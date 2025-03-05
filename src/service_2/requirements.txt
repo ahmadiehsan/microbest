@@ -1,0 +1,17 @@
+# =========================
+# Mains
+# =====
+fastapi==0.115.11
+uvicorn==0.34.0
+
+opentelemetry-sdk==1.30.0
+opentelemetry-instrumentation-fastapi==0.51b0
+opentelemetry-instrumentation-requests==0.51b0
+opentelemetry-exporter-otlp==1.30.0
+
+requests==2.32.3
+
+# =========================
+# Devs
+# =====
+ruff==0.9.9

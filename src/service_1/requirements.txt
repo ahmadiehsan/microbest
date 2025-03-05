@@ -1,0 +1,14 @@
+# =========================
+# Mains
+# =====
+django==5.1.6
+django-ninja==1.3.0
+
+opentelemetry-sdk==1.30.0
+opentelemetry-instrumentation-django==0.51b0
+opentelemetry-exporter-otlp==1.30.0
+
+# =========================
+# Devs
+# =====
+ruff==0.9.9

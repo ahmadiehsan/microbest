@@ -1,0 +1,61 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: otel_collector:4317
+      http:
+        endpoint: otel_collector:4318
+        cors:
+          allowed_origins:
+            - "http://*"
+            - "https://*"
+
+exporters:
+  debug:
+  otlp:
+    endpoint: "jaeger:4317"
+    tls:
+      insecure: true
+  otlphttp/prometheus:
+    endpoint: "http://prometheus:9090/api/v1/otlp"
+    tls:
+      insecure: true
+  elasticsearch:
+    endpoint: "http://elasticsearch:9200"
+
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 5s
+    limit_percentage: 80
+    spike_limit_percentage: 25
+
+connectors:
+  spanmetrics:
+
+service:
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ otlp, debug, spanmetrics ]
+    metrics:
+      receivers: [ otlp, spanmetrics ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ otlphttp/prometheus, debug ]
+    logs:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ elasticsearch, debug ]
+
+  telemetry:
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            interval: 10000
+            timeout: 5000
+            exporter:
+              otlp:
+                protocol: grpc
+                endpoint: otel_collector:4317

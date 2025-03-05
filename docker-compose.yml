@@ -1,0 +1,121 @@
+services:
+  otel_collector:
+    image: otel/opentelemetry-collector-contrib:0.121.0
+    restart: on-failure
+    volumes:
+      - ./configs/docker_configs/otel_collector.yaml:/etc/otel_collector/config.yaml
+    command:
+      - --config=/etc/otel_collector/config.yaml
+    ports:
+      - "4317"  # OTLP gRPC
+      - "4318"  # OTLP HTTP
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      prometheus:
+        condition: service_started
+      jaeger:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    restart: on-failure
+    env_file:
+      - configs/docker_envs/elasticsearch.env
+    ports:
+      - "9200"
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test: curl -s http://localhost:9200/_cluster/health | grep -E '"status":"(green|yellow)"'
+      start_period: 10s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kibana:
+    image: kibana:7.10.1
+    restart: on-failure
+    volumes:
+      - kibana_data:/usr/share/kibana/data
+    env_file:
+      - ./configs/docker_envs/kibana.env
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    restart: on-failure
+    volumes:
+      - ./configs/docker_configs/prometheus.yaml:/etc/prometheus/config.yaml
+    command:
+      - --config.file=/etc/prometheus/config.yaml
+      - --web.enable-otlp-receiver
+    ports:
+      - "9090"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 120M
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.66.0
+    restart: on-failure
+    env_file:
+      - configs/docker_envs/jaeger.env
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4317"  # OTEL collector port gRPC
+    deploy:
+      resources:
+        limits:
+          memory: 1200M
+
+  service_1:
+    restart: on-failure
+    build: ./src/service_1
+    volumes:
+      - ./src/service_1:/app
+    env_file:
+      - configs/docker_envs/service_1.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - otel_collector
+
+  service_2:
+    restart: on-failure
+    build: ./src/service_2
+    volumes:
+      - ./src/service_2:/app
+    env_file:
+      - configs/docker_envs/service_2.env
+    ports:
+      - "8000:8001"
+    depends_on:
+      - otel_collector
+
+volumes:
+  kibana_data:
