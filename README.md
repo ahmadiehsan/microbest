@@ -7,12 +7,17 @@ Sample OpenTelemetry project
 ```shell
 git clone <this/repo/url>
 cd open_telemetry
+make service_1.up
+```
 
+## Developers
+
+```shell
 python3.12 -m venv venv
 source venv/bin/activate
 
 make requirements.install
-make service_1.up
+make pre_commit.init
 ```
 
 ## TODOs
