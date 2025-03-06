@@ -1,0 +1,69 @@
+exclude: ^(.*assets|.*resources|.*results|src/run_action.py)
+default_stages: [ commit ]
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+        stages: [ commit ]
+      - id: trailing-whitespace
+        stages: [ commit ]
+      - id: check-merge-conflict
+
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.10.0-2
+    hooks:
+      - id: shfmt
+        args: [ --indent, "2", --write ]
+        stages: [ commit ]
+
+  - repo: https://github.com/mrtazz/checkmake.git
+    rev: 0.2.2
+    hooks:
+      - id: checkmake
+        args: [ --config, "./.checkmake.ini" ]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.4
+    hooks:
+      - id: ruff
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: dir-checker
+        name: dir-checker
+        entry: env PYTHONPATH=. python scripts/dir_checker/dir_checker.py
+        language: python
+        pass_filenames: false
+
+  - repo: local
+    hooks:
+      - id: file-checker
+        name: file-checker
+        entry: env PYTHONPATH=. python scripts/file_checker/file_checker.py
+        language: python
+        pass_filenames: false
+
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.0
+    hooks:
+      - id: hadolint-docker
+
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.8.2
+    hooks:
+      - id: bandit
+        args: [ --configfile, "pyproject.toml", --recursive, "." ]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        additional_dependencies: [ types-tabulate==0.9.0.0, types-requests==2.30.0.0 ]
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.3.4
+    hooks:
+      - id: pylint

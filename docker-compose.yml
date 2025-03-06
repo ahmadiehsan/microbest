@@ -1,14 +1,16 @@
 services:
   otel_collector:
-    image: otel/opentelemetry-collector-contrib:0.121.0
+    image: ${OTEL_COLLECTOR_IMAGE}
     restart: on-failure
     volumes:
-      - ./configs/docker_configs/otel_collector.yaml:/etc/otel_collector/config.yaml
+      - ${OTEL_COLLECTOR_CONFIG}:/etc/otel_collector/config.yaml
     command:
       - --config=/etc/otel_collector/config.yaml
+    env_file:
+      - ${DOCKER_COMPOSE_ENV_FILE}
     ports:
-      - "4317"  # OTLP gRPC
-      - "4318"  # OTLP HTTP
+      - "${OTEL_COLLECTOR_GRPC_PORT}"
+      - "${OTEL_COLLECTOR_HTTP_PORT}"
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -22,12 +24,13 @@ services:
           memory: 200M
 
   elasticsearch:
-    image: elasticsearch:7.10.1
+    image: ${ELASTICSEARCH_IMAGE}
     restart: on-failure
     env_file:
-      - configs/docker_envs/elasticsearch.env
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${ELASTICSEARCH_ENV_FILE}
     ports:
-      - "9200"
+      - "${ELASTICSEARCH_PORT}"
     deploy:
       resources:
         limits:
@@ -37,57 +40,59 @@ services:
         soft: -1
         hard: -1
     healthcheck:
-      test: curl -s http://localhost:9200/_cluster/health | grep -E '"status":"(green|yellow)"'
+      test: curl -s http://localhost:${ELASTICSEARCH_PORT}/_cluster/health | grep -E '"status":"(green|yellow)"'
       start_period: 10s
       interval: 5s
       timeout: 10s
       retries: 10
 
   kibana:
-    image: kibana:7.10.1
+    image: ${KIBANA_IMAGE}
     restart: on-failure
     volumes:
       - kibana_data:/usr/share/kibana/data
     env_file:
-      - ./configs/docker_envs/kibana.env
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${KIBANA_ENV_FILE}
     ports:
-      - "5601:5601"
+      - "${KIBANA_PORT}:${KIBANA_PORT_HOST}"
     depends_on:
       - elasticsearch
 
   prometheus:
-    image: prom/prometheus:v3.2.1
+    image: ${PROMETHEUS_IMAGE}
     restart: on-failure
     volumes:
-      - ./configs/docker_configs/prometheus.yaml:/etc/prometheus/config.yaml
+      - ${PROMETHEUS_CONFIG}:/etc/prometheus/config.yaml
     command:
       - --config.file=/etc/prometheus/config.yaml
       - --web.enable-otlp-receiver
     ports:
-      - "9090"
+      - "${PROMETHEUS_PORT}"
     deploy:
       resources:
         limits:
           memory: 300M
 
   grafana:
-    image: grafana/grafana:11.5.2
+    image: ${GRAFANA_IMAGE}
     restart: on-failure
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT}:${GRAFANA_PORT_HOST}"
     deploy:
       resources:
         limits:
           memory: 120M
 
   jaeger:
-    image: jaegertracing/all-in-one:1.66.0
+    image: ${JAEGER_IMAGE}
     restart: on-failure
     env_file:
-      - configs/docker_envs/jaeger.env
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${JAEGER_ENV_FILE}
     ports:
-      - "16686:16686"  # Jaeger UI
-      - "4317"  # OTEL collector port gRPC
+      - "${JAEGER_UI_PORT}:${JAEGER_UI_PORT_HOST}"
+      - "${JAEGER_OTEL_COLLECTOR_GRPC_PORT}"
     deploy:
       resources:
         limits:
@@ -95,25 +100,27 @@ services:
 
   service_1:
     restart: on-failure
-    build: ./src/service_1
+    build: ${SERVICE_1_ROOT_DIR}
     volumes:
-      - ./src/service_1:/app
+      - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
-      - configs/docker_envs/service_1.env
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${SERVICE_1_ENV_FILE}
     ports:
-      - "8000:8000"
+      - "${SERVICE_1_PORT}:${SERVICE_1_PORT_HOST}"
     depends_on:
       - otel_collector
 
   service_2:
     restart: on-failure
-    build: ./src/service_2
+    build: ${SERVICE_2_ROOT_DIR}
     volumes:
-      - ./src/service_2:/app
+      - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
-      - configs/docker_envs/service_2.env
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${SERVICE_2_ENV_FILE}
     ports:
-      - "8000:8001"
+      - "${SERVICE_2_PORT}:${SERVICE_2_PORT_HOST}"
     depends_on:
       - otel_collector
 

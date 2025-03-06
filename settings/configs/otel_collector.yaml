@@ -2,9 +2,9 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: otel_collector:4317
+        endpoint: ${env:OTEL_COLLECTOR_GRPC_ADDRESS}
       http:
-        endpoint: otel_collector:4318
+        endpoint: ${env:OTEL_COLLECTOR_HTTP_ADDRESS}
         cors:
           allowed_origins:
             - "http://*"
@@ -13,15 +13,15 @@ receivers:
 exporters:
   debug:
   otlp:
-    endpoint: "jaeger:4317"
+    endpoint: "${env:JAEGER_OTEL_COLLECTOR_GRPC_ADDRESS}"
     tls:
       insecure: true
   otlphttp/prometheus:
-    endpoint: "http://prometheus:9090/api/v1/otlp"
+    endpoint: "http://${env:PROMETHEUS_ADDRESS}/api/v1/otlp"
     tls:
       insecure: true
   elasticsearch:
-    endpoint: "http://elasticsearch:9200"
+    endpoint: "http://${env:ELASTICSEARCH_ADDRESS}"
 
 processors:
   batch:
@@ -58,4 +58,4 @@ service:
             exporter:
               otlp:
                 protocol: grpc
-                endpoint: otel_collector:4317
+                endpoint: ${env:OTEL_COLLECTOR_GRPC_ADDRESS}

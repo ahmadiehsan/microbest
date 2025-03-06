@@ -22,13 +22,15 @@ app = FastAPI()
 FastAPIInstrumentor.instrument_app(app)
 RequestsInstrumentor().instrument()
 
+
 @app.get("/")
-def read_root():
+def read_root() -> dict:
     return {"message": "Hello, FastAPI!"}
 
+
 @app.get("/external-api")
-def call_external():
+def call_external() -> dict:
     with trace.get_tracer(__name__).start_as_current_span("external-request"):
         time.sleep(1)  # Simulate processing delay
-        response = requests.get("https://httpbin.org/get")
+        response = requests.get("https://httpbin.org/get", timeout=10)
         return {"status_code": response.status_code, "message": "Fetched external data"}

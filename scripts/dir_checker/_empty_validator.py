@@ -1,0 +1,27 @@
+from pathlib import Path
+
+from scripts.dir_checker._dto import DirSpecsDto
+
+
+class EmptyValidator:
+    def validate(self, dir_specs: DirSpecsDto) -> None:
+        is_hidden = any(p.startswith(".") for p in dir_specs.rel_path.parts)
+        is_empty = self._is_empty(dir_specs.abs_path)
+
+        if not is_hidden and is_empty:
+            error = f"{dir_specs.rel_path}: is an empty directory"
+            dir_specs.errors.append(error)
+
+    @staticmethod
+    def _is_empty(dir_abs_path: Path) -> bool:
+        is_empty = True
+        black_list_names = ["__init__", "__pycache__"]
+
+        for content in dir_abs_path.iterdir():
+            if content.name in black_list_names:
+                continue
+
+            is_empty = False
+            break
+
+        return is_empty

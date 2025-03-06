@@ -1,3 +1,4 @@
+from django.http import HttpRequest
 from ninja import NinjaAPI
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
@@ -17,6 +18,7 @@ DjangoInstrumentor().instrument()
 # Initialize Django Ninja API
 api = NinjaAPI()
 
+
 @api.get("/")
-def read_root(request):
+def read_root(request: HttpRequest) -> dict:  # noqa: ARG001
     return {"message": "Hello, Django!"}
