@@ -1,6 +1,20 @@
 services:
+  nginx:
+    image: ${NGINX_IMAGE}
+    hostname: ${NGINX_HOST}
+    restart: on-failure
+    volumes:
+      - ${NGINX_CONFIG}:/etc/nginx/templates/default.conf.template
+      - ${NGINX_ENTRYPOINT}:/etc/nginx/entrypoint.sh
+    entrypoint: /etc/nginx/entrypoint.sh
+    env_file:
+      - ${DOCKER_COMPOSE_ENV_FILE}
+    ports:
+      - "${NGINX_PORT_PUBLIC}:${NGINX_PORT}"
+
   otel_collector:
     image: ${OTEL_COLLECTOR_IMAGE}
+    hostname: ${OTEL_COLLECTOR_HOST}
     restart: on-failure
     volumes:
       - ${OTEL_COLLECTOR_CONFIG}:/etc/otel_collector/config.yaml
@@ -12,12 +26,9 @@ services:
       - "${OTEL_COLLECTOR_GRPC_PORT}"
       - "${OTEL_COLLECTOR_HTTP_PORT}"
     depends_on:
-      elasticsearch:
-        condition: service_healthy
-      prometheus:
-        condition: service_started
-      jaeger:
-        condition: service_started
+      - elasticsearch
+      - prometheus
+      - jaeger
     deploy:
       resources:
         limits:
@@ -25,6 +36,7 @@ services:
 
   elasticsearch:
     image: ${ELASTICSEARCH_IMAGE}
+    hostname: ${ELASTICSEARCH_HOST}
     restart: on-failure
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
@@ -48,6 +60,7 @@ services:
 
   kibana:
     image: ${KIBANA_IMAGE}
+    hostname: ${KIBANA_HOST}
     restart: on-failure
     volumes:
       - kibana_data:/usr/share/kibana/data
@@ -55,12 +68,14 @@ services:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${KIBANA_ENV_FILE}
     ports:
-      - "${KIBANA_PORT_HOST}:${KIBANA_PORT}"
+      - "${KIBANA_PORT}"
     depends_on:
+      - nginx
       - elasticsearch
 
   prometheus:
     image: ${PROMETHEUS_IMAGE}
+    hostname: ${PROMETHEUS_HOST}
     restart: on-failure
     volumes:
       - ${PROMETHEUS_CONFIG}:/etc/prometheus/config.yaml
@@ -76,9 +91,12 @@ services:
 
   grafana:
     image: ${GRAFANA_IMAGE}
+    hostname: ${GRAFANA_HOST}
     restart: on-failure
     ports:
-      - "${GRAFANA_PORT_HOST}:${GRAFANA_PORT}"
+      - "${GRAFANA_PORT}"
+    depends_on:
+      - nginx
     deploy:
       resources:
         limits:
@@ -86,42 +104,51 @@ services:
 
   jaeger:
     image: ${JAEGER_IMAGE}
+    hostname: ${JAEGER_HOST}
     restart: on-failure
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${JAEGER_ENV_FILE}
     ports:
-      - "${JAEGER_UI_PORT_HOST}:${JAEGER_UI_PORT}"
+      - "${JAEGER_UI_PORT}"
       - "${JAEGER_OTEL_COLLECTOR_GRPC_PORT}"
+    depends_on:
+      - nginx
     deploy:
       resources:
         limits:
           memory: 1200M
 
   service_1:
-    restart: on-failure
+    image: ${SERVICE_1_IMAGE}
     build: ${SERVICE_1_ROOT_DIR}
+    hostname: ${SERVICE_1_HOST}
+    restart: on-failure
     volumes:
       - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${SERVICE_1_ENV_FILE}
     ports:
-      - "${SERVICE_1_PORT_HOST}:${SERVICE_1_PORT}"
+      - "${SERVICE_1_PORT}"
     depends_on:
+      - nginx
       - otel_collector
 
   service_2:
-    restart: on-failure
+    image: ${SERVICE_2_IMAGE}
     build: ${SERVICE_2_ROOT_DIR}
+    hostname: ${SERVICE_2_HOST}
+    restart: on-failure
     volumes:
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${SERVICE_2_ENV_FILE}
     ports:
-      - "${SERVICE_2_PORT_HOST}:${SERVICE_2_PORT}"
+      - "${SERVICE_2_PORT}"
     depends_on:
+      - nginx
       - otel_collector
 
 volumes:

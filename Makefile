@@ -42,13 +42,37 @@ docker.logs:
 	$(DOCKER_COMPOSE) logs -f
 
 # =========================
+# Nginx
+# =====
+_nginx.up:
+	$(DOCKER_COMPOSE) up -d nginx
+
+nginx.logs:
+	$(DOCKER_COMPOSE) logs -f nginx
+
+nginx.up: _nginx.up nginx.logs
+
+nginx.stop:
+	$(DOCKER_COMPOSE) stop nginx
+
+nginx.down: nginx.stop
+	$(DOCKER_COMPOSE) rm -f nginx
+
+nginx.restart: nginx.down _nginx.up
+
+nginx.shell: _nginx.up
+	$(DOCKER_COMPOSE) exec nginx /bin/sh
+
+# =========================
 # OpenTelemetry Collector
 # =====
-otel_collector.up:
-	$(DOCKER_COMPOSE) up otel_collector
+_otel_collector.up:
+	$(DOCKER_COMPOSE) up -d otel_collector
 
 otel_collector.logs:
 	$(DOCKER_COMPOSE) logs -f otel_collector
+
+otel_collector.up: _otel_collector.up otel_collector.logs
 
 otel_collector.stop:
 	$(DOCKER_COMPOSE) stop otel_collector
@@ -56,16 +80,21 @@ otel_collector.stop:
 otel_collector.down: otel_collector.stop
 	$(DOCKER_COMPOSE) rm -f otel_collector
 
-otel_collector.restart: otel_collector.down otel_collector.up
+otel_collector.restart: otel_collector.down _otel_collector.up
+
+otel_collector.shell: _otel_collector.up
+	$(DOCKER_COMPOSE) exec otel_collector /bin/sh
 
 # =========================
 # Elasticsearch
 # =====
-elasticsearch.up:
-	$(DOCKER_COMPOSE) up elasticsearch
+_elasticsearch.up:
+	$(DOCKER_COMPOSE) up -d elasticsearch
 
 elasticsearch.logs:
 	$(DOCKER_COMPOSE) logs -f elasticsearch
+
+elasticsearch.up: _elasticsearch.up elasticsearch.logs
 
 elasticsearch.stop:
 	$(DOCKER_COMPOSE) stop elasticsearch
@@ -73,17 +102,21 @@ elasticsearch.stop:
 elasticsearch.down: elasticsearch.stop
 	$(DOCKER_COMPOSE) rm -f elasticsearch
 
-elasticsearch.restart: elasticsearch.down elasticsearch.up
+elasticsearch.restart: elasticsearch.down _elasticsearch.up
+
+elasticsearch.shell: _elasticsearch.up
+	$(DOCKER_COMPOSE) exec elasticsearch /bin/sh
 
 # =========================
 # Kibana
 # =====
-kibana.up:
-	@echo ">>>>> http://127.0.0.1:5601"
-	$(DOCKER_COMPOSE) up kibana
+_kibana.up:
+	$(DOCKER_COMPOSE) up -d kibana
 
 kibana.logs:
 	$(DOCKER_COMPOSE) logs -f kibana
+
+kibana.up: _kibana.up kibana.logs
 
 kibana.stop:
 	$(DOCKER_COMPOSE) stop kibana
@@ -91,16 +124,21 @@ kibana.stop:
 kibana.down: kibana.stop
 	$(DOCKER_COMPOSE) rm -f kibana
 
-kibana.restart: kibana.down kibana.up
+kibana.restart: kibana.down _kibana.up
+
+kibana.shell: _kibana.up
+	$(DOCKER_COMPOSE) exec kibana /bin/sh
 
 # =========================
 # Prometheus
 # =====
-prometheus.up:
-	$(DOCKER_COMPOSE) up prometheus
+_prometheus.up:
+	$(DOCKER_COMPOSE) up -d prometheus
 
 prometheus.logs:
 	$(DOCKER_COMPOSE) logs -f prometheus
+
+prometheus.up: _prometheus.up prometheus.logs
 
 prometheus.stop:
 	$(DOCKER_COMPOSE) stop prometheus
@@ -108,17 +146,21 @@ prometheus.stop:
 prometheus.down: prometheus.stop
 	$(DOCKER_COMPOSE) rm -f prometheus
 
-prometheus.restart: prometheus.down prometheus.up
+prometheus.restart: prometheus.down _prometheus.up
+
+prometheus.shell: _prometheus.up
+	$(DOCKER_COMPOSE) exec prometheus /bin/sh
 
 # =========================
 # Grafana
 # =====
-grafana.up:
-	@echo ">>>>> http://127.0.0.1:3000"
-	$(DOCKER_COMPOSE) up grafana
+_grafana.up:
+	$(DOCKER_COMPOSE) up -d grafana
 
 grafana.logs:
 	$(DOCKER_COMPOSE) logs -f grafana
+
+grafana.up: _grafana.up grafana.logs
 
 grafana.stop:
 	$(DOCKER_COMPOSE) stop grafana
@@ -126,17 +168,21 @@ grafana.stop:
 grafana.down: grafana.stop
 	$(DOCKER_COMPOSE) rm -f grafana
 
-grafana.restart: grafana.down grafana.up
+grafana.restart: grafana.down _grafana.up
+
+grafana.shell: _grafana.up
+	$(DOCKER_COMPOSE) exec grafana /bin/sh
 
 # =========================
 # Jaeger
 # =====
-jaeger.up:
-	@echo ">>>>> http://127.0.0.1:16686"
-	$(DOCKER_COMPOSE) up jaeger
+_jaeger.up:
+	$(DOCKER_COMPOSE) up -d jaeger
 
 jaeger.logs:
 	$(DOCKER_COMPOSE) logs -f jaeger
+
+jaeger.up: _jaeger.up jaeger.logs
 
 jaeger.stop:
 	$(DOCKER_COMPOSE) stop jaeger
@@ -144,17 +190,21 @@ jaeger.stop:
 jaeger.down: jaeger.stop
 	$(DOCKER_COMPOSE) rm -f jaeger
 
-jaeger.restart: jaeger.down jaeger.up
+jaeger.restart: jaeger.down _jaeger.up
+
+jaeger.shell: _jaeger.up
+	$(DOCKER_COMPOSE) exec jaeger /bin/sh
 
 # =========================
 # Service 1
 # =====
-service_1.up:
-	@echo ">>>>> http://127.0.0.1:8000"
-	$(DOCKER_COMPOSE) up service_1
+_service_1.up:
+	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.logs:
 	$(DOCKER_COMPOSE) logs -f service_1
+
+service_1.up: _service_1.up service_1.logs
 
 service_1.stop:
 	$(DOCKER_COMPOSE) stop service_1
@@ -162,17 +212,21 @@ service_1.stop:
 service_1.down: service_1.stop
 	$(DOCKER_COMPOSE) rm -f service_1
 
-service_1.restart: service_1.down service_1.up
+service_1.restart: service_1.down _service_1.up
+
+service_1.shell: _service_1.up
+	$(DOCKER_COMPOSE) exec service_1 /bin/sh
 
 # =========================
 # Service 2
 # =====
-service_2.up:
-	@echo ">>>>> http://127.0.0.1:8001"
-	$(DOCKER_COMPOSE) up service_2
+_service_2.up:
+	$(DOCKER_COMPOSE) up -d service_2
 
 service_2.logs:
 	$(DOCKER_COMPOSE) logs -f service_2
+
+service_2.up: _service_2.up service_2.logs
 
 service_2.stop:
 	$(DOCKER_COMPOSE) stop service_2
@@ -180,7 +234,10 @@ service_2.stop:
 service_2.down: service_2.stop
 	$(DOCKER_COMPOSE) rm -f service_2
 
-service_2.restart: service_2.down service_2.up
+service_2.restart: service_2.down _service_2.up
+
+service_2.shell: _service_2.up
+	$(DOCKER_COMPOSE) exec service_2 /bin/sh
 
 # =========================
 # Help

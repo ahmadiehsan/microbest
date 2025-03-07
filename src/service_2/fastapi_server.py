@@ -16,7 +16,7 @@ otlp_exporter = OTLPSpanExporter(endpoint="http://otel_collector:4318/v1/traces"
 tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
 # Initialize FastAPI
-app = FastAPI()
+app = FastAPI(root_path="/service-2")
 
 # Instrument FastAPI and Requests
 FastAPIInstrumentor.instrument_app(app)

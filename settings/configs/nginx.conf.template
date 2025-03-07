@@ -1,0 +1,35 @@
+server {
+    listen ${NGINX_PORT};
+    server_name _;
+    resolver 127.0.0.11 valid=30s;
+
+    location /otlp-http/ {
+        set ${DOLLAR}otlp http://${OTEL_COLLECTOR_HOST}:${OTEL_COLLECTOR_HTTP_PORT};
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_pass ${DOLLAR}otlp;
+    }
+
+    location /jaeger {
+        set ${DOLLAR}jaeger http://${JAEGER_HOST}:${JAEGER_UI_PORT};
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_pass ${DOLLAR}jaeger;
+    }
+
+    location /grafana {
+        set ${DOLLAR}grafana http://${GRAFANA_HOST}:${GRAFANA_PORT};
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_pass ${DOLLAR}grafana;
+    }
+
+    location /service-1 {
+        set ${DOLLAR}service1 http://${SERVICE_1_HOST}:${SERVICE_1_PORT};
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_pass ${DOLLAR}service1;
+    }
+
+    location /service-2 {
+        set ${DOLLAR}service2 http://${SERVICE_2_HOST}:${SERVICE_2_PORT};
+        proxy_set_header Host ${DOLLAR}host;
+        proxy_pass ${DOLLAR}service2;
+    }
+}
