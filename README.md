@@ -23,5 +23,9 @@ make pre_commit.init
 ## TODOs
 
 - [x] Add Nginx as frontend-proxy
+- [ ] More comprehensive use of OpenTelemetry
 - [ ] Add overview diagram
 - [ ] Persist data for Docker services
+- [ ] Add gRPC communications
+- [ ] Add Kafka
+- [ ] Add Kong
