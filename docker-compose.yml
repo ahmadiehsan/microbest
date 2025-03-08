@@ -125,6 +125,7 @@ services:
     build: ${SERVICE_1_ROOT_DIR}
     hostname: ${SERVICE_1_HOST}
     restart: on-failure
+    command: sh -c "/wait && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
@@ -141,6 +142,7 @@ services:
     build: ${SERVICE_2_ROOT_DIR}
     hostname: ${SERVICE_2_HOST}
     restart: on-failure
+    command: sh -c "/wait && uvicorn fastapi_server:app --host 0.0.0.0 --reload --port 8000 --proxy-headers"
     volumes:
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:

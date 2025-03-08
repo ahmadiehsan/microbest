@@ -9,5 +9,3 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
-CMD ["sh", "-c", "/wait && uvicorn fastapi_server:app --host 0.0.0.0 --reload --port 8000"]

@@ -26,9 +26,6 @@ pre_commit.run_for_all:
 # =========================
 # Docker
 # =====
-docker.build:
-	$(DOCKER_COMPOSE) build service_1 service_2
-
 docker.destroy:
 	$(DOCKER_COMPOSE) down -v
 
@@ -233,6 +230,9 @@ service_1.restart: service_1.down service_1.start
 service_1.shell: service_1.up
 	$(DOCKER_COMPOSE) exec service_1 /bin/sh
 
+service_1.build:
+	$(DOCKER_COMPOSE) build service_1
+
 # =========================
 # Service 2
 # =====
@@ -256,6 +256,9 @@ service_2.restart: service_2.down service_2.start
 
 service_2.shell: service_2.up
 	$(DOCKER_COMPOSE) exec service_2 /bin/sh
+
+service_2.build:
+	$(DOCKER_COMPOSE) build service_2
 
 # =========================
 # Help

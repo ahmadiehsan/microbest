@@ -16,8 +16,8 @@ Including another URLconf
 
 """
 
-from api.views import api
+from api.views import API
 from django.contrib import admin
 from django.urls import path
 
-urlpatterns = [path("api/", api.urls), path("admin/", admin.site.urls)]
+urlpatterns = [path("api/", API.urls), path("admin/", admin.site.urls)]

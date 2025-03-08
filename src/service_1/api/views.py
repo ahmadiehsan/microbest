@@ -20,9 +20,9 @@ tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 DjangoInstrumentor().instrument()
 
 # Initialize Django Ninja API
-api = NinjaAPI()
+API = NinjaAPI()
 
 
-@api.get("/")
+@API.get("/")
 def read_root(request: HttpRequest) -> dict:  # noqa: ARG001
     return {"message": "Hello, Django!"}
