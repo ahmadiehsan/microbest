@@ -22,5 +22,6 @@ make pre_commit.init
 
 ## TODOs
 
-- Add Nginx as frontend-proxy
-- Add overview diagram
+- [x] Add Nginx as frontend-proxy
+- [ ] Add overview diagram
+- [ ] Persist data for Docker services
