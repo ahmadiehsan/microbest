@@ -11,6 +11,7 @@ services:
       - ${DOCKER_COMPOSE_ENV_FILE}
     ports:
       - "${NGINX_PORT_PUBLIC}:${NGINX_PORT}"
+    stop_grace_period: 0s
 
   otel_collector:
     image: ${OTEL_COLLECTOR_IMAGE}
