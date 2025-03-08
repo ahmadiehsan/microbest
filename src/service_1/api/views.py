@@ -1,3 +1,5 @@
+import os
+
 from django.http import HttpRequest
 from ninja import NinjaAPI
 from opentelemetry import trace
@@ -9,7 +11,9 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 # Initialize OpenTelemetry Tracer
 tracer_provider = TracerProvider()
 trace.set_tracer_provider(tracer_provider)
-otlp_exporter = OTLPSpanExporter(endpoint="http://otel_collector:4318/v1/traces")
+otlp_exporter = OTLPSpanExporter(
+    endpoint=f"http://{os.environ['OTEL_COLLECTOR_HOST']}:{os.environ['OTEL_COLLECTOR_HTTP_PORT']}/v1/traces"
+)
 tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
 # Instrument Django

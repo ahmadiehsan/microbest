@@ -1,4 +1,4 @@
-import time
+import os
 
 import requests
 from fastapi import FastAPI
@@ -12,11 +12,13 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 # Initialize OpenTelemetry Tracer
 tracer_provider = TracerProvider()
 trace.set_tracer_provider(tracer_provider)
-otlp_exporter = OTLPSpanExporter(endpoint="http://otel_collector:4318/v1/traces")
+otlp_exporter = OTLPSpanExporter(
+    endpoint=f"http://{os.environ['OTEL_COLLECTOR_HOST']}:{os.environ['OTEL_COLLECTOR_HTTP_PORT']}/v1/traces"
+)
 tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
 # Initialize FastAPI
-app = FastAPI(root_path="/service-2")
+app = FastAPI(root_path=os.environ["SERVICE_2_PROXY_URL"])
 
 # Instrument FastAPI and Requests
 FastAPIInstrumentor.instrument_app(app)
@@ -31,6 +33,5 @@ def read_root() -> dict:
 @app.get("/external-api")
 def call_external() -> dict:
     with trace.get_tracer(__name__).start_as_current_span("external-request"):
-        time.sleep(1)  # Simulate processing delay
         response = requests.get("https://httpbin.org/get", timeout=10)
-        return {"status_code": response.status_code, "message": "Fetched external data"}
+        return {"status_code": response.status_code, **response.json()}

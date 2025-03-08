@@ -20,13 +20,11 @@ ignore = [
     "D203",  # one-blank-line-before-class (conflict with D211)
     "D213",  # multi-line-summary-second-line (conflict with D212)
     "ANN401",  # any-type
-    "ANN101",  # missing-type-self
-    "ANN102",  # missing-type-cls
     "FIX002",  # line-contains-todo
     "TD003",  # missing-todo-link
     "TRY003",  # raise-vanilla-args
     "TRY400",  # error-instead-of-exception
-    "TCH001",  # typing-only-first-party-import
+    "TC001",  # typing-only-first-party-import
     "T201",  # print
     "S603",  # subprocess-without-shell-equals-true
     "S311",  # suspicious-non-cryptographic-random-usage
