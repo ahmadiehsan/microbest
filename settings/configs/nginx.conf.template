@@ -11,27 +11,27 @@ server {
     proxy_set_header X-Forwarded-For ${DOLLAR}proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto ${DOLLAR}scheme;
 
-    location ${KIBANA_PROXY_URL} {
+    location /kibana {
         set ${DOLLAR}kibana http://${KIBANA_HOST}:${KIBANA_PORT};
         proxy_pass ${DOLLAR}kibana;
     }
 
-    location ${GRAFANA_PROXY_URL} {
+    location /grafana {
         set ${DOLLAR}grafana http://${GRAFANA_HOST}:${GRAFANA_PORT};
         proxy_pass ${DOLLAR}grafana;
     }
 
-    location ${JAEGER_PROXY_URL} {
+    location /jaeger {
         set ${DOLLAR}jaeger http://${JAEGER_HOST}:${JAEGER_UI_PORT};
         proxy_pass ${DOLLAR}jaeger;
     }
 
-    location ${SERVICE_1_PROXY_URL} {
+    location /service-1 {
         set ${DOLLAR}service_1 http://${SERVICE_1_HOST}:${SERVICE_1_PORT};
         proxy_pass ${DOLLAR}service_1;
     }
 
-    location ${SERVICE_2_PROXY_URL} {
+    location /service-2 {
         set ${DOLLAR}service_2 http://${SERVICE_2_HOST}:${SERVICE_2_PORT};
         proxy_pass ${DOLLAR}service_2;
     }

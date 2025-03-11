@@ -18,7 +18,7 @@ otlp_exporter = OTLPSpanExporter(
 tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
 # Initialize FastAPI
-app = FastAPI(root_path=os.environ["SERVICE_2_PROXY_URL"])
+app = FastAPI(root_path="/service-2")
 
 # Instrument FastAPI and Requests
 FastAPIInstrumentor.instrument_app(app)

@@ -12,10 +12,10 @@ from scripts.file_checker._msg_validator import MsgValidator
 
 class FileChecker:
     def __init__(self) -> None:
-        self.ignore_rules = self._load_ignore_rules()
-        self.msg_validator = MsgValidator()
-        self.import_validator = ImportValidator()
-        self.func_validator = FuncValidator()
+        self._ignore_rules = self._load_ignore_rules()
+        self._msg_validator = MsgValidator()
+        self._import_validator = ImportValidator()
+        self._func_validator = FuncValidator()
 
     def run(self) -> NoReturn:
         repo_abs_path = Path.cwd()
@@ -56,17 +56,17 @@ class FileChecker:
         ignored_validators = self._get_ignored_validators(file_specs.rel_path)
 
         if "import_validator" not in ignored_validators:
-            self.import_validator.validate(tree, file_specs)
+            self._import_validator.validate(tree, file_specs)
 
         if "msg_validator" not in ignored_validators:
-            self.msg_validator.validate(tree, file_specs)
+            self._msg_validator.validate(tree, file_specs)
 
         if "func_validator" not in ignored_validators:
-            self.func_validator.validate(tree, file_specs)
+            self._func_validator.validate(tree, file_specs)
 
     def _get_ignored_validators(self, file_rel_path: Path) -> list[str]:
         """Return validators to ignore for a given file."""
-        for base_rel_path, ignored_validators in self.ignore_rules.items():
+        for base_rel_path, ignored_validators in self._ignore_rules.items():
             if str(file_rel_path).startswith(base_rel_path):
                 return ignored_validators
 

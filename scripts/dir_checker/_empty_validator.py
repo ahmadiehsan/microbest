@@ -14,8 +14,8 @@ class EmptyValidator:
 
     @staticmethod
     def _is_empty(dir_abs_path: Path) -> bool:
+        black_list_names = ["__init__.py", "__pycache__"]
         is_empty = True
-        black_list_names = ["__init__", "__pycache__"]
 
         for content in dir_abs_path.iterdir():
             if content.name in black_list_names:
