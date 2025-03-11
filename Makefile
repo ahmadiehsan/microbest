@@ -105,7 +105,7 @@ elasticsearch.logs:
 	$(DOCKER_COMPOSE) logs -f elasticsearch
 
 elasticsearch.shell: elasticsearch.up
-	$(DOCKER_COMPOSE) exec elasticsearch /bin/sh
+	$(DOCKER_COMPOSE) exec elasticsearch /bin/bash
 
 # =========================
 # Kibana
@@ -128,7 +128,7 @@ kibana.logs:
 	$(DOCKER_COMPOSE) logs -f kibana
 
 kibana.shell: kibana.up
-	$(DOCKER_COMPOSE) exec kibana /bin/sh
+	$(DOCKER_COMPOSE) exec kibana /bin/bash
 
 # =========================
 # Prometheus

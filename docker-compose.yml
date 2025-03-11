@@ -63,8 +63,6 @@ services:
     image: ${KIBANA_IMAGE}
     hostname: ${KIBANA_HOST}
     restart: on-failure
-    volumes:
-      - kibana_data:/usr/share/kibana/data
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${KIBANA_ENV_FILE}
@@ -153,6 +151,3 @@ services:
     depends_on:
       - nginx
       - otel_collector
-
-volumes:
-  kibana_data:

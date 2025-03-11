@@ -10,6 +10,14 @@ cd open_telemetry
 make service_1.up
 ```
 
+Services:
+
+- [Kibana](http://localhost:8000/kibana/)
+- [Grafana](http://localhost:8000/grafana/)
+- [Jaeger UI](http://localhost:8000/jaeger/ui/)
+- [Service 1](http://localhost:8000/serivce-1/)
+- [Service 2](http://localhost:8000/serivce-2/)
+
 ## Developers
 
 ```shell
@@ -28,4 +36,5 @@ make pre_commit.init
 - [ ] Add Kafka
 - [ ] Add Kong
 - [ ] Persist data for Docker services
+- [ ] Add example ENVs
 - [ ] Add overview diagram
