@@ -44,10 +44,8 @@ docker.logs:
 nginx.up:
 	$(DOCKER_COMPOSE) up -d nginx
 
-nginx.logs:
-	$(DOCKER_COMPOSE) logs -f nginx
-
-nginx.start: nginx.up nginx.logs
+nginx.start:
+	$(DOCKER_COMPOSE) up nginx
 
 nginx.stop:
 	$(DOCKER_COMPOSE) stop nginx
@@ -57,7 +55,8 @@ nginx.down: nginx.stop
 
 nginx.reup: nginx.down nginx.up
 
-nginx.restart: nginx.down nginx.start
+nginx.logs:
+	$(DOCKER_COMPOSE) logs -f nginx
 
 nginx.shell: nginx.up
 	$(DOCKER_COMPOSE) exec nginx /bin/sh
@@ -68,10 +67,8 @@ nginx.shell: nginx.up
 otel_collector.up:
 	$(DOCKER_COMPOSE) up -d otel_collector
 
-otel_collector.logs:
-	$(DOCKER_COMPOSE) logs -f otel_collector
-
-otel_collector.start: otel_collector.up otel_collector.logs
+otel_collector.start:
+	$(DOCKER_COMPOSE) up otel_collector
 
 otel_collector.stop:
 	$(DOCKER_COMPOSE) stop otel_collector
@@ -81,7 +78,8 @@ otel_collector.down: otel_collector.stop
 
 otel_collector.reup: otel_collector.down otel_collector.up
 
-otel_collector.restart: otel_collector.down otel_collector.start
+otel_collector.logs:
+	$(DOCKER_COMPOSE) logs -f otel_collector
 
 otel_collector.shell: otel_collector.up
 	$(DOCKER_COMPOSE) exec otel_collector /bin/sh
@@ -92,10 +90,8 @@ otel_collector.shell: otel_collector.up
 elasticsearch.up:
 	$(DOCKER_COMPOSE) up -d elasticsearch
 
-elasticsearch.logs:
-	$(DOCKER_COMPOSE) logs -f elasticsearch
-
-elasticsearch.start: elasticsearch.up elasticsearch.logs
+elasticsearch.start:
+	$(DOCKER_COMPOSE) up elasticsearch
 
 elasticsearch.stop:
 	$(DOCKER_COMPOSE) stop elasticsearch
@@ -105,7 +101,8 @@ elasticsearch.down: elasticsearch.stop
 
 elasticsearch.reup: elasticsearch.down elasticsearch.up
 
-elasticsearch.restart: elasticsearch.down elasticsearch.start
+elasticsearch.logs:
+	$(DOCKER_COMPOSE) logs -f elasticsearch
 
 elasticsearch.shell: elasticsearch.up
 	$(DOCKER_COMPOSE) exec elasticsearch /bin/sh
@@ -116,10 +113,8 @@ elasticsearch.shell: elasticsearch.up
 kibana.up:
 	$(DOCKER_COMPOSE) up -d kibana
 
-kibana.logs:
-	$(DOCKER_COMPOSE) logs -f kibana
-
-kibana.start: kibana.up kibana.logs
+kibana.start:
+	$(DOCKER_COMPOSE) up kibana
 
 kibana.stop:
 	$(DOCKER_COMPOSE) stop kibana
@@ -129,7 +124,8 @@ kibana.down: kibana.stop
 
 kibana.reup: kibana.down kibana.up
 
-kibana.restart: kibana.down kibana.start
+kibana.logs:
+	$(DOCKER_COMPOSE) logs -f kibana
 
 kibana.shell: kibana.up
 	$(DOCKER_COMPOSE) exec kibana /bin/sh
@@ -140,10 +136,8 @@ kibana.shell: kibana.up
 prometheus.up:
 	$(DOCKER_COMPOSE) up -d prometheus
 
-prometheus.logs:
-	$(DOCKER_COMPOSE) logs -f prometheus
-
-prometheus.start: prometheus.up prometheus.logs
+prometheus.start:
+	$(DOCKER_COMPOSE) up prometheus
 
 prometheus.stop:
 	$(DOCKER_COMPOSE) stop prometheus
@@ -153,7 +147,8 @@ prometheus.down: prometheus.stop
 
 prometheus.reup: prometheus.down prometheus.up
 
-prometheus.restart: prometheus.down prometheus.start
+prometheus.logs:
+	$(DOCKER_COMPOSE) logs -f prometheus
 
 prometheus.shell: prometheus.up
 	$(DOCKER_COMPOSE) exec prometheus /bin/sh
@@ -164,10 +159,8 @@ prometheus.shell: prometheus.up
 grafana.up:
 	$(DOCKER_COMPOSE) up -d grafana
 
-grafana.logs:
-	$(DOCKER_COMPOSE) logs -f grafana
-
-grafana.start: grafana.up grafana.logs
+grafana.start:
+	$(DOCKER_COMPOSE) up grafana
 
 grafana.stop:
 	$(DOCKER_COMPOSE) stop grafana
@@ -177,7 +170,8 @@ grafana.down: grafana.stop
 
 grafana.reup: grafana.down grafana.up
 
-grafana.restart: grafana.down grafana.start
+grafana.logs:
+	$(DOCKER_COMPOSE) logs -f grafana
 
 grafana.shell: grafana.up
 	$(DOCKER_COMPOSE) exec grafana /bin/sh
@@ -188,10 +182,8 @@ grafana.shell: grafana.up
 jaeger.up:
 	$(DOCKER_COMPOSE) up -d jaeger
 
-jaeger.logs:
-	$(DOCKER_COMPOSE) logs -f jaeger
-
-jaeger.start: jaeger.up jaeger.logs
+jaeger.start:
+	$(DOCKER_COMPOSE) up jaeger
 
 jaeger.stop:
 	$(DOCKER_COMPOSE) stop jaeger
@@ -201,7 +193,8 @@ jaeger.down: jaeger.stop
 
 jaeger.reup: jaeger.down jaeger.up
 
-jaeger.restart: jaeger.down jaeger.start
+jaeger.logs:
+	$(DOCKER_COMPOSE) logs -f jaeger
 
 jaeger.shell: jaeger.up
 	$(DOCKER_COMPOSE) exec jaeger /bin/sh
@@ -212,10 +205,8 @@ jaeger.shell: jaeger.up
 service_1.up:
 	$(DOCKER_COMPOSE) up -d service_1
 
-service_1.logs:
-	$(DOCKER_COMPOSE) logs -f service_1
-
-service_1.start: service_1.up service_1.logs
+service_1.start:
+	$(DOCKER_COMPOSE) up service_1
 
 service_1.stop:
 	$(DOCKER_COMPOSE) stop service_1
@@ -225,7 +216,8 @@ service_1.down: service_1.stop
 
 service_1.reup: service_1.down service_1.up
 
-service_1.restart: service_1.down service_1.start
+service_1.logs:
+	$(DOCKER_COMPOSE) logs -f service_1
 
 service_1.shell: service_1.up
 	$(DOCKER_COMPOSE) exec service_1 /bin/sh
@@ -239,10 +231,8 @@ service_1.build:
 service_2.up:
 	$(DOCKER_COMPOSE) up -d service_2
 
-service_2.logs:
-	$(DOCKER_COMPOSE) logs -f service_2
-
-service_2.start: service_2.up service_2.logs
+service_2.start:
+	$(DOCKER_COMPOSE) up service_2
 
 service_2.stop:
 	$(DOCKER_COMPOSE) stop service_2
@@ -252,7 +242,8 @@ service_2.down: service_2.stop
 
 service_2.reup: service_2.down service_2.up
 
-service_2.restart: service_2.down service_2.start
+service_2.logs:
+	$(DOCKER_COMPOSE) logs -f service_2
 
 service_2.shell: service_2.up
 	$(DOCKER_COMPOSE) exec service_2 /bin/sh
