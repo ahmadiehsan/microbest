@@ -5,7 +5,7 @@ import os
 import sys
 
 
-def main() -> None:
+def _main() -> None:
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "main_app.settings")
     try:
@@ -21,4 +21,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    _main()

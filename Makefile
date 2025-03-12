@@ -114,6 +114,7 @@ kibana.up:
 	$(DOCKER_COMPOSE) up -d kibana
 
 kibana.start:
+	@echo ">>>>> http://127.0.0.1:8000/kibana/"
 	$(DOCKER_COMPOSE) up kibana
 
 kibana.stop:
@@ -160,6 +161,7 @@ grafana.up:
 	$(DOCKER_COMPOSE) up -d grafana
 
 grafana.start:
+	@echo ">>>>> http://127.0.0.1:8000/grafana/"
 	$(DOCKER_COMPOSE) up grafana
 
 grafana.stop:
@@ -183,6 +185,7 @@ jaeger.up:
 	$(DOCKER_COMPOSE) up -d jaeger
 
 jaeger.start:
+	@echo ">>>>> http://127.0.0.1:8000/jaeger/ui/"
 	$(DOCKER_COMPOSE) up jaeger
 
 jaeger.stop:
@@ -206,6 +209,7 @@ service_1.up:
 	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.start:
+	@echo ">>>>> http://127.0.0.1:8000/service-1/"
 	$(DOCKER_COMPOSE) up service_1
 
 service_1.stop:
@@ -232,6 +236,7 @@ service_2.up:
 	$(DOCKER_COMPOSE) up -d service_2
 
 service_2.start:
+	@echo ">>>>> http://127.0.0.1:8000/service-2/"
 	$(DOCKER_COMPOSE) up service_2
 
 service_2.stop:

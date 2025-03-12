@@ -53,7 +53,7 @@ services:
         soft: -1
         hard: -1
     healthcheck:
-      test: curl -s http://localhost:${ELASTICSEARCH_PORT}/_cluster/health | grep -E '"status":"(green|yellow)"'
+      test: curl -s http://127.0.0.1:${ELASTICSEARCH_PORT}/_cluster/health | grep -E '"status":"(green|yellow)"'
       start_period: 10s
       interval: 5s
       timeout: 10s

@@ -12,11 +12,11 @@ make service_1.up
 
 Services:
 
-- [Kibana](http://localhost:8000/kibana/)
-- [Grafana](http://localhost:8000/grafana/)
-- [Jaeger UI](http://localhost:8000/jaeger/ui/)
-- [Service 1](http://localhost:8000/serivce-1/)
-- [Service 2](http://localhost:8000/serivce-2/)
+- [Kibana](http://127.0.0.1:8000/kibana/)
+- [Grafana](http://127.0.0.1:8000/grafana/)
+- [Jaeger UI](http://127.0.0.1:8000/jaeger/ui/)
+- [Service 1](http://127.0.0.1:8000/serivce-1/)
+- [Service 2](http://127.0.0.1:8000/serivce-2/)
 
 ## Developers
 
