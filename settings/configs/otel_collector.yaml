@@ -31,6 +31,10 @@ connectors:
 
 service:
   pipelines:
+    logs:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ elasticsearch, debug ]
     traces:
       receivers: [ otlp ]
       processors: [ memory_limiter, batch ]
@@ -39,10 +43,6 @@ service:
       receivers: [ otlp, spanmetrics ]
       processors: [ memory_limiter, batch ]
       exporters: [ otlphttp/prometheus, debug ]
-    logs:
-      receivers: [ otlp ]
-      processors: [ memory_limiter, batch ]
-      exporters: [ elasticsearch, debug ]
 
   telemetry:
     metrics:
