@@ -209,7 +209,7 @@ service_1.up:
 	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.start:
-	@echo ">>>>> http://127.0.0.1:8000/service-1/"
+	@echo ">>>>> http://127.0.0.1:8000/"
 	$(DOCKER_COMPOSE) up service_1
 
 service_1.stop:

@@ -107,6 +107,7 @@ skips = [
 [tool.file_checker.per-file-ignores]
 "src/service_1/api/views.py" = [
     "func_validator",
+    "import_validator",
 ]
 "src/service_2/fastapi_server.py" = [
     "func_validator",

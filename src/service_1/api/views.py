@@ -1,20 +1,41 @@
-import os
+import logging
 
 from django.http import HttpRequest
 from ninja import NinjaAPI
-from opentelemetry import trace
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry import _logs, trace
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs._internal.export import BatchLogRecordProcessor
+from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-# Initialize OpenTelemetry Tracer
-tracer_provider = TracerProvider()
+# Python Logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO)
+stream_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(message)s"))
+logger.addHandler(stream_handler)
+
+# OpenTelemetry Share
+resource = Resource.create({"service.name": "service-1"})
+
+# OpenTelemetry Logger
+logger_provider = LoggerProvider(resource=resource)
+log_exporter = OTLPLogExporter()
+logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
+_logs.set_logger_provider(logger_provider)
+otel_logging_handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
+logger.addHandler(otel_logging_handler)
+
+# OpenTelemetry Tracer
+tracer_provider = TracerProvider(resource=resource)
+span_exporter = OTLPSpanExporter()
+tracer_provider.add_span_processor(BatchSpanProcessor(span_exporter))
 trace.set_tracer_provider(tracer_provider)
-otlp_exporter = OTLPSpanExporter(
-    endpoint=f"http://{os.environ['OTEL_COLLECTOR_HOST']}:{os.environ['OTEL_COLLECTOR_HTTP_PORT']}/v1/traces"
-)
-tracer_provider.add_span_processor(BatchSpanProcessor(otlp_exporter))
 
 # Instrument Django
 DjangoInstrumentor().instrument()
@@ -23,6 +44,18 @@ DjangoInstrumentor().instrument()
 API = NinjaAPI()
 
 
+# APIs
 @API.get("/")
-def read_root(request: HttpRequest) -> dict:  # noqa: ARG001
-    return {"message": "Hello, Django!"}
+def hello(request: HttpRequest) -> dict:  # noqa: ARG001
+    logger.info("start hello API")
+
+    with trace.get_tracer(__name__).start_as_current_span("hello"):
+        return {"message": "Hello, Django!"}
+
+
+@API.get("/ping/")
+def ping(request: HttpRequest) -> dict:  # noqa: ARG001
+    logger.info("start ping API")
+
+    with trace.get_tracer(__name__).start_as_current_span("ping"):
+        return {"message": "pong"}

@@ -26,13 +26,13 @@ server {
         proxy_pass ${DOLLAR}jaeger;
     }
 
-    location /service-1 {
-        set ${DOLLAR}service_1 http://${SERVICE_1_HOST}:${SERVICE_1_PORT};
-        proxy_pass ${DOLLAR}service_1;
-    }
-
     location /service-2 {
         set ${DOLLAR}service_2 http://${SERVICE_2_HOST}:${SERVICE_2_PORT};
         proxy_pass ${DOLLAR}service_2;
+    }
+
+    location / {
+        set ${DOLLAR}service_1 http://${SERVICE_1_HOST}:${SERVICE_1_PORT};
+        proxy_pass ${DOLLAR}service_1;
     }
 }
