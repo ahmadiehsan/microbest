@@ -82,7 +82,7 @@ otel_collector.logs:
 	$(DOCKER_COMPOSE) logs -f otel_collector
 
 otel_collector.shell: otel_collector.up
-	$(DOCKER_COMPOSE) exec otel_collector /bin/sh
+	@echo ">>>>> This service doesn't support shell"
 
 # =========================
 # Elasticsearch

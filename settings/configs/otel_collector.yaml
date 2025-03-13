@@ -5,10 +5,6 @@ receivers:
         endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_GRPC_PORT}
       http:
         endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
-        cors:
-          allowed_origins:
-            - "http://*"
-            - "https://*"
 
 exporters:
   debug:

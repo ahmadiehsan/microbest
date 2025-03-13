@@ -1,12 +1,10 @@
 import logging
-import os
 
 import requests
 from fastapi import FastAPI
-from opentelemetry import trace
-from opentelemetry._logs import set_logger_provider
-from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry import _logs, trace
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
@@ -25,21 +23,20 @@ logger.addHandler(stream_handler)
 
 # OpenTelemetry Share
 resource = Resource.create({"service.name": "service-2"})
-collector_address = f"http://{os.environ['OTEL_COLLECTOR_HOST']}:{os.environ['OTEL_COLLECTOR_HTTP_PORT']}"
-
-# OpenTelemetry Tracer
-tracer_provider = TracerProvider(resource=resource)
-span_exporter = OTLPSpanExporter(endpoint=f"{collector_address}/v1/traces")
-tracer_provider.add_span_processor(BatchSpanProcessor(span_exporter))
-trace.set_tracer_provider(tracer_provider)
 
 # OpenTelemetry Logger
 logger_provider = LoggerProvider(resource=resource)
-log_exporter = OTLPLogExporter(endpoint=f"{collector_address}/v1/logs")
+log_exporter = OTLPLogExporter()
 logger_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
-set_logger_provider(logger_provider)
+_logs.set_logger_provider(logger_provider)
 otel_logging_handler = LoggingHandler(level=logging.NOTSET, logger_provider=logger_provider)
 logger.addHandler(otel_logging_handler)
+
+# OpenTelemetry Tracer
+tracer_provider = TracerProvider(resource=resource)
+span_exporter = OTLPSpanExporter()
+tracer_provider.add_span_processor(BatchSpanProcessor(span_exporter))
+trace.set_tracer_provider(tracer_provider)
 
 # FastAPI
 app = FastAPI(root_path="/service-2")
