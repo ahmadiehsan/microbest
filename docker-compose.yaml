@@ -92,6 +92,8 @@ services:
     image: ${GRAFANA_IMAGE}
     hostname: ${GRAFANA_HOST}
     restart: on-failure
+    volumes:
+      - ${GRAFANA_CONFIG}:/etc/grafana/grafana.ini
     ports:
       - "${GRAFANA_PORT}"
     depends_on:
