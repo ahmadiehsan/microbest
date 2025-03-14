@@ -1,14 +1,14 @@
 import logging
 import os
 
-import requests
+import httpx
 from fastapi import FastAPI
 from opentelemetry import _logs, metrics, trace
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs._internal.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
@@ -51,25 +51,28 @@ metrics.set_meter_provider(meter_provider)
 # FastAPI
 app = FastAPI(root_path="/service-2")
 
-# Instrument FastAPI and Requests
+# Instrument FastAPI and HTTPX
 FastAPIInstrumentor.instrument_app(app)
-RequestsInstrumentor().instrument()
+HTTPXClientInstrumentor().instrument()
 
 
 # APIs
 @app.get("/")
-def hello() -> dict:
+async def hello() -> dict:
     logger.info("hello API")
     return {"message": "Hello, FastAPI!"}
 
 
 @app.get("/external-api")
-def call_external() -> dict:
+async def call_external() -> dict:
     logger.info("call-external API")
     url = "https://httpbin.org/get"
 
-    with trace.get_tracer(__name__).start_as_current_span("external-request") as span:
-        response = requests.get(url, timeout=10)
+    async with (
+        trace.get_tracer(__name__).start_as_current_span("external-request") as span,
+        httpx.AsyncClient() as client,
+    ):
+        response = await client.get(url, timeout=10)
         status_code = response.status_code
         span.set_attributes({"request.url": url, "request.status_code": status_code})
 
@@ -77,8 +80,11 @@ def call_external() -> dict:
 
 
 @app.get("/ping-service-1")
-def ping_service_1() -> dict:
+async def ping_service_1() -> dict:
     logger.info("ping-service-1 API")
     url = f"http://{os.environ['SERVICE_1_HOST']}:{os.environ['SERVICE_1_PORT']}/api/ping/"
-    response = requests.get(url, timeout=10)
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, timeout=10)
+
     return {"status_code": response.status_code, "content": response.json()}
