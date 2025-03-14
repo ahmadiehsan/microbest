@@ -45,6 +45,7 @@ metric_exporter = OTLPMetricExporter()
 metric_reader = PeriodicExportingMetricReader(metric_exporter)
 meter_provider = MeterProvider(resource=resource, metric_readers=[metric_reader])
 metrics.set_meter_provider(meter_provider)
+ping_counter = metrics.get_meter(__name__).create_counter("ping_counter", description="Ping count", unit="req")
 
 # Instrument Django
 DjangoInstrumentor().instrument()
@@ -56,15 +57,12 @@ API = NinjaAPI()
 # APIs
 @API.get("/")
 def hello(request: HttpRequest) -> dict:  # noqa: ARG001
-    logger.info("start hello API")
-
-    with trace.get_tracer(__name__).start_as_current_span("hello"):
-        return {"message": "Hello, Django!"}
+    logger.info("hello API")
+    return {"message": "Hello, Django!"}
 
 
 @API.get("/ping/")
 def ping(request: HttpRequest) -> dict:  # noqa: ARG001
-    logger.info("start ping API")
-
-    with trace.get_tracer(__name__).start_as_current_span("ping"):
-        return {"message": "pong"}
+    logger.info("ping API")
+    ping_counter.add(1)
+    return {"message": "pong"}
