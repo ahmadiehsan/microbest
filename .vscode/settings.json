@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.mypy_cache": true,
+        "**/.venv": true,
+        "**/.idea": true,
+        "**/.ruff_cache": true
+    },
+    "cSpell.words": [
+        "Instrumentor",
+        "levelname"
+    ]
+}
