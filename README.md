@@ -37,4 +37,5 @@ make pre_commit.init
 - [ ] Add Kong
 - [ ] Persist data for Docker services
 - [ ] Add example ENVs
+- [ ] Add Poetry
 - [ ] Add overview diagram

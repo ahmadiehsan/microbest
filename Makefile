@@ -209,7 +209,7 @@ service_1.up:
 	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.start:
-	@echo ">>>>> http://127.0.0.1:8000/"
+	@echo ">>>>> http://127.0.0.1:8000/api/"
 	$(DOCKER_COMPOSE) up service_1
 
 service_1.stop:
@@ -229,6 +229,10 @@ service_1.shell: service_1.up
 service_1.build:
 	$(DOCKER_COMPOSE) build service_1
 
+service_1.compile_protos:
+	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_1/api/compiled_protos --mypy_out=./src/service_1/api/compiled_protos --grpc_python_out=./src/service_1/api/compiled_protos ./protos/*.proto
+	for file in ./src/service_1/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+
 # =========================
 # Service 2
 # =====
@@ -236,7 +240,7 @@ service_2.up:
 	$(DOCKER_COMPOSE) up -d service_2
 
 service_2.start:
-	@echo ">>>>> http://127.0.0.1:8000/service-2/"
+	@echo ">>>>> http://127.0.0.1:8000/service-2/api/"
 	$(DOCKER_COMPOSE) up service_2
 
 service_2.stop:
@@ -255,6 +259,19 @@ service_2.shell: service_2.up
 
 service_2.build:
 	$(DOCKER_COMPOSE) build service_2
+
+service_2.compile_protos:
+	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_2/rpc/compiled_protos --mypy_out=./src/service_2/rpc/compiled_protos --grpc_python_out=./src/service_2/rpc/compiled_protos ./protos/*.proto
+	for file in ./src/service_2/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+
+# =========================
+# Scripts
+# =====
+script.file_checker:
+	PYTHONPATH=. python scripts/file_checker/file_checker.py
+
+script.dir_checker:
+	PYTHONPATH=. python scripts/dir_checker/dir_checker.py
 
 # =========================
 # Help

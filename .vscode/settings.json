@@ -7,7 +7,31 @@
         "**/.ruff_cache": true
     },
     "cSpell.words": [
+        "asgi",
+        "checkmake",
+        "configfile",
+        "fastapi",
+        "funcarg",
+        "funcs",
+        "grpcio",
+        "healthcheck",
+        "httpx",
         "Instrumentor",
-        "levelname"
+        "isort",
+        "jaegertracing",
+        "keepalive",
+        "levelname",
+        "memlock",
+        "mypy",
+        "protoc",
+        "protos",
+        "Pylint",
+        "pyproject",
+        "PYTHONPATH",
+        "runserver",
+        "shfmt",
+        "ulimits",
+        "uvicorn",
+        "venv"
     ]
 }

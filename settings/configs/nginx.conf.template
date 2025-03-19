@@ -34,7 +34,7 @@ server {
     }
 
     location /service-2 {
-        set ${DOLLAR}service_2 http://${SERVICE_2_HOST}:${SERVICE_2_PORT};
+        set ${DOLLAR}service_2 http://${SERVICE_2_HOST}:${SERVICE_2_HTTP_PORT};
         proxy_pass ${DOLLAR}service_2;
     }
 

@@ -1,5 +1,6 @@
 import ast
 import logging
+import sys
 import tomllib
 from pathlib import Path
 from typing import NoReturn
@@ -19,7 +20,8 @@ class FileChecker:
 
     def run(self) -> NoReturn:
         repo_abs_path = Path.cwd()
-        errors = self._validate_files(repo_abs_path)
+        files_to_check = sys.argv[1:] if len(sys.argv) > 1 else []
+        errors = self._validate_files(repo_abs_path, files_to_check)
 
         if errors:
             for error in errors:
@@ -29,10 +31,16 @@ class FileChecker:
         logging.info("all checks passed")
         raise SystemExit(0)
 
-    def _validate_files(self, repo_abs_path: Path) -> list[str]:
+    def _validate_files(self, repo_abs_path: Path, files_to_check: list[str]) -> list[str]:
         errors: list[str] = []
+        file_abs_paths: list[Path] = []
 
-        for file_abs_path in repo_abs_path.rglob("*.py"):
+        if files_to_check:
+            file_abs_paths.extend(repo_abs_path / Path(f) for f in files_to_check if f.endswith(".py"))
+        else:
+            file_abs_paths.extend(repo_abs_path.rglob("*.py"))
+
+        for file_abs_path in file_abs_paths:
             if file_abs_path.is_file():
                 errors.extend(self._validate_file(file_abs_path, repo_abs_path))
 
@@ -66,11 +74,13 @@ class FileChecker:
 
     def _get_ignored_validators(self, file_rel_path: Path) -> list[str]:
         """Return validators to ignore for a given file."""
+        all_ignored_validators = []
+
         for base_rel_path, ignored_validators in self._ignore_rules.items():
             if str(file_rel_path).startswith(base_rel_path):
-                return ignored_validators
+                all_ignored_validators.extend(ignored_validators)
 
-        return []
+        return all_ignored_validators
 
     def _set_parents(self, node: ast.AST, parent: ast.AST | None = None) -> None:
         """Recursively set parent attributes for AST nodes."""

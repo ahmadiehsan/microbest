@@ -8,8 +8,15 @@ opentelemetry-sdk==1.30.0
 opentelemetry-instrumentation-django==0.51b0
 opentelemetry-exporter-otlp==1.30.0
 
+requests==2.32.3
+
+grpcio==1.71.0
+grpcio-tools==1.71.0
+mypy-protobuf==3.6.0
+
 # =========================
 # Devs
 # =====
 pre-commit==3.5.0
 ruff==0.9.9
+types-requests==2.32.0.20250306

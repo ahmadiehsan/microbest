@@ -125,7 +125,7 @@ services:
     build: ${SERVICE_1_ROOT_DIR}
     hostname: ${SERVICE_1_HOST}
     restart: on-failure
-    command: sh -c "/wait && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "/wait && python manage.py runserver 0.0.0.0:${SERVICE_1_PORT}"
     volumes:
       - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
@@ -142,14 +142,15 @@ services:
     build: ${SERVICE_2_ROOT_DIR}
     hostname: ${SERVICE_2_HOST}
     restart: on-failure
-    command: sh -c "/wait && uvicorn fastapi_server:app --host 0.0.0.0 --reload --port 8000 --proxy-headers"
+    command: sh -c "/wait && uvicorn fast_api.server:APP --host 0.0.0.0 --reload --port ${SERVICE_2_HTTP_PORT} --proxy-headers"
     volumes:
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${SERVICE_2_ENV_FILE}
     ports:
-      - "${SERVICE_2_PORT}"
+      - "${SERVICE_2_HTTP_PORT}"
+      - "${SERVICE_2_GRPC_PORT}"
     depends_on:
       - nginx
       - otel_collector
