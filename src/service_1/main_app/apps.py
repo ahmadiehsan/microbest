@@ -6,6 +6,10 @@ from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry.exporter.otlp.proto.grpc.metric_exporter import OTLPMetricExporter
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.django import DjangoInstrumentor
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
+from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs._internal.export import BatchLogRecordProcessor
 from opentelemetry.sdk.metrics import MeterProvider
@@ -29,7 +33,11 @@ class MainAppConfig(AppConfig):
         self._setup_otel_logs()
         self._setup_otel_traces()
         self._setup_otel_metrics()
+        LoggingInstrumentor().instrument()
         DjangoInstrumentor().instrument()
+        GrpcInstrumentorClient().instrument()
+        RequestsInstrumentor().instrument()
+        SQLite3Instrumentor().instrument()
 
     @staticmethod
     def _setup_python_logger() -> None:

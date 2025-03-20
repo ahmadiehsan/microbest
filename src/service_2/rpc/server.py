@@ -5,6 +5,8 @@ from concurrent import futures
 import grpc
 from helpers.logger import setup_python_logger
 from helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
+from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 from rpc.compiled_protos import service_2_pb2_grpc
 from rpc.services import EchoService
@@ -33,6 +35,8 @@ class _GrpcServer:
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()
+        LoggingInstrumentor().instrument()
+        GrpcInstrumentorServer().instrument()
 
     @staticmethod
     def _create_server() -> grpc.Server:

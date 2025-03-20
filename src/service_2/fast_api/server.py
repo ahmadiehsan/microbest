@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from helpers.logger import setup_python_logger
 from helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-from opentelemetry.instrumentation.httpx import HTTPXClientInstrumentor
+from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 from fast_api.end_points import API_ROUTER
 
@@ -22,8 +22,8 @@ class _FastApiApp:
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()
+        LoggingInstrumentor().instrument()
         FastAPIInstrumentor.instrument_app(app)
-        HTTPXClientInstrumentor().instrument()
 
     def _add_routers(self, app: FastAPI) -> None:
         app.include_router(API_ROUTER)

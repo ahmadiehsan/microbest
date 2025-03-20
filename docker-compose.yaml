@@ -142,7 +142,7 @@ services:
     build: ${SERVICE_2_ROOT_DIR}
     hostname: ${SERVICE_2_HOST}
     restart: on-failure
-    command: sh -c "/wait && uvicorn fast_api.server:APP --host 0.0.0.0 --reload --port ${SERVICE_2_HTTP_PORT} --proxy-headers"
+    command: sh -c "/wait && (uvicorn fast_api.server:APP --host 0.0.0.0 --reload --port ${SERVICE_2_HTTP_PORT} --proxy-headers & PYTHONPATH=/app python rpc/server.py)"
     volumes:
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
@@ -154,3 +154,4 @@ services:
     depends_on:
       - nginx
       - otel_collector
+    stop_grace_period: 0s

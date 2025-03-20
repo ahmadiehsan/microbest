@@ -18,7 +18,7 @@ def hello(request: HttpRequest) -> dict:  # noqa: ARG001
     _LOGGER.info("hello API")
     return {
         "message": "Hello, Django!",
-        "end_points": ["/api/", "/api/external-api-http/", "/api/service-2-ping-http/", "/api/service-2-echo-grpc/"],
+        "end_points": ["/api", "/api/external-api-http", "/api/service-2-ping-http", "/api/service-2-echo-grpc"],
     }
 
 
