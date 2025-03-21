@@ -120,6 +120,27 @@ services:
         limits:
           memory: 1200M
 
+  kafka:
+    image: ${KAFKA_IMAGE}
+    hostname: ${KAFKA_HOST}
+    restart: on-failure
+    env_file:
+      - ${DOCKER_COMPOSE_ENV_FILE}
+      - ${KAFKA_ENV_FILE}
+    ports:
+      - "${KAFKA_BROKER_PORT}"
+      - "${KAFKA_CONTROLLER_PORT}"
+    healthcheck:
+      test: nc -z kafka ${KAFKA_BROKER_PORT}
+      start_period: 10s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 620M
+
   service_1:
     image: ${SERVICE_1_IMAGE}
     build: ${SERVICE_1_ROOT_DIR}

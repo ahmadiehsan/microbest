@@ -203,6 +203,29 @@ jaeger.shell: jaeger.up
 	$(DOCKER_COMPOSE) exec jaeger /bin/sh
 
 # =========================
+# Kafka
+# =====
+kafka.up:
+	$(DOCKER_COMPOSE) up -d kafka
+
+kafka.start:
+	$(DOCKER_COMPOSE) up kafka
+
+kafka.stop:
+	$(DOCKER_COMPOSE) stop kafka
+
+kafka.down: kafka.stop
+	$(DOCKER_COMPOSE) rm -f kafka
+
+kafka.reup: kafka.down kafka.up
+
+kafka.logs:
+	$(DOCKER_COMPOSE) logs -f kafka
+
+kafka.shell: kafka.up
+	$(DOCKER_COMPOSE) exec kafka /bin/sh
+
+# =========================
 # Service 1
 # =====
 service_1.up:
