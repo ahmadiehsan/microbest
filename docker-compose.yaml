@@ -146,8 +146,9 @@ services:
     build: ${SERVICE_1_ROOT_DIR}
     hostname: ${SERVICE_1_HOST}
     restart: on-failure
-    command: sh -c "/wait && (gunicorn main_app.wsgi:application --bind 0.0.0.0:${SERVICE_1_PORT} --reload --access-logfile '-' & PYTHONPATH=/app python manage.py listen_my_topic)"
+    command: supervisord -c /etc/supervisord.conf
     volumes:
+      - ${SERVICE_1_CONFIG}:/etc/supervisord.conf
       - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
@@ -159,15 +160,15 @@ services:
       - otel_collector
       - kafka
       - service_2
-    stop_grace_period: 0s
 
   service_2:
     image: ${SERVICE_2_IMAGE}
     build: ${SERVICE_2_ROOT_DIR}
     hostname: ${SERVICE_2_HOST}
     restart: on-failure
-    command: sh -c "/wait && (uvicorn fast_api.server:APP --host 0.0.0.0 --port ${SERVICE_2_HTTP_PORT} --reload --proxy-headers & PYTHONPATH=/app python rpc/server.py)"
+    command: supervisord -c /etc/supervisord.conf
     volumes:
+      - ${SERVICE_2_CONFIG}:/etc/supervisord.conf
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
@@ -179,4 +180,3 @@ services:
       - nginx
       - otel_collector
       - kafka
-    stop_grace_period: 0s

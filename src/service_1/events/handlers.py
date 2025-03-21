@@ -11,7 +11,11 @@ class MyTopicEventHandler:
     def listen(self) -> None:
         _LOGGER.info("start listing for my_topic events")
         consumer = KafkaConsumer(
-            "my_topic", bootstrap_servers=Configs.KAFKA_ADDRESS, enable_auto_commit=False, auto_offset_reset="earliest"
+            "my_topic",
+            bootstrap_servers=Configs.KAFKA_ADDRESS,
+            group_id="service_1_my_topic_consumer",
+            enable_auto_commit=False,
+            auto_offset_reset="earliest",
         )
 
         try:

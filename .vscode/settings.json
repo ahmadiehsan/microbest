@@ -32,6 +32,7 @@
         "PYTHONPATH",
         "runserver",
         "shfmt",
+        "supervisord",
         "ulimits",
         "uvicorn",
         "venv",

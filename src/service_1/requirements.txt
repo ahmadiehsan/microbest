@@ -1,6 +1,8 @@
 # =========================
 # Mains
 # =====
+supervisor==4.2.5
+
 django==5.1.6
 django-ninja==1.3.0
 gunicorn==23.0.0
