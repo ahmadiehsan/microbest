@@ -12,7 +12,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-_RESOURCE = Resource.create({"service.name": "service-2"})
+_RESOURCE = Resource.create({"service.name": "service-1"})
 _LOGGER = logging.getLogger(__name__)
 
 

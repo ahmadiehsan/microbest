@@ -1,8 +1,8 @@
 import logging
-import os
 from concurrent import futures
 
 import grpc
+from helpers.configs import Configs
 from helpers.logger import setup_python_logger
 from helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorServer
@@ -40,9 +40,8 @@ class _GrpcServer:
 
     @staticmethod
     def _create_server() -> grpc.Server:
-        max_workers = int(os.environ["GRPC_MAX_WORKERS"])
         return grpc.server(
-            futures.ThreadPoolExecutor(max_workers=max_workers),
+            futures.ThreadPoolExecutor(max_workers=Configs.GRPC_MAX_WORKERS),
             options=[
                 ("grpc.max_send_message_length", 1 * 1024 * 1024),  # MB
                 ("grpc.max_receive_message_length", 1 * 1024 * 1024),  # MB
@@ -57,8 +56,7 @@ class _GrpcServer:
 
     @staticmethod
     def _setup_port(server: grpc.Server) -> None:
-        port = os.environ["SERVICE_2_GRPC_PORT"]
-        server.add_insecure_port(f"[::]:{port}")
+        server.add_insecure_port(f"[::]:{Configs.SERVICE_2_GRPC_PORT}")
 
     @staticmethod
     def _listen(server: grpc.Server) -> None:

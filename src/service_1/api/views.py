@@ -1,15 +1,15 @@
 import logging
-import os
 
 import grpc
 import requests
 from django.http import HttpRequest
 from ninja import NinjaAPI
 from opentelemetry import trace
+from utils.configs import Configs
 
 from api.compiled_protos import service_2_pb2, service_2_pb2_grpc
 
-_LOGGER = logging.getLogger()
+_LOGGER = logging.getLogger(__name__)
 API = NinjaAPI()
 
 
@@ -17,8 +17,14 @@ API = NinjaAPI()
 def hello(request: HttpRequest) -> dict:  # noqa: ARG001
     _LOGGER.info("hello API")
     return {
-        "message": "Hello, Django!",
-        "end_points": ["/api", "/api/external-api-http", "/api/service-2-ping-http", "/api/service-2-echo-grpc"],
+        "message": "Hello from Django!",
+        "end_points": [
+            "/api",
+            "/api/external-api-http",
+            "/api/service-2-ping-http",
+            "/api/service-2-event-http",
+            "/api/service-2-echo-grpc",
+        ],
     }
 
 
@@ -35,19 +41,24 @@ def external_api_http(request: HttpRequest) -> dict:  # noqa: ARG001
 
 
 @API.get("/service-2-ping-http")
-def service_1_ping_http(request: HttpRequest) -> dict:  # noqa: ARG001
+def service_2_ping_http(request: HttpRequest) -> dict:  # noqa: ARG001
     _LOGGER.info("call Service 2 ping API")
-    url = f"http://{os.environ['SERVICE_2_HOST']}:{os.environ['SERVICE_2_HTTP_PORT']}/api/ping/"
-    response = requests.get(url, timeout=10)
+    response = requests.get(f"http://{Configs.SERVICE_2_HTTP_ADDRESS}/api/ping/", timeout=10)
+    return {"status_code": response.status_code, "content": response.json()}
+
+
+@API.get("/service-2-event-http")
+def service_2_event_http(request: HttpRequest) -> dict:  # noqa: ARG001
+    _LOGGER.info("call Service 2 event API")
+    response = requests.get(f"http://{Configs.SERVICE_2_HTTP_ADDRESS}/api/event/", timeout=10)
     return {"status_code": response.status_code, "content": response.json()}
 
 
 @API.get("/service-2-echo-grpc/")
 def service_2_echo_grpc(request: HttpRequest) -> dict:  # noqa: ARG001
     _LOGGER.info("call Service 2 echo RPC")
-    target = f"{os.environ['SERVICE_2_HOST']}:{os.environ['SERVICE_2_GRPC_PORT']}"
 
-    with grpc.insecure_channel(target) as channel:
+    with grpc.insecure_channel(Configs.SERVICE_2_GRPC_ADDRESS) as channel:
         stub = service_2_pb2_grpc.EchoStub(channel)
         echo_request = service_2_pb2.EchoRequest(message="hello from Service 1")
 

@@ -146,7 +146,7 @@ services:
     build: ${SERVICE_1_ROOT_DIR}
     hostname: ${SERVICE_1_HOST}
     restart: on-failure
-    command: sh -c "/wait && python manage.py runserver 0.0.0.0:${SERVICE_1_PORT}"
+    command: sh -c "/wait && (gunicorn main_app.wsgi:application --bind 0.0.0.0:${SERVICE_1_PORT} --reload --access-logfile '-' & PYTHONPATH=/app python manage.py listen_my_topic)"
     volumes:
       - ${SERVICE_1_ROOT_DIR}:/app
     env_file:
@@ -157,13 +157,16 @@ services:
     depends_on:
       - nginx
       - otel_collector
+      - kafka
+      - service_2
+    stop_grace_period: 0s
 
   service_2:
     image: ${SERVICE_2_IMAGE}
     build: ${SERVICE_2_ROOT_DIR}
     hostname: ${SERVICE_2_HOST}
     restart: on-failure
-    command: sh -c "/wait && (uvicorn fast_api.server:APP --host 0.0.0.0 --reload --port ${SERVICE_2_HTTP_PORT} --proxy-headers & PYTHONPATH=/app python rpc/server.py)"
+    command: sh -c "/wait && (uvicorn fast_api.server:APP --host 0.0.0.0 --port ${SERVICE_2_HTTP_PORT} --reload --proxy-headers & PYTHONPATH=/app python rpc/server.py)"
     volumes:
       - ${SERVICE_2_ROOT_DIR}:/app
     env_file:
@@ -175,4 +178,5 @@ services:
     depends_on:
       - nginx
       - otel_collector
+      - kafka
     stop_grace_period: 0s

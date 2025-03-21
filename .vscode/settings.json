@@ -14,6 +14,7 @@
         "funcarg",
         "funcs",
         "grpcio",
+        "gunicorn",
         "healthcheck",
         "httpx",
         "Instrumentor",
@@ -21,6 +22,7 @@
         "jaegertracing",
         "keepalive",
         "levelname",
+        "logfile",
         "memlock",
         "mypy",
         "protoc",
@@ -32,6 +34,7 @@
         "shfmt",
         "ulimits",
         "uvicorn",
-        "venv"
+        "venv",
+        "wsgi"
     ]
 }

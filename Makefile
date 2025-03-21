@@ -247,7 +247,7 @@ service_1.logs:
 	$(DOCKER_COMPOSE) logs -f service_1
 
 service_1.shell: service_1.up
-	$(DOCKER_COMPOSE) exec service_1 /bin/sh
+	$(DOCKER_COMPOSE) exec service_1 /bin/bash
 
 service_1.build:
 	$(DOCKER_COMPOSE) build service_1
@@ -278,7 +278,7 @@ service_2.logs:
 	$(DOCKER_COMPOSE) logs -f service_2
 
 service_2.shell: service_2.up
-	$(DOCKER_COMPOSE) exec service_2 /bin/sh
+	$(DOCKER_COMPOSE) exec service_2 /bin/bash
 
 service_2.build:
 	$(DOCKER_COMPOSE) build service_2

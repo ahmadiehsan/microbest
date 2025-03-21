@@ -107,7 +107,8 @@ skips = [
 # File Checker
 # =====
 [tool.file_checker.per-file-ignores]
-"src/service_1/main_app/apps.py" = ["func_validator", "import_validator"]
+"src/service_1/utils" = ["func_validator"]
+"src/service_1/utils/otel.py" = ["import_validator"]
 "src/service_1/api/views.py" = ["func_validator"]
 "src/service_2/helpers" = ["func_validator"]
 "src/service_2/helpers/otel.py" = ["import_validator"]
