@@ -1,0 +1,49 @@
+_format_version: '3.0'
+_transform: true
+
+services:
+  - name: kibana
+    url: 'http://${KIBANA_HOST}:${KIBANA_PORT}'
+    read_timeout: 3600000 # WebSocket support
+    write_timeout: 3600000 # WebSocket support
+    routes:
+      - name: kibana_route
+        paths:
+          - /kibana
+
+  - name: grafana
+    url: 'http://${GRAFANA_HOST}:${GRAFANA_PORT}'
+    read_timeout: 3600000 # WebSocket support
+    write_timeout: 3600000 # WebSocket support
+    routes:
+      - name: grafana_route
+        paths:
+          - /grafana
+
+  - name: jaeger
+    url: 'http://${JAEGER_HOST}:${JAEGER_UI_PORT}'
+    routes:
+      - name: jaeger_route
+        paths:
+          - /jaeger
+
+  - name: service_2
+    url: 'http://${SERVICE_2_HOST}:${SERVICE_2_HTTP_PORT}'
+    routes:
+      - name: service_2_route
+        paths:
+          - /service_2
+
+  - name: service_1
+    url: 'http://${SERVICE_1_HOST}:${SERVICE_1_PORT}'
+    routes:
+      - name: service_1_route
+        paths:
+          - /
+
+plugins:
+  - name: rate-limiting
+    service: service_1
+    config:
+      minute: 20
+      policy: local

@@ -45,7 +45,7 @@ nginx.up:
 	$(DOCKER_COMPOSE) up -d nginx
 
 nginx.start:
-	$(DOCKER_COMPOSE) up nginx
+	$(DOCKER_COMPOSE) up --no-log-prefix nginx
 
 nginx.stop:
 	$(DOCKER_COMPOSE) stop nginx
@@ -56,10 +56,33 @@ nginx.down: nginx.stop
 nginx.reup: nginx.down nginx.up
 
 nginx.logs:
-	$(DOCKER_COMPOSE) logs -f nginx
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f nginx
 
 nginx.shell: nginx.up
 	$(DOCKER_COMPOSE) exec nginx /bin/sh
+
+# =========================
+# Kong
+# =====
+kong.up:
+	$(DOCKER_COMPOSE) up -d kong
+
+kong.start:
+	$(DOCKER_COMPOSE) up --no-log-prefix kong
+
+kong.stop:
+	$(DOCKER_COMPOSE) stop kong
+
+kong.down: kong.stop
+	$(DOCKER_COMPOSE) rm -f kong
+
+kong.reup: kong.down kong.up
+
+kong.logs:
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kong
+
+kong.shell: kong.up
+	$(DOCKER_COMPOSE) exec kong /bin/sh
 
 # =========================
 # OpenTelemetry Collector
@@ -68,7 +91,7 @@ otel_collector.up:
 	$(DOCKER_COMPOSE) up -d otel_collector
 
 otel_collector.start:
-	$(DOCKER_COMPOSE) up otel_collector
+	$(DOCKER_COMPOSE) up --no-log-prefix otel_collector
 
 otel_collector.stop:
 	$(DOCKER_COMPOSE) stop otel_collector
@@ -79,7 +102,7 @@ otel_collector.down: otel_collector.stop
 otel_collector.reup: otel_collector.down otel_collector.up
 
 otel_collector.logs:
-	$(DOCKER_COMPOSE) logs -f otel_collector
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f otel_collector
 
 otel_collector.shell: otel_collector.up
 	@echo ">>>>> This service doesn't support shell"
@@ -91,7 +114,7 @@ elasticsearch.up:
 	$(DOCKER_COMPOSE) up -d elasticsearch
 
 elasticsearch.start:
-	$(DOCKER_COMPOSE) up elasticsearch
+	$(DOCKER_COMPOSE) up --no-log-prefix elasticsearch
 
 elasticsearch.stop:
 	$(DOCKER_COMPOSE) stop elasticsearch
@@ -102,7 +125,7 @@ elasticsearch.down: elasticsearch.stop
 elasticsearch.reup: elasticsearch.down elasticsearch.up
 
 elasticsearch.logs:
-	$(DOCKER_COMPOSE) logs -f elasticsearch
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f elasticsearch
 
 elasticsearch.shell: elasticsearch.up
 	$(DOCKER_COMPOSE) exec elasticsearch /bin/bash
@@ -115,7 +138,7 @@ kibana.up:
 
 kibana.start:
 	@echo ">>>>> http://127.0.0.1:8000/kibana/"
-	$(DOCKER_COMPOSE) up kibana
+	$(DOCKER_COMPOSE) up --no-log-prefix kibana
 
 kibana.stop:
 	$(DOCKER_COMPOSE) stop kibana
@@ -126,7 +149,7 @@ kibana.down: kibana.stop
 kibana.reup: kibana.down kibana.up
 
 kibana.logs:
-	$(DOCKER_COMPOSE) logs -f kibana
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kibana
 
 kibana.shell: kibana.up
 	$(DOCKER_COMPOSE) exec kibana /bin/bash
@@ -138,7 +161,7 @@ prometheus.up:
 	$(DOCKER_COMPOSE) up -d prometheus
 
 prometheus.start:
-	$(DOCKER_COMPOSE) up prometheus
+	$(DOCKER_COMPOSE) up --no-log-prefix prometheus
 
 prometheus.stop:
 	$(DOCKER_COMPOSE) stop prometheus
@@ -149,7 +172,7 @@ prometheus.down: prometheus.stop
 prometheus.reup: prometheus.down prometheus.up
 
 prometheus.logs:
-	$(DOCKER_COMPOSE) logs -f prometheus
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f prometheus
 
 prometheus.shell: prometheus.up
 	$(DOCKER_COMPOSE) exec prometheus /bin/sh
@@ -162,7 +185,7 @@ grafana.up:
 
 grafana.start:
 	@echo ">>>>> http://127.0.0.1:8000/grafana/"
-	$(DOCKER_COMPOSE) up grafana
+	$(DOCKER_COMPOSE) up --no-log-prefix grafana
 
 grafana.stop:
 	$(DOCKER_COMPOSE) stop grafana
@@ -173,7 +196,7 @@ grafana.down: grafana.stop
 grafana.reup: grafana.down grafana.up
 
 grafana.logs:
-	$(DOCKER_COMPOSE) logs -f grafana
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f grafana
 
 grafana.shell: grafana.up
 	$(DOCKER_COMPOSE) exec grafana /bin/sh
@@ -186,7 +209,7 @@ jaeger.up:
 
 jaeger.start:
 	@echo ">>>>> http://127.0.0.1:8000/jaeger/ui/"
-	$(DOCKER_COMPOSE) up jaeger
+	$(DOCKER_COMPOSE) up --no-log-prefix jaeger
 
 jaeger.stop:
 	$(DOCKER_COMPOSE) stop jaeger
@@ -197,7 +220,7 @@ jaeger.down: jaeger.stop
 jaeger.reup: jaeger.down jaeger.up
 
 jaeger.logs:
-	$(DOCKER_COMPOSE) logs -f jaeger
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f jaeger
 
 jaeger.shell: jaeger.up
 	$(DOCKER_COMPOSE) exec jaeger /bin/sh
@@ -209,7 +232,7 @@ kafka.up:
 	$(DOCKER_COMPOSE) up -d kafka
 
 kafka.start:
-	$(DOCKER_COMPOSE) up kafka
+	$(DOCKER_COMPOSE) up --no-log-prefix kafka
 
 kafka.stop:
 	$(DOCKER_COMPOSE) stop kafka
@@ -220,7 +243,7 @@ kafka.down: kafka.stop
 kafka.reup: kafka.down kafka.up
 
 kafka.logs:
-	$(DOCKER_COMPOSE) logs -f kafka
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kafka
 
 kafka.shell: kafka.up
 	$(DOCKER_COMPOSE) exec kafka /bin/sh
@@ -233,7 +256,7 @@ service_1.up:
 
 service_1.start:
 	@echo ">>>>> http://127.0.0.1:8000/api/"
-	$(DOCKER_COMPOSE) up service_1
+	$(DOCKER_COMPOSE) up --no-log-prefix service_1
 
 service_1.stop:
 	$(DOCKER_COMPOSE) stop service_1
@@ -244,7 +267,7 @@ service_1.down: service_1.stop
 service_1.reup: service_1.down service_1.up
 
 service_1.logs:
-	$(DOCKER_COMPOSE) logs -f service_1
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f service_1
 
 service_1.shell: service_1.up
 	$(DOCKER_COMPOSE) exec service_1 /bin/bash
@@ -264,7 +287,7 @@ service_2.up:
 
 service_2.start:
 	@echo ">>>>> http://127.0.0.1:8000/service-2/api/"
-	$(DOCKER_COMPOSE) up service_2
+	$(DOCKER_COMPOSE) up --no-log-prefix service_2
 
 service_2.stop:
 	$(DOCKER_COMPOSE) stop service_2
@@ -275,7 +298,7 @@ service_2.down: service_2.stop
 service_2.reup: service_2.down service_2.up
 
 service_2.logs:
-	$(DOCKER_COMPOSE) logs -f service_2
+	$(DOCKER_COMPOSE) logs  --no-log-prefix -f service_2
 
 service_2.shell: service_2.up
 	$(DOCKER_COMPOSE) exec service_2 /bin/bash

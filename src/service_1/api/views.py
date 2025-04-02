@@ -9,13 +9,13 @@ from utils.configs import Configs
 
 from api.compiled_protos import service_2_pb2, service_2_pb2_grpc
 
-_LOGGER = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 API = NinjaAPI()
 
 
 @API.get("/")
 def hello(request: HttpRequest) -> dict:  # noqa: ARG001
-    _LOGGER.info("hello API")
+    _logger.info("hello API")
     return {
         "message": "Hello from Django!",
         "end_points": [
@@ -30,7 +30,7 @@ def hello(request: HttpRequest) -> dict:  # noqa: ARG001
 
 @API.get("/external-api-http")
 def external_api_http(request: HttpRequest) -> dict:  # noqa: ARG001
-    _LOGGER.info("call external API")
+    _logger.info("call external API")
     url = "https://httpbin.org/get"
 
     with trace.get_tracer(__name__).start_as_current_span("external-request") as span:
@@ -42,21 +42,21 @@ def external_api_http(request: HttpRequest) -> dict:  # noqa: ARG001
 
 @API.get("/service-2-ping-http")
 def service_2_ping_http(request: HttpRequest) -> dict:  # noqa: ARG001
-    _LOGGER.info("call Service 2 ping API")
+    _logger.info("call Service 2 ping API")
     response = requests.get(f"http://{Configs.SERVICE_2_HTTP_ADDRESS}/api/ping/", timeout=10)
     return {"status_code": response.status_code, "content": response.json()}
 
 
 @API.get("/service-2-event-http")
 def service_2_event_http(request: HttpRequest) -> dict:  # noqa: ARG001
-    _LOGGER.info("call Service 2 event API")
+    _logger.info("call Service 2 event API")
     response = requests.get(f"http://{Configs.SERVICE_2_HTTP_ADDRESS}/api/event/", timeout=10)
     return {"status_code": response.status_code, "content": response.json()}
 
 
 @API.get("/service-2-echo-grpc/")
 def service_2_echo_grpc(request: HttpRequest) -> dict:  # noqa: ARG001
-    _LOGGER.info("call Service 2 echo RPC")
+    _logger.info("call Service 2 echo RPC")
 
     with grpc.insecure_channel(Configs.SERVICE_2_GRPC_ADDRESS) as channel:
         stub = service_2_pb2_grpc.EchoStub(channel)

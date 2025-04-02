@@ -11,7 +11,7 @@ class FuncValidator:
             if not self._is_func(node):
                 continue
 
-            func_node = cast(ast.FunctionDef | ast.AsyncFunctionDef, node)
+            func_node = cast("ast.FunctionDef | ast.AsyncFunctionDef", node)
 
             if self._is_public(func_node) and self._is_file_level(node) and self._is_public_module(file_specs.rel_path):
                 error = (

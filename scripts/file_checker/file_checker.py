@@ -10,6 +10,8 @@ from scripts.file_checker._func_validator import FuncValidator
 from scripts.file_checker._import_validator import ImportValidator
 from scripts.file_checker._msg_validator import MsgValidator
 
+_logger = logging.getLogger(__name__)
+
 
 class FileChecker:
     def __init__(self) -> None:
@@ -25,10 +27,10 @@ class FileChecker:
 
         if errors:
             for error in errors:
-                logging.error(error)
+                _logger.error(error)
             raise SystemExit(1)
 
-        logging.info("all checks passed")
+        _logger.info("all checks passed")
         raise SystemExit(0)
 
     def _validate_files(self, repo_abs_path: Path, files_to_check: list[str]) -> list[str]:

@@ -34,7 +34,8 @@ make pre_commit.init
 - [x] More comprehensive use of OpenTelemetry
 - [x] Add gRPC communications
 - [x] Add Kafka
-- [ ] Add Kong
+- [x] Add Kong and its plugins
+- [ ] Add multiple services for each system in docker-compose.yaml
 - [ ] Persist data for Docker services
 - [ ] Add example ENVs
 - [ ] Add Poetry

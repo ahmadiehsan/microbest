@@ -11,7 +11,7 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from rpc.compiled_protos import service_2_pb2_grpc
 from rpc.services import EchoService
 
-_LOGGER = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class _GrpcServer:
@@ -19,7 +19,7 @@ class _GrpcServer:
         try:
             self._start_server()
         except Exception:
-            _LOGGER.exception("failed to start gRPC server")
+            _logger.exception("failed to start gRPC server")
             raise
 
     def _start_server(self) -> None:
@@ -61,7 +61,7 @@ class _GrpcServer:
     @staticmethod
     def _listen(server: grpc.Server) -> None:
         server.start()
-        _LOGGER.info("gRPC server started")
+        _logger.info("gRPC server started")
         server.wait_for_termination()
 
 

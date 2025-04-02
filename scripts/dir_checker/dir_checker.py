@@ -5,6 +5,8 @@ from typing import NoReturn
 from scripts.dir_checker._dto import DirSpecsDto
 from scripts.dir_checker._empty_validator import EmptyValidator
 
+_logger = logging.getLogger(__name__)
+
 
 class DirChecker:
     def __init__(self) -> None:
@@ -16,10 +18,10 @@ class DirChecker:
 
         if errors:
             for error in errors:
-                logging.error(error)
+                _logger.error(error)
             raise SystemExit(1)
 
-        logging.info("all checks passed")
+        _logger.info("all checks passed")
         raise SystemExit(0)
 
     def _validate_dirs(self, repo_abs_path: Path) -> list[str]:

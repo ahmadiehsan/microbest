@@ -13,7 +13,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
 _RESOURCE = Resource.create({"service.name": "service-1"})
-_LOGGER = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 def setup_otel_logs() -> None:
@@ -22,7 +22,7 @@ def setup_otel_logs() -> None:
     provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
     _logs.set_logger_provider(provider)
     handler = LoggingHandler(level=logging.NOTSET, logger_provider=provider)
-    _LOGGER.addHandler(handler)
+    _logger.addHandler(handler)
 
 
 def setup_otel_traces() -> None:

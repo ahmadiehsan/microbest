@@ -4,12 +4,12 @@ from kafka import KafkaConsumer
 from kafka.consumer.fetcher import ConsumerRecord
 from utils.configs import Configs
 
-_LOGGER = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 class MyTopicEventHandler:
     def listen(self) -> None:
-        _LOGGER.info("start listing for my_topic events")
+        _logger.info("start listing for my_topic events")
         consumer = KafkaConsumer(
             "my_topic",
             bootstrap_servers=Configs.KAFKA_ADDRESS,
@@ -26,4 +26,4 @@ class MyTopicEventHandler:
             consumer.close()
 
     def _handle_message(self, message: ConsumerRecord) -> None:
-        _LOGGER.info("received event: %s", message.value.decode("utf-8"))
+        _logger.info("received event: %s", message.value.decode("utf-8"))
