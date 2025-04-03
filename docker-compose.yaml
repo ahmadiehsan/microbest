@@ -109,7 +109,7 @@ services:
       - ${JAEGER_ENV_FILE}
     ports:
       - "${JAEGER_UI_PORT}"
-      - "${JAEGER_OTEL_COLLECTOR_GRPC_PORT}"
+      - "${JAEGER_OTEL_GRPC_PORT}"
     depends_on:
       - kong
       - elasticsearch

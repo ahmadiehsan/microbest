@@ -9,7 +9,7 @@ receivers:
 exporters:
   debug:
   otlp:
-    endpoint: "${env:JAEGER_HOST}:${env:JAEGER_OTEL_COLLECTOR_GRPC_PORT}"
+    endpoint: "${env:JAEGER_HOST}:${env:JAEGER_OTEL_GRPC_PORT}"
     tls:
       insecure: true
   otlphttp/prometheus:
@@ -32,17 +32,17 @@ connectors:
 service:
   pipelines:
     logs:
-      receivers: [ otlp ]
-      processors: [ memory_limiter, batch ]
-      exporters: [ elasticsearch, debug ]
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [elasticsearch, debug]
     traces:
-      receivers: [ otlp ]
-      processors: [ memory_limiter, batch ]
-      exporters: [ otlp, debug, spanmetrics ]
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp, debug, spanmetrics]
     metrics:
-      receivers: [ otlp, spanmetrics ]
-      processors: [ memory_limiter, batch ]
-      exporters: [ otlphttp/prometheus, debug ]
+      receivers: [otlp, spanmetrics]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/prometheus, debug]
 
   telemetry:
     metrics:
