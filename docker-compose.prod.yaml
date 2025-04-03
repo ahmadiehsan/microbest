@@ -1,0 +1,33 @@
+services:
+  nginx:
+    restart: always
+
+  kong:
+    restart: always
+
+  otel_collector:
+    restart: always
+
+  elasticsearch:
+    restart: always
+
+  kibana:
+    restart: always
+
+  prometheus:
+    restart: always
+
+  grafana:
+    restart: always
+
+  jaeger:
+    restart: always
+
+  kafka:
+    restart: always
+
+  service_1:
+    restart: always
+
+  service_2:
+    restart: always

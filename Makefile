@@ -1,322 +1,324 @@
 # =========================
 # Init
 # =====
-DOCKER_COMPOSE := docker compose --env-file settings/envs/docker_compose.env -p open_telemetry
+PROJECT_ENV_NAME := OPEN_TELEMETRY_ENV
+PROJECT_ENV_VALUE := $($(PROJECT_ENV_NAME))
+DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/envs/docker_compose.env -p open_telemetry
 .DEFAULT_GOAL := help
 
 # =========================
 # Requirements
 # =====
-requirements.install:
+requirements.install: _is_env_dev
 	pip install -r src/service_1/requirements.txt
 	pip install -r src/service_2/requirements.txt
 
 # =========================
 # PreCommit
 # =====
-pre_commit.init:
+pre_commit.init: _is_env_dev
 	pre-commit install
 	pre-commit install --hook-type pre-push
 	pre-commit install --hook-type commit-msg
 	oco hook set
 
-pre_commit.run_for_all:
+pre_commit.run_for_all: _is_env_dev
 	pre-commit run --all-files
 
 # =========================
 # Docker
 # =====
-docker.destroy:
+docker.destroy: _is_env_dev
 	$(DOCKER_COMPOSE) down -v
 
-docker.down:
+docker.down: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) down
 
-docker.stop:
+docker.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop
 
-docker.logs:
+docker.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs -f
 
 # =========================
 # Nginx
 # =====
-nginx.up:
+nginx.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d nginx
 
-nginx.start:
+nginx.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix nginx
 
-nginx.stop:
+nginx.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop nginx
 
-nginx.down: nginx.stop
+nginx.down: _is_env_prod_or_dev nginx.stop
 	$(DOCKER_COMPOSE) rm -f nginx
 
-nginx.reup: nginx.down nginx.up
+nginx.reup: _is_env_prod_or_dev nginx.down nginx.up
 
-nginx.logs:
+nginx.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f nginx
 
-nginx.shell: nginx.up
+nginx.shell: _is_env_prod_or_dev nginx.up
 	$(DOCKER_COMPOSE) exec nginx /bin/sh
 
 # =========================
 # Kong
 # =====
-kong.up:
+kong.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d kong
 
-kong.start:
+kong.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix kong
 
-kong.stop:
+kong.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop kong
 
-kong.down: kong.stop
+kong.down: _is_env_prod_or_dev kong.stop
 	$(DOCKER_COMPOSE) rm -f kong
 
-kong.reup: kong.down kong.up
+kong.reup: _is_env_prod_or_dev kong.down kong.up
 
-kong.logs:
+kong.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kong
 
-kong.shell: kong.up
+kong.shell: _is_env_prod_or_dev kong.up
 	$(DOCKER_COMPOSE) exec kong /bin/sh
 
 # =========================
 # OpenTelemetry Collector
 # =====
-otel_collector.up:
+otel_collector.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d otel_collector
 
-otel_collector.start:
+otel_collector.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix otel_collector
 
-otel_collector.stop:
+otel_collector.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop otel_collector
 
-otel_collector.down: otel_collector.stop
+otel_collector.down: _is_env_prod_or_dev otel_collector.stop
 	$(DOCKER_COMPOSE) rm -f otel_collector
 
-otel_collector.reup: otel_collector.down otel_collector.up
+otel_collector.reup: _is_env_prod_or_dev otel_collector.down otel_collector.up
 
-otel_collector.logs:
+otel_collector.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f otel_collector
 
-otel_collector.shell: otel_collector.up
+otel_collector.shell: _is_env_prod_or_dev otel_collector.up
 	@echo ">>>>> This service doesn't support shell"
 
 # =========================
 # Elasticsearch
 # =====
-elasticsearch.up:
+elasticsearch.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d elasticsearch
 
-elasticsearch.start:
+elasticsearch.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix elasticsearch
 
-elasticsearch.stop:
+elasticsearch.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop elasticsearch
 
-elasticsearch.down: elasticsearch.stop
+elasticsearch.down: _is_env_prod_or_dev elasticsearch.stop
 	$(DOCKER_COMPOSE) rm -f elasticsearch
 
-elasticsearch.reup: elasticsearch.down elasticsearch.up
+elasticsearch.reup: _is_env_prod_or_dev elasticsearch.down elasticsearch.up
 
-elasticsearch.logs:
+elasticsearch.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f elasticsearch
 
-elasticsearch.shell: elasticsearch.up
+elasticsearch.shell: _is_env_prod_or_dev elasticsearch.up
 	$(DOCKER_COMPOSE) exec elasticsearch /bin/bash
 
 # =========================
 # Kibana
 # =====
-kibana.up:
+kibana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d kibana
 
-kibana.start:
+kibana.start: _is_env_dev
 	@echo ">>>>> http://127.0.0.1:8000/kibana/"
 	$(DOCKER_COMPOSE) up --no-log-prefix kibana
 
-kibana.stop:
+kibana.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop kibana
 
-kibana.down: kibana.stop
+kibana.down: _is_env_prod_or_dev kibana.stop
 	$(DOCKER_COMPOSE) rm -f kibana
 
-kibana.reup: kibana.down kibana.up
+kibana.reup: _is_env_prod_or_dev kibana.down kibana.up
 
-kibana.logs:
+kibana.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kibana
 
-kibana.shell: kibana.up
+kibana.shell: _is_env_prod_or_dev kibana.up
 	$(DOCKER_COMPOSE) exec kibana /bin/bash
 
 # =========================
 # Prometheus
 # =====
-prometheus.up:
+prometheus.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d prometheus
 
-prometheus.start:
+prometheus.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix prometheus
 
-prometheus.stop:
+prometheus.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop prometheus
 
-prometheus.down: prometheus.stop
+prometheus.down: _is_env_prod_or_dev prometheus.stop
 	$(DOCKER_COMPOSE) rm -f prometheus
 
-prometheus.reup: prometheus.down prometheus.up
+prometheus.reup: _is_env_prod_or_dev prometheus.down prometheus.up
 
-prometheus.logs:
+prometheus.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f prometheus
 
-prometheus.shell: prometheus.up
+prometheus.shell: _is_env_prod_or_dev prometheus.up
 	$(DOCKER_COMPOSE) exec prometheus /bin/sh
 
 # =========================
 # Grafana
 # =====
-grafana.up:
+grafana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d grafana
 
-grafana.start:
+grafana.start: _is_env_dev
 	@echo ">>>>> http://127.0.0.1:8000/grafana/"
 	$(DOCKER_COMPOSE) up --no-log-prefix grafana
 
-grafana.stop:
+grafana.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop grafana
 
-grafana.down: grafana.stop
+grafana.down: _is_env_prod_or_dev grafana.stop
 	$(DOCKER_COMPOSE) rm -f grafana
 
-grafana.reup: grafana.down grafana.up
+grafana.reup: _is_env_prod_or_dev grafana.down grafana.up
 
-grafana.logs:
+grafana.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f grafana
 
-grafana.shell: grafana.up
+grafana.shell: _is_env_prod_or_dev grafana.up
 	$(DOCKER_COMPOSE) exec grafana /bin/sh
 
 # =========================
 # Jaeger
 # =====
-jaeger.up:
+jaeger.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d jaeger
 
-jaeger.start:
+jaeger.start: _is_env_dev
 	@echo ">>>>> http://127.0.0.1:8000/jaeger/ui/"
 	$(DOCKER_COMPOSE) up --no-log-prefix jaeger
 
-jaeger.stop:
+jaeger.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop jaeger
 
-jaeger.down: jaeger.stop
+jaeger.down: _is_env_prod_or_dev jaeger.stop
 	$(DOCKER_COMPOSE) rm -f jaeger
 
-jaeger.reup: jaeger.down jaeger.up
+jaeger.reup: _is_env_prod_or_dev jaeger.down jaeger.up
 
-jaeger.logs:
+jaeger.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f jaeger
 
-jaeger.shell: jaeger.up
+jaeger.shell: _is_env_prod_or_dev jaeger.up
 	$(DOCKER_COMPOSE) exec jaeger /bin/sh
 
 # =========================
 # Kafka
 # =====
-kafka.up:
+kafka.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d kafka
 
-kafka.start:
+kafka.start: _is_env_dev
 	$(DOCKER_COMPOSE) up --no-log-prefix kafka
 
-kafka.stop:
+kafka.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop kafka
 
-kafka.down: kafka.stop
+kafka.down: _is_env_prod_or_dev kafka.stop
 	$(DOCKER_COMPOSE) rm -f kafka
 
-kafka.reup: kafka.down kafka.up
+kafka.reup: _is_env_prod_or_dev kafka.down kafka.up
 
-kafka.logs:
+kafka.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f kafka
 
-kafka.shell: kafka.up
+kafka.shell: _is_env_prod_or_dev kafka.up
 	$(DOCKER_COMPOSE) exec kafka /bin/sh
 
 # =========================
 # Service 1
 # =====
-service_1.up:
+service_1.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d service_1
 
-service_1.start:
+service_1.start: _is_env_dev
 	@echo ">>>>> http://127.0.0.1:8000/api/"
 	$(DOCKER_COMPOSE) up --no-log-prefix service_1
 
-service_1.stop:
+service_1.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop service_1
 
-service_1.down: service_1.stop
+service_1.down: _is_env_prod_or_dev service_1.stop
 	$(DOCKER_COMPOSE) rm -f service_1
 
-service_1.reup: service_1.down service_1.up
+service_1.reup: _is_env_prod_or_dev service_1.down service_1.up
 
-service_1.logs:
+service_1.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f service_1
 
-service_1.shell: service_1.up
+service_1.shell: _is_env_prod_or_dev service_1.up
 	$(DOCKER_COMPOSE) exec service_1 /bin/bash
 
-service_1.build:
+service_1.build: _is_env_dev
 	$(DOCKER_COMPOSE) build service_1
 
-service_1.compile_protos:
+service_1.compile_protos: _is_env_dev
 	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_1/api/compiled_protos --mypy_out=./src/service_1/api/compiled_protos --grpc_python_out=./src/service_1/api/compiled_protos ./protos/*.proto
 	for file in ./src/service_1/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
 # Service 2
 # =====
-service_2.up:
+service_2.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d service_2
 
-service_2.start:
+service_2.start: _is_env_dev
 	@echo ">>>>> http://127.0.0.1:8000/service-2/api/"
 	$(DOCKER_COMPOSE) up --no-log-prefix service_2
 
-service_2.stop:
+service_2.stop: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) stop service_2
 
-service_2.down: service_2.stop
+service_2.down: _is_env_prod_or_dev service_2.stop
 	$(DOCKER_COMPOSE) rm -f service_2
 
-service_2.reup: service_2.down service_2.up
+service_2.reup: _is_env_prod_or_dev service_2.down service_2.up
 
-service_2.logs:
+service_2.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f service_2
 
-service_2.shell: service_2.up
+service_2.shell: _is_env_prod_or_dev service_2.up
 	$(DOCKER_COMPOSE) exec service_2 /bin/bash
 
-service_2.build:
+service_2.build: _is_env_dev
 	$(DOCKER_COMPOSE) build service_2
 
-service_2.compile_protos:
+service_2.compile_protos: _is_env_dev
 	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_2/rpc/compiled_protos --mypy_out=./src/service_2/rpc/compiled_protos --grpc_python_out=./src/service_2/rpc/compiled_protos ./protos/*.proto
 	for file in ./src/service_2/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
 # Scripts
 # =====
-script.file_checker:
+script.file_checker: _is_env_dev
 	PYTHONPATH=. python scripts/file_checker/file_checker.py
 
-script.dir_checker:
+script.dir_checker: _is_env_dev
 	PYTHONPATH=. python scripts/dir_checker/dir_checker.py
 
 # =========================
@@ -325,3 +327,28 @@ script.dir_checker:
 help:
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z0-9][a-zA-Z0-9._-]*:' Makefile | sort | awk -F: '{print "  "$$1}'
+
+# =========================
+# Env Checks
+# =====
+_is_env_exist:
+ifndef $(PROJECT_ENV_NAME)
+	$(error Please set the $(PROJECT_ENV_NAME) variable)
+endif
+
+_is_env_prod: _is_env_exist
+ifneq ($(PROJECT_ENV_VALUE),prod)
+	$(error This target is only available for 'prod' environment)
+endif
+
+_is_env_dev: _is_env_exist
+ifneq ($(PROJECT_ENV_VALUE),dev)
+	$(error This target is only available for 'dev' environment)
+endif
+
+_is_env_prod_or_dev: _is_env_exist
+ifneq ($(PROJECT_ENV_VALUE),prod)
+ifneq ($(PROJECT_ENV_VALUE),dev)
+	$(error This target is only available for 'prod' or 'dev' environment)
+endif
+endif

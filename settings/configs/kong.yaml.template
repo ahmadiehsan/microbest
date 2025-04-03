@@ -3,43 +3,58 @@ _transform: true
 
 services:
   - name: kibana
-    url: 'http://${KIBANA_HOST}:${KIBANA_PORT}'
+    host: ${KIBANA_HOST}
+    port: ${KIBANA_PORT}
+    protocol: http
     read_timeout: 3600000 # WebSocket support
     write_timeout: 3600000 # WebSocket support
     routes:
       - name: kibana_route
         paths:
           - /kibana
+        strip_path: false
 
   - name: grafana
-    url: 'http://${GRAFANA_HOST}:${GRAFANA_PORT}'
+    host: ${GRAFANA_HOST}
+    port: ${GRAFANA_PORT}
+    protocol: http
     read_timeout: 3600000 # WebSocket support
     write_timeout: 3600000 # WebSocket support
     routes:
       - name: grafana_route
         paths:
           - /grafana
+        strip_path: false
 
   - name: jaeger
-    url: 'http://${JAEGER_HOST}:${JAEGER_UI_PORT}'
+    host: ${JAEGER_HOST}
+    port: ${JAEGER_UI_PORT}
+    protocol: http
     routes:
       - name: jaeger_route
         paths:
           - /jaeger
+        strip_path: false
 
   - name: service_2
-    url: 'http://${SERVICE_2_HOST}:${SERVICE_2_HTTP_PORT}'
+    host: ${SERVICE_2_HOST}
+    port: ${SERVICE_2_HTTP_PORT}
+    protocol: http
     routes:
       - name: service_2_route
         paths:
-          - /service_2
+          - /service-2
+        strip_path: false
 
   - name: service_1
-    url: 'http://${SERVICE_1_HOST}:${SERVICE_1_PORT}'
+    host: ${SERVICE_1_HOST}
+    port: ${SERVICE_1_PORT}
+    protocol: http
     routes:
       - name: service_1_route
         paths:
           - /
+        strip_path: false
 
 plugins:
   - name: rate-limiting

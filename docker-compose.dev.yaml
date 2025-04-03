@@ -1,0 +1,63 @@
+services:
+  nginx:
+    restart: on-failure
+
+  kong:
+    restart: on-failure
+
+  otel_collector:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  elasticsearch:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+
+  kibana:
+    restart: on-failure
+
+  prometheus:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+  grafana:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 120M
+
+  jaeger:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 1200M
+
+  kafka:
+    restart: on-failure
+    deploy:
+      resources:
+        limits:
+          memory: 620M
+
+  service_1:
+    build: ${SERVICE_1_ROOT_DIR}
+    restart: on-failure
+    volumes:
+      - ${SERVICE_1_ROOT_DIR}:/app
+
+  service_2:
+    build: ${SERVICE_2_ROOT_DIR}
+    restart: on-failure
+    volumes:
+      - ${SERVICE_2_ROOT_DIR}:/app
