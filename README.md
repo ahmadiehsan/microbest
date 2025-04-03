@@ -1,14 +1,27 @@
-# OpenTelemetry
+# MicroBest
 
-Sample OpenTelemetry project
+A sleek microservices reference project, showcasing best practices in scalability, observability, and service communication.
+
+Tech Stack:
+
+- **Nginx** – High-performance reverse proxy
+- **Kong** – API gateway for seamless service management
+- **OTEL Collector** – Unified observability pipeline
+- **Elasticsearch & Kibana** – Log aggregation and visualization
+- **Prometheus & Grafana** – Metrics-driven monitoring
+- **Jaeger** – Distributed tracing made simple
+- **Kafka** – Reliable event streaming
+- **Example services** – Two minimal services demonstrating basic inter-service communication
+
+Built for clarity, efficiency, and real-world usability. 🚀
 
 ## Usage
 
 ```shell
 git clone <this/repo/url>
-cd open_telemetry
+cd microbest
 
-export OPEN_TELEMETRY_ENV=dev
+export MICROBEST_ENV=dev
 make service_1.up
 ```
 
@@ -32,13 +45,13 @@ make pre_commit.init
 
 ## TODOs
 
-- [x] Add Nginx as proxy
+- [x] Add Nginx
 - [x] More comprehensive use of OpenTelemetry
 - [x] Add gRPC communications
 - [x] Add Kafka
 - [x] Add Kong and its plugins
 - [x] Add production support to docker-compose.yaml
-- [ ] Rename the projct to micro_verse
+- [x] Rename the projct to microbest
 - [ ] Persist data for Docker services
 - [ ] Add example ENVs
 - [ ] Add Poetry

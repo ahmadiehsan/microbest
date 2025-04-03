@@ -1,9 +1,9 @@
 # =========================
 # Init
 # =====
-PROJECT_ENV_NAME := OPEN_TELEMETRY_ENV
+PROJECT_ENV_NAME := MICROBEST_ENV
 PROJECT_ENV_VALUE := $($(PROJECT_ENV_NAME))
-DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/envs/docker_compose.env -p open_telemetry
+DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/envs/docker_compose.env -p microbest
 .DEFAULT_GOAL := help
 
 # =========================
