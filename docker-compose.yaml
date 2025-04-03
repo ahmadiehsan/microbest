@@ -43,6 +43,8 @@ services:
   elasticsearch:
     image: ${ELASTICSEARCH_IMAGE}
     hostname: ${ELASTICSEARCH_HOST}
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${ELASTICSEARCH_ENV_FILE}
@@ -76,6 +78,7 @@ services:
     hostname: ${PROMETHEUS_HOST}
     volumes:
       - ${PROMETHEUS_CONFIG}:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
     command:
@@ -90,6 +93,7 @@ services:
     hostname: ${GRAFANA_HOST}
     volumes:
       - ${GRAFANA_CONFIG}:/etc/grafana/grafana.ini:ro
+      - grafana_data:/var/lib/grafana
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
     ports:
@@ -108,6 +112,8 @@ services:
       - "${JAEGER_OTEL_COLLECTOR_GRPC_PORT}"
     depends_on:
       - kong
+      - elasticsearch
+      - prometheus
 
   kafka:
     image: ${KAFKA_IMAGE}
@@ -158,3 +164,8 @@ services:
       - kong
       - otel_collector
       - kafka
+
+volumes:
+  elasticsearch_data:
+  prometheus_data:
+  grafana_data:

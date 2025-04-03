@@ -39,6 +39,7 @@
         "ulimits",
         "uvicorn",
         "venv",
-        "wsgi"
+        "wsgi",
+        "xpack"
     ]
 }

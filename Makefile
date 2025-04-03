@@ -3,7 +3,7 @@
 # =====
 PROJECT_ENV_NAME := MICROBEST_ENV
 PROJECT_ENV_VALUE := $($(PROJECT_ENV_NAME))
-DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/envs/docker_compose.env -p microbest
+DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/docker_compose/.env -p microbest
 .DEFAULT_GOAL := help
 
 # =========================
