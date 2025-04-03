@@ -12,7 +12,7 @@ repos:
       - id: check-merge-conflict
 
   - repo: https://github.com/scop/pre-commit-shfmt
-    rev: v3.10.0-2
+    rev: v3.11.0-1
     hooks:
       - id: shfmt
         args: [--indent, "2", --write]
@@ -25,7 +25,7 @@ repos:
         args: [--config, "./.checkmake.ini"]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.4
+    rev: v0.11.2
     hooks:
       - id: ruff
       - id: ruff-format
@@ -51,18 +51,18 @@ repos:
       - id: hadolint-docker
 
   - repo: https://github.com/pycqa/bandit
-    rev: 1.8.2
+    rev: 1.8.3
     hooks:
       - id: bandit
         args: [--configfile, "pyproject.toml", --recursive, "."]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+    rev: v1.15.0
     hooks:
       - id: mypy
         additional_dependencies: [types-requests==2.32.0.20250306]
 
   - repo: https://github.com/pycqa/pylint
-    rev: v3.3.4
+    rev: v3.3.6
     hooks:
       - id: pylint

@@ -35,7 +35,7 @@ make pre_commit.init
 - [x] Add gRPC communications
 - [x] Add Kafka
 - [x] Add Kong and its plugins
-- [ ] Add multiple services for each system in docker-compose.yaml
+- [ ] Add production support to docker-compose.yaml
 - [ ] Persist data for Docker services
 - [ ] Add example ENVs
 - [ ] Add Poetry
