@@ -1,3 +1,5 @@
+import sys
+
 from django.apps import AppConfig
 from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
@@ -16,7 +18,8 @@ class MainAppConfig(AppConfig):
         self._startup_setups()
 
     def _startup_setups(self) -> None:
-        setup_python_logger(process_name="django")
+        process_name = self._get_process_name()
+        setup_python_logger(process_name=process_name)
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()
@@ -26,3 +29,24 @@ class MainAppConfig(AppConfig):
         RequestsInstrumentor().instrument()
         SQLite3Instrumentor().instrument()
         KafkaInstrumentor().instrument()
+
+    def _get_process_name(self) -> str:
+        default_name = "django"
+        manage_py_index = self._get_manage_py_index()
+
+        if manage_py_index is None:
+            return default_name
+
+        command = sys.argv[manage_py_index + 1]
+        return command if command != "runserver" else default_name
+
+    def _get_manage_py_index(self) -> int | None:
+        command_names = ["manage.py", "./manage.py", "django-admin"]
+
+        for name in command_names:
+            try:
+                return sys.argv.index(name)
+            except ValueError:
+                continue
+
+        return None

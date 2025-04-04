@@ -64,6 +64,8 @@ services:
   kibana:
     image: ${KIBANA_IMAGE}
     hostname: ${KIBANA_HOST}
+    volumes:
+      - kibana_data:/usr/share/kibana/data
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${KIBANA_ENV_FILE}
@@ -118,6 +120,8 @@ services:
   kafka:
     image: ${KAFKA_IMAGE}
     hostname: ${KAFKA_HOST}
+    volumes:
+      - kafka_data:/var/lib/kafka/data
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
       - ${KAFKA_ENV_FILE}
@@ -167,5 +171,7 @@ services:
 
 volumes:
   elasticsearch_data:
+  kibana_data:
   prometheus_data:
   grafana_data:
+  kafka_data:

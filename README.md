@@ -52,8 +52,9 @@ make pre_commit.init
 - [x] Add Kong and its plugins
 - [x] Add production support to docker-compose.yaml
 - [x] Rename the projct to microbest
-- [x] Persist data for Prometheus, Grafana, and Elasticsearch
-- [ ] Persist data for Kafka, Kibana, Kong, OtelCollector
+- [x] Persist data for Prometheus, Grafana, Elasticsearch, Kibana, and Kafka
+- [ ] Persist data for Kong, OtelCollector
+- [ ] Grafana dashboard for FastAPI and Django
 - [ ] Add example ENVs
 - [ ] Add Poetry
 - [ ] Add overview diagram

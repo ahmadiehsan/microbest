@@ -10,6 +10,7 @@ DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJ
 # Requirements
 # =====
 requirements.install: _is_env_dev
+	pip freeze | xargs pip uninstall -y
 	pip install -r src/service_1/requirements.txt
 	pip install -r src/service_2/requirements.txt
 

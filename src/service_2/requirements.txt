@@ -3,25 +3,25 @@
 # =====
 supervisor==4.2.5
 
-fastapi==0.115.11
+fastapi==0.115.12
 uvicorn==0.34.0
 
 grpcio==1.71.0
 grpcio-tools==1.71.0
 mypy-protobuf==3.6.0
 
-kafka-python==2.1.2
+kafka-python==2.1.4
 
-opentelemetry-sdk==1.30.0
-opentelemetry-exporter-otlp==1.30.0
-opentelemetry-instrumentation-logging==0.51b0
-opentelemetry-instrumentation-fastapi==0.51b0
-opentelemetry-instrumentation-grpc==0.51b0
-opentelemetry-instrumentation-kafka-python==0.51b0
+opentelemetry-sdk==1.31.1
+opentelemetry-exporter-otlp==1.31.1
+opentelemetry-instrumentation-logging==0.52b1
+opentelemetry-instrumentation-fastapi==0.52b1
+opentelemetry-instrumentation-grpc==0.52b1
+opentelemetry-instrumentation-kafka-python==0.52b1
 
 # =========================
 # Devs
 # =====
-pre-commit==3.5.0
-ruff==0.9.9
-types-requests==2.32.0.20250306
+pre-commit==4.2.0
+ruff==0.11.3
+types-requests==2.32.0.20250328

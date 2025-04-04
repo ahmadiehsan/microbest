@@ -57,13 +57,20 @@ service:
       exporters: [otlphttp/prometheus, debug]
 
   telemetry: # OpenTelemetry Collector's own logs, traces, and metrics
+    logs:
+      level: debug # We don't need to send logs to Elasticsearch because console is enough
+    traces:
+      processors:
+        - batch:
+            exporter:
+              otlp:
+                protocol: http/protobuf
+                endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
     metrics:
       level: detailed
       readers:
         - periodic:
-            interval: 10000
-            timeout: 5000
             exporter:
               otlp:
-                protocol: grpc
-                endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_GRPC_PORT}
+                protocol: http/protobuf
+                endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
