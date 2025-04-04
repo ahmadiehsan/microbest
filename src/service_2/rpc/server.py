@@ -31,7 +31,7 @@ class _GrpcServer:
 
     @staticmethod
     def _startup_setups() -> None:
-        setup_python_logger()
+        setup_python_logger(process_name="rpc")
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()

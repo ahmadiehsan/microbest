@@ -19,7 +19,7 @@ class _FastApiApp:
         return FastAPI(root_path="/service-2")
 
     def _startup_setups(self, app: FastAPI) -> None:
-        setup_python_logger()
+        setup_python_logger(process_name="fastapi")
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()

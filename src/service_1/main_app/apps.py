@@ -16,7 +16,7 @@ class MainAppConfig(AppConfig):
         self._startup_setups()
 
     def _startup_setups(self) -> None:
-        setup_python_logger()
+        setup_python_logger(process_name="django")
         setup_otel_logs()
         setup_otel_traces()
         setup_otel_metrics()
