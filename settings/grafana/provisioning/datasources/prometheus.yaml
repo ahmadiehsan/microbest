@@ -1,0 +1,16 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    uid: metrics
+    type: prometheus
+    url: http://${PROMETHEUS_HOST}:${PROMETHEUS_PORT}
+    isDefault: true
+    jsonData:
+      exemplarTraceIdDestinations:
+        - datasourceUid: traces
+          name: trace_id
+
+        - url: http://${NGINX_HOST_PUBLIC}:${NGINX_PORT_PUBLIC}/jaeger/ui/trace/$${__value.raw}
+          name: trace_id
+          urlDisplayLabel: View in Jaeger UI

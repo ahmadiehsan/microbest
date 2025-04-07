@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: Elasticsearch
+    uid: logs
+    type: elasticsearch
+    url: http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+    access: proxy
+    jsonData:
+      index: logs-generic.otel-default
+      timeField: observed_timestamp
+      logMessageField: message
+      logLevelField: severity_text
+      version: 8.17.3

@@ -18,7 +18,7 @@ class _CustomFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_color = self._colors.get(record.levelname, self._color_reset)
-        record.levelname = f"{log_color}{record.levelname}{self._color_reset}"
+        record.color_levelname = f"{log_color}{record.levelname}{self._color_reset}"
         record.process_name = self._process_name
         return super().format(record)
 
@@ -30,7 +30,7 @@ def setup_python_logger(*, process_name: str) -> None:
     stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(
         _CustomFormatter(
-            "[%(levelname)s] %(message)s [%(process_name)s] [%(name)s:%(lineno)d]", process_name=process_name
+            "[%(color_levelname)s] %(message)s [%(process_name)s] [%(name)s:%(lineno)d]", process_name=process_name
         )
     )
     logger.addHandler(stream_handler)

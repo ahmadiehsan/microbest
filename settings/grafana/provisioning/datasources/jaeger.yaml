@@ -1,0 +1,7 @@
+apiVersion: 1
+
+datasources:
+  - name: Jaeger
+    uid: traces
+    type: jaeger
+    url: http://${JAEGER_HOST}:${JAEGER_UI_PORT}/jaeger/ui

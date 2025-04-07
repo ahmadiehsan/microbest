@@ -95,6 +95,7 @@ services:
     hostname: ${GRAFANA_HOST}
     volumes:
       - ${GRAFANA_CONFIG}:/etc/grafana/grafana.ini:ro
+      - ${GRAFANA_PROVISIONING}:/etc/grafana/provisioning:ro
       - grafana_data:/var/lib/grafana
     env_file:
       - ${DOCKER_COMPOSE_ENV_FILE}
@@ -102,6 +103,9 @@ services:
       - "${GRAFANA_PORT}"
     depends_on:
       - kong
+      - prometheus
+      - jaeger
+      - elasticsearch
 
   jaeger:
     image: ${JAEGER_IMAGE}
