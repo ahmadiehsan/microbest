@@ -11,7 +11,7 @@ services:
     routes:
       - name: kibana_route
         paths:
-          - /kibana
+          - /${KIBANA_PUBLIC_BASE_PATH}
         strip_path: false
 
   - name: grafana
@@ -23,7 +23,7 @@ services:
     routes:
       - name: grafana_route
         paths:
-          - /grafana
+          - /${GRAFANA_PUBLIC_BASE_PATH}
         strip_path: false
 
   - name: jaeger
@@ -33,7 +33,7 @@ services:
     routes:
       - name: jaeger_route
         paths:
-          - /jaeger
+          - /${JAEGER_PUBLIC_BASE_PATH}
         strip_path: false
 
   - name: service_2
@@ -43,7 +43,7 @@ services:
     routes:
       - name: service_2_route
         paths:
-          - /service-2
+          - /${SERVICE_2_PUBLIC_BASE_PATH}
         strip_path: false
 
   - name: service_1
@@ -53,7 +53,7 @@ services:
     routes:
       - name: service_1_route
         paths:
-          - /
+          - /${SERVICE_1_PUBLIC_BASE_PATH}
         strip_path: false
 
 plugins:

@@ -4,4 +4,4 @@ datasources:
   - name: Jaeger
     uid: traces
     type: jaeger
-    url: http://${JAEGER_HOST}:${JAEGER_UI_PORT}/jaeger/ui
+    url: http://${JAEGER_HOST}:${JAEGER_UI_PORT}/${JAEGER_PUBLIC_BASE_PATH}

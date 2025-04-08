@@ -41,6 +41,9 @@ docker.stop: _is_env_prod_or_dev
 docker.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs -f
 
+docker.up: _is_env_prod_or_dev
+	$(DOCKER_COMPOSE) up
+
 # =========================
 # Nginx
 # =====
@@ -140,7 +143,7 @@ kibana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d kibana
 
 kibana.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/kibana/"
+	@echo ">>>>> http://127.0.0.1:8000/kibana"
 	$(DOCKER_COMPOSE) up --no-log-prefix kibana
 
 kibana.stop: _is_env_prod_or_dev
@@ -187,7 +190,7 @@ grafana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d grafana
 
 grafana.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/grafana/"
+	@echo ">>>>> http://127.0.0.1:8000/grafana"
 	$(DOCKER_COMPOSE) up --no-log-prefix grafana
 
 grafana.stop: _is_env_prod_or_dev
@@ -211,7 +214,7 @@ jaeger.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d jaeger
 
 jaeger.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/jaeger/ui/"
+	@echo ">>>>> http://127.0.0.1:8000/jaeger"
 	$(DOCKER_COMPOSE) up --no-log-prefix jaeger
 
 jaeger.stop: _is_env_prod_or_dev
@@ -258,7 +261,7 @@ service_1.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/api/"
+	@echo ">>>>> http://127.0.0.1:8000/api"
 	$(DOCKER_COMPOSE) up --no-log-prefix service_1
 
 service_1.stop: _is_env_prod_or_dev

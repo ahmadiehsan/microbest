@@ -36,6 +36,7 @@
         "shfmt",
         "supervisorctl",
         "supervisord",
+        "tini",
         "ulimits",
         "uvicorn",
         "venv",

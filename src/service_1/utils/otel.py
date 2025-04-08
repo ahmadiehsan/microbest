@@ -15,12 +15,20 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 _resource = Resource.create({"service.name": "service-1"})
 
 
+class _SafeLoggingHandler(LoggingHandler):
+    def emit(self, record: logging.LogRecord) -> None:
+        if isinstance(record.msg, Exception):
+            record.msg = str(record.msg)
+
+        super().emit(record)
+
+
 def setup_otel_logs() -> None:
     provider = LoggerProvider(resource=_resource)
     exporter = OTLPLogExporter()
     provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
     _logs.set_logger_provider(provider)
-    handler = LoggingHandler(level=logging.NOTSET, logger_provider=provider)
+    handler = _SafeLoggingHandler(level=logging.NOTSET, logger_provider=provider)
     root_logger = logging.getLogger()
     root_logger.addHandler(handler)
 

@@ -27,11 +27,11 @@ make service_1.up
 
 Services:
 
-- [Service 1](http://127.0.0.1:8000/api/)
+- [Service 1](http://127.0.0.1:8000/api)
 - [Service 2](http://127.0.0.1:8000/service-2/api/)
-- [Kibana](http://127.0.0.1:8000/kibana/)
-- [Grafana](http://127.0.0.1:8000/grafana/)
-- [Jaeger UI](http://127.0.0.1:8000/jaeger/ui/)
+- [Kibana](http://127.0.0.1:8000/kibana)
+- [Grafana](http://127.0.0.1:8000/grafana)
+- [Jaeger UI](http://127.0.0.1:8000/jaeger)
 
 ## Developers
 
