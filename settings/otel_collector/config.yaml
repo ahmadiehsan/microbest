@@ -5,9 +5,9 @@ receivers:
   otlp:
     protocols:
       grpc: # OpenTelemetry Collector accepts OTLP over gRPC
-        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_GRPC_PORT}
+        endpoint: 0.0.0.0:${env:OTEL_COLLECTOR_GRPC_PORT}
       http: # OpenTelemetry Collector accepts OTLP over HTTP
-        endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
+        endpoint: 0.0.0.0:${env:OTEL_COLLECTOR_HTTP_PORT}
 
 # =========================
 # Exporters (Output Methods)
@@ -22,7 +22,7 @@ exporters:
     endpoint: "http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp"
     tls:
       insecure: true
-  elasticsearch: # Elasticsearch doesn't natively support OTLP, but the OpenTelemetry uses Elasticsearch API
+  elasticsearch: # Elasticsearch doesn't natively support OTLP, but OpenTelemetry Collector uses Elasticsearch API
     endpoint: "http://${env:ELASTICSEARCH_HOST}:${env:ELASTICSEARCH_PORT}"
 
 # =========================
@@ -39,7 +39,7 @@ connectors:
   spanmetrics:
 
 # =========================
-# Pipelines
+# Node Configuration
 # =====
 service:
   pipelines: # Logs/Traces/Metrics -> Receivers -> Processors -> Exporters -> Jaeger/Prometheus/Elasticsearch
@@ -56,16 +56,9 @@ service:
       processors: [memory_limiter, batch]
       exporters: [otlphttp/prometheus, debug]
 
-  telemetry: # OpenTelemetry Collector's own logs, traces, and metrics
+  telemetry: # OpenTelemetry Collector's own logs and metrics (If we configure traces, it will create an infinite loop)
     logs:
-      level: debug # We don't need to send logs to Elasticsearch because console is enough
-    traces:
-      processors:
-        - batch:
-            exporter:
-              otlp:
-                protocol: http/protobuf
-                endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
+      level: info # We don't need to send logs to Elasticsearch because console is enough
     metrics:
       level: detailed
       readers:

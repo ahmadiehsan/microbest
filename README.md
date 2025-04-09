@@ -20,9 +20,8 @@ Built for clarity, efficiency, and real-world usability. 🚀
 ```shell
 git clone <this/repo/url>
 cd microbest
-
 export MICROBEST_ENV=dev
-make service_1.up
+make compose.up
 ```
 
 Services:
@@ -41,6 +40,7 @@ source venv/bin/activate
 
 make requirements.install
 make pre_commit.init
+make help
 ```
 
 ## TODOs
@@ -50,7 +50,7 @@ make pre_commit.init
 - [x] Add gRPC communications
 - [x] Add Kafka
 - [x] Add Kong and its plugins
-- [x] Add production support to docker-compose.yaml
+- [x] Add production support to compose.yaml
 - [x] Rename the projct to microbest
 - [x] Persist data for Prometheus, Grafana, Elasticsearch, Kibana, and Kafka
 - [ ] Persist data for Kong, OtelCollector

@@ -22,7 +22,7 @@ import_objects() {
 
   echo "[INFO ][import.sh] Importing ${type}..."
 
-  for file in "/etc/provisioning/${dir}/"*.ndjson; do
+  for file in "/etc/_provisioning/${dir}/"*.ndjson; do
     echo "[INFO ][import.sh] Processing $file..."
     local response
     response=$(import_file "$file")

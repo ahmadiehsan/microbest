@@ -1,39 +1,39 @@
 services:
   nginx:
-    image: ${NGINX_IMAGE}
+    image: nginx:1.27.4-alpine
     hostname: ${NGINX_HOST}
     ports:
       - ${NGINX_PORT_PUBLIC}:${NGINX_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
     volumes:
       - ./settings/nginx/default.conf.template:/etc/nginx/templates/default.conf.template:ro
 
   kong:
-    image: ${KONG_IMAGE}
+    image: kong:3.9.0
     hostname: ${KONG_HOST}
     ports:
       - ${KONG_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/kong/.env
     volumes:
-      - ./settings/kong/config.yaml.template:/etc/config.yaml.template:ro
-      - ./settings/kong/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/kong/config.yaml.template:/etc/_config.yaml.template:ro
+      - ./settings/kong/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     user: root
     depends_on:
       - nginx
 
   otel_collector:
-    image: ${OTEL_COLLECTOR_IMAGE}
+    image: otel/opentelemetry-collector-contrib:0.123.0
     hostname: ${OTEL_COLLECTOR_HOST}
     ports:
       - ${OTEL_COLLECTOR_GRPC_PORT}
       - ${OTEL_COLLECTOR_HTTP_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
     volumes:
       - ./settings/otel_collector/config.yaml:/etc/otelcol-contrib/config.yaml:ro
     depends_on:
@@ -42,12 +42,12 @@ services:
       - jaeger
 
   elasticsearch:
-    image: ${ELASTICSEARCH_IMAGE}
+    image: elasticsearch:8.17.3
     hostname: ${ELASTICSEARCH_HOST}
     ports:
       - ${ELASTICSEARCH_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/elasticsearch/.env
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
@@ -63,53 +63,51 @@ services:
       retries: 10
 
   kibana:
-    image: ${KIBANA_IMAGE}
+    image: kibana:8.17.3
     hostname: ${KIBANA_HOST}
     ports:
       - ${KIBANA_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/kibana/.env
     volumes:
       - kibana_data:/usr/share/kibana/data
-      - ./settings/kibana/provisioning:/etc/provisioning:ro
-      - ./settings/kibana/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/kibana/provisioning:/etc/_provisioning:ro
+      - ./settings/kibana/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - elasticsearch
 
   prometheus:
-    image: ${PROMETHEUS_IMAGE}
+    image: prom/prometheus:v3.2.1
     hostname: ${PROMETHEUS_HOST}
     ports:
       - ${PROMETHEUS_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
     volumes:
       - prometheus_data:/prometheus
       - ./settings/prometheus/config.yaml:/etc/prometheus/prometheus.yml:ro
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml # default of image
-      - --storage.tsdb.path=/prometheus # default of image
-      - --web.enable-otlp-receiver
+      - ./settings/prometheus/entrypoint.sh:/etc/_entrypoint.sh:ro
+    entrypoint: /etc/_entrypoint.sh
 
   grafana:
-    image: ${GRAFANA_IMAGE}
+    image: grafana/grafana:11.5.2
     hostname: ${GRAFANA_HOST}
     ports:
       - ${GRAFANA_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/grafana/.env
     volumes:
       - grafana_data:/var/lib/grafana
       - ./settings/grafana/config.ini:/etc/grafana/grafana.ini:ro
       - ./settings/grafana/provisioning:/etc/grafana/provisioning:ro
-      - ./settings/grafana/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/grafana/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - prometheus
@@ -117,31 +115,33 @@ services:
       - elasticsearch
 
   jaeger:
-    image: ${JAEGER_IMAGE}
+    image: jaegertracing/jaeger:2.5.0
     hostname: ${JAEGER_HOST}
     ports:
       - ${JAEGER_UI_PORT}
       - ${JAEGER_OTEL_GRPC_PORT}
+      - ${JAEGER_OTEL_HTTP_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/jaeger/.env
     volumes:
-      - ./settings/jaeger/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/jaeger/config.yaml:/etc/_config.yaml:ro
+      - ./settings/jaeger/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - elasticsearch
       - prometheus
 
   kafka:
-    image: ${KAFKA_IMAGE}
+    image: apache/kafka:4.0.0
     hostname: ${KAFKA_HOST}
     ports:
       - ${KAFKA_BROKER_PORT}
       - ${KAFKA_CONTROLLER_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/kafka/.env
     volumes:
       - kafka_data:/var/lib/kafka/data
@@ -153,18 +153,18 @@ services:
       retries: 10
 
   service_1:
-    image: ${SERVICE_1_IMAGE}
+    image: microbest_service_1:latest
     hostname: ${SERVICE_1_HOST}
     ports:
       - ${SERVICE_1_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/service_1/.env
     volumes:
-      - ./settings/service_1/supervisord.conf:/etc/supervisord.conf:ro
-      - ./settings/service_1/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/service_1/supervisord.conf:/etc/_supervisord.conf:ro
+      - ./settings/service_1/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - otel_collector
@@ -172,19 +172,19 @@ services:
       - service_2
 
   service_2:
-    image: ${SERVICE_2_IMAGE}
+    image: microbest_service_2:latest
     hostname: ${SERVICE_2_HOST}
     ports:
       - ${SERVICE_2_HTTP_PORT}
       - ${SERVICE_2_GRPC_PORT}
     env_file:
-      - ./settings/docker_compose/.env
+      - ./settings/compose/.env
       - ./settings/service_2/.env
     volumes:
-      - ./settings/service_2/supervisord.conf:/etc/supervisord.conf:ro
-      - ./settings/service_2/entrypoint.sh:/etc/entrypoint.sh:ro
-      - ./settings/docker_compose/wait:/etc/wait:ro
-    entrypoint: /etc/entrypoint.sh
+      - ./settings/service_2/supervisord.conf:/etc/_supervisord.conf:ro
+      - ./settings/service_2/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - otel_collector

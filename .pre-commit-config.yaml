@@ -51,7 +51,7 @@ repos:
         name: validate docker compose files
         language: script
         entry: scripts/compose_checker/main.sh
-        args: [--env-file, "./settings/docker_compose/.env"]
+        args: [--env-file, "./settings/compose/.env"]
         require_serial: true
         files: (docker-)?compose.*\.ya?ml$
 

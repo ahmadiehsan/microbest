@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Wait for other services
-/etc/wait
+/etc/_wait
 
 # Run default Entrypoint and CMD
-exec /go/bin/all-in-one-linux
+exec /cmd/jaeger/jaeger-linux --config /etc/_config.yaml

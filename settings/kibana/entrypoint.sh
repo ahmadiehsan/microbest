@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # Wait for other services
-/etc/wait
+/etc/_wait
 
 # Run provisioning scirpt in the background
-bash /etc/provisioning/import.sh &
+bash /etc/_provisioning/import.sh &
 
 # Run default Entrypoint and CMD
 exec /bin/tini -- /usr/local/bin/kibana-docker

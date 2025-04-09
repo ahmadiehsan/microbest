@@ -1,0 +1,87 @@
+# =========================
+# Extensions (Jaeger extensions to OpenTelemetry Collector configuration format)
+# =====
+extensions:
+  jaeger_storage:
+    backends: # Trace storages
+      elasticsearch_storage:
+        elasticsearch:
+          server_urls:
+            - http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}
+
+    metric_backends: # Metric storages
+      prometheus_storage:
+        prometheus:
+          endpoint: http://${PROMETHEUS_HOST}:${PROMETHEUS_PORT}
+          normalize_calls: true
+          normalize_duration: true
+
+  jaeger_query: # Jaeger UI
+    storage:
+      traces: elasticsearch_storage
+      metrics: prometheus_storage
+    base_path: /${JAEGER_PUBLIC_BASE_PATH}
+
+# =========================
+# Receivers (Input Methods)
+# =====
+receivers:
+  otlp:
+    protocols:
+      grpc: # Jaeger accepts OTLP over gRPC
+        endpoint: 0.0.0.0:${env:JAEGER_OTEL_GRPC_PORT}
+      http: # Jaeger accepts OTLP over HTTP
+        endpoint: 0.0.0.0:${env:JAEGER_OTEL_HTTP_PORT}
+
+# =========================
+# Exporters (Output Methods)
+# =====
+exporters:
+  debug: # Log received inputs
+  otlphttp/prometheus: # Prometheus natively supports OTLP over HTTP
+    endpoint: "http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp"
+    tls:
+      insecure: true
+  jaeger_storage_exporter:
+    trace_storage: elasticsearch_storage
+
+# =========================
+# Processors (Data Manipulation)
+# =====
+processors:
+  batch:
+  memory_limiter:
+    check_interval: 5s
+    limit_percentage: 80
+    spike_limit_percentage: 25
+
+connectors:
+  spanmetrics:
+
+# =========================
+# Node Configuration
+# =====
+service:
+  extensions: [jaeger_storage, jaeger_query] # Introducing available extensions
+
+  pipelines: # Traces/Metrics -> Receivers -> Processors -> Exporters -> Prometheus/Elasticsearch
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [jaeger_storage_exporter, debug, spanmetrics]
+    metrics/spanmetrics:
+      receivers: [spanmetrics]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/prometheus, debug]
+
+  telemetry: # Jaeger's logs and metrics (Jaeger will automatically track its own traces, we don't need to configure it here)
+    logs:
+      level: info # We don't need to send logs to Elasticsearch because console is enough
+    metrics:
+      level: detailed
+      readers:
+        - periodic:
+            exporter:
+              otlp:
+                protocol: http/protobuf
+                endpoint: ${env:OTEL_COLLECTOR_HOST}:${env:OTEL_COLLECTOR_HTTP_PORT}
