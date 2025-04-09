@@ -39,7 +39,7 @@ receivers:
 exporters:
   debug: # Log received inputs
   otlphttp/prometheus: # Prometheus natively supports OTLP over HTTP
-    endpoint: "http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp"
+    endpoint: http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp
     tls:
       insecure: true
   jaeger_storage_exporter:
@@ -59,7 +59,7 @@ connectors:
   spanmetrics:
 
 # =========================
-# Node Configuration
+# Node
 # =====
 service:
   extensions: [jaeger_storage, jaeger_query] # Introducing available extensions

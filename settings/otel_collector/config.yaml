@@ -15,15 +15,15 @@ receivers:
 exporters:
   debug: # Log received inputs
   otlp: # Jaeger natively supports OTLP over gRPC
-    endpoint: "${env:JAEGER_HOST}:${env:JAEGER_OTEL_GRPC_PORT}"
+    endpoint: ${env:JAEGER_HOST}:${env:JAEGER_OTEL_GRPC_PORT}
     tls:
       insecure: true
   otlphttp/prometheus: # Prometheus natively supports OTLP over HTTP
-    endpoint: "http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp"
+    endpoint: http://${env:PROMETHEUS_HOST}:${env:PROMETHEUS_PORT}/api/v1/otlp
     tls:
       insecure: true
   elasticsearch: # Elasticsearch doesn't natively support OTLP, but OpenTelemetry Collector uses Elasticsearch API
-    endpoint: "http://${env:ELASTICSEARCH_HOST}:${env:ELASTICSEARCH_PORT}"
+    endpoint: http://${env:ELASTICSEARCH_HOST}:${env:ELASTICSEARCH_PORT}
 
 # =========================
 # Processors (Data Manipulation)
@@ -39,7 +39,7 @@ connectors:
   spanmetrics:
 
 # =========================
-# Node Configuration
+# Node
 # =====
 service:
   pipelines: # Logs/Traces/Metrics -> Receivers -> Processors -> Exporters -> Jaeger/Prometheus/Elasticsearch

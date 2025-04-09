@@ -52,8 +52,10 @@ make help
 - [x] Add Kong and its plugins
 - [x] Add production support to compose.yaml
 - [x] Rename the projct to microbest
+- [x] Add Kibana dashboard for logs
 - [x] Persist data for Prometheus, Grafana, Elasticsearch, Kibana, and Kafka
 - [ ] Persist data for Kong, OtelCollector
+- [ ] Fix Grafana's OpenTelemetry Collector dashboard
 - [ ] Grafana dashboard for FastAPI and Django
 - [ ] Add example ENVs
 - [ ] Add Poetry
