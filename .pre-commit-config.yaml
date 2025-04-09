@@ -32,18 +32,28 @@ repos:
 
   - repo: local
     hooks:
-      - id: dir-checker
-        name: dir-checker
-        entry: env PYTHONPATH=. python scripts/dir_checker/dir_checker.py
+      - id: dir_checker
+        name: validate directories
         language: python
+        entry: env PYTHONPATH=. python scripts/dir_checker/main.py
         pass_filenames: false
 
   - repo: local
     hooks:
-      - id: file-checker
-        name: file-checker
-        entry: env PYTHONPATH=. python scripts/file_checker/file_checker.py
+      - id: python_checker
+        name: validate python files
         language: python
+        entry: env PYTHONPATH=. python scripts/python_checker/main.py
+
+  - repo: local
+    hooks:
+      - id: compose_checker
+        name: validate docker compose files
+        language: script
+        entry: scripts/compose_checker/main.sh
+        args: [--env-file, "./settings/docker_compose/.env"]
+        require_serial: true
+        files: (docker-)?compose.*\.ya?ml$
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0

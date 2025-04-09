@@ -1,5 +1,6 @@
 import logging
 
+from fast_api.end_points import API_ROUTER
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from helpers.configs import Configs
@@ -8,8 +9,6 @@ from helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.kafka import KafkaInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
-
-from fast_api.end_points import API_ROUTER
 
 _logger = logging.getLogger(__name__)
 

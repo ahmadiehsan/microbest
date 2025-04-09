@@ -51,13 +51,13 @@ services:
           memory: 620M
 
   service_1:
-    build: ${SERVICE_1_ROOT_DIR}
+    build: ./src/service_1
     restart: on-failure
     volumes:
-      - ${SERVICE_1_ROOT_DIR}:/app
+      - ./src/service_1:/app
 
   service_2:
-    build: ${SERVICE_2_ROOT_DIR}
+    build: ./src/service_2
     restart: on-failure
     volumes:
-      - ${SERVICE_2_ROOT_DIR}:/app
+      - ./src/service_2:/app

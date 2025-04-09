@@ -24,8 +24,8 @@ class _CustomFormatter(logging.Formatter):
 
 
 def setup_python_logger(*, process_name: str) -> None:
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.INFO)
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(
@@ -33,4 +33,4 @@ def setup_python_logger(*, process_name: str) -> None:
             "[%(color_levelname)s] %(message)s [%(process_name)s] [%(name)s:%(lineno)d]", process_name=process_name
         )
     )
-    logger.addHandler(stream_handler)
+    root_logger.addHandler(stream_handler)

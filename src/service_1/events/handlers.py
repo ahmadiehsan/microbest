@@ -1,8 +1,8 @@
 import logging
 
+from helpers.configs import Configs
 from kafka import KafkaConsumer
 from kafka.consumer.fetcher import ConsumerRecord
-from utils.configs import Configs
 
 _logger = logging.getLogger(__name__)
 

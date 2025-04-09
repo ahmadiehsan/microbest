@@ -2,12 +2,11 @@ import logging
 
 import grpc
 import requests
+from api.compiled_protos import service_2_pb2, service_2_pb2_grpc
 from django.http import HttpRequest
+from helpers.configs import Configs
 from ninja import NinjaAPI
 from opentelemetry import trace
-from utils.configs import Configs
-
-from api.compiled_protos import service_2_pb2, service_2_pb2_grpc
 
 _logger = logging.getLogger(__name__)
 API = NinjaAPI()

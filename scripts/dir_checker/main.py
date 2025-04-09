@@ -4,6 +4,8 @@ from typing import NoReturn
 
 from scripts.dir_checker._dto import DirSpecsDto
 from scripts.dir_checker._empty_validator import EmptyValidator
+from scripts.dir_checker._init_py_validator import InitPyValidator
+from scripts.dir_checker._logger import setup_logger
 
 _logger = logging.getLogger(__name__)
 
@@ -11,8 +13,10 @@ _logger = logging.getLogger(__name__)
 class DirChecker:
     def __init__(self) -> None:
         self._empty_validator = EmptyValidator()
+        self._init_py_validator = InitPyValidator()
 
     def run(self) -> NoReturn:
+        setup_logger()
         repo_abs_path = Path.cwd()
         errors = self._validate_dirs(repo_abs_path)
 
@@ -62,6 +66,7 @@ class DirChecker:
 
     def _run_validators(self, dir_specs: DirSpecsDto) -> None:
         self._empty_validator.validate(dir_specs)
+        self._init_py_validator.validate(dir_specs)
 
 
 if __name__ == "__main__":

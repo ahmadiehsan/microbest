@@ -104,12 +104,14 @@ skips = [
 ]
 
 # =========================
-# File Checker
+# Python Checker
 # =====
-[tool.file_checker.per-file-ignores]
-"src/service_1/utils" = ["func_validator"]
-"src/service_1/utils/otel.py" = ["import_validator"]
+[tool.python_checker.per-file-ignores]
+"src/service_1/helpers" = ["func_validator"]
+"src/service_1/helpers/otel.py" = ["import_validator"]
 "src/service_1/api/views.py" = ["func_validator"]
+"src/service_1/api/compiled_protos" = ["all"]
 "src/service_2/helpers" = ["func_validator"]
 "src/service_2/helpers/otel.py" = ["import_validator"]
 "src/service_2/fast_api/end_points.py" = ["func_validator"]
+"src/service_2/rpc/compiled_protos" = ["all"]

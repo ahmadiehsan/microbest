@@ -1,10 +1,12 @@
 import ast
 from pathlib import Path
 
-from scripts.file_checker._dto import FileSpecsDto
+from scripts.python_checker._dto import FileSpecsDto
 
 
 class ImportValidator:
+    _error_code = "import_validator"
+
     def validate(self, tree: ast.AST, file_specs: FileSpecsDto) -> None:
         imports = self._find_imports(tree)
 
@@ -12,7 +14,11 @@ class ImportValidator:
             if self._is_private_module(imported_module) and not self._is_within_package(
                 imported_module, file_specs.rel_path
             ):
-                error = f"{file_specs.rel_path}:{line}: invalid import of private module '{imported_module}'"
+                error = (
+                    f"{file_specs.rel_path}:{line}: "
+                    f"invalid import of private module '{imported_module}' "
+                    f"[{self._error_code}]"
+                )
                 file_specs.errors.append(error)
 
     @staticmethod

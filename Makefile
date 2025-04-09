@@ -5,6 +5,7 @@ PROJECT_ENV_NAME := MICROBEST_ENV
 PROJECT_ENV_VALUE := $($(PROJECT_ENV_NAME))
 DOCKER_COMPOSE := docker compose -f docker-compose.yaml -f docker-compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/docker_compose/.env -p microbest
 .DEFAULT_GOAL := help
+.SILENT:
 
 # =========================
 # Requirements
@@ -111,7 +112,7 @@ otel_collector.logs: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) logs  --no-log-prefix -f otel_collector
 
 otel_collector.shell: _is_env_prod_or_dev otel_collector.up
-	@echo ">>>>> This service doesn't support shell"
+	echo ">>>>> This service doesn't support shell"
 
 # =========================
 # Elasticsearch
@@ -143,7 +144,7 @@ kibana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d kibana
 
 kibana.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/kibana"
+	echo ">>>>> http://127.0.0.1:8000/kibana"
 	$(DOCKER_COMPOSE) up --no-log-prefix kibana
 
 kibana.stop: _is_env_prod_or_dev
@@ -190,7 +191,7 @@ grafana.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d grafana
 
 grafana.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/grafana"
+	echo ">>>>> http://127.0.0.1:8000/grafana"
 	$(DOCKER_COMPOSE) up --no-log-prefix grafana
 
 grafana.stop: _is_env_prod_or_dev
@@ -214,7 +215,7 @@ jaeger.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d jaeger
 
 jaeger.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/jaeger"
+	echo ">>>>> http://127.0.0.1:8000/jaeger"
 	$(DOCKER_COMPOSE) up --no-log-prefix jaeger
 
 jaeger.stop: _is_env_prod_or_dev
@@ -261,7 +262,7 @@ service_1.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d service_1
 
 service_1.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/api"
+	echo ">>>>> http://127.0.0.1:8000/api"
 	$(DOCKER_COMPOSE) up --no-log-prefix service_1
 
 service_1.stop: _is_env_prod_or_dev
@@ -292,7 +293,7 @@ service_2.up: _is_env_prod_or_dev
 	$(DOCKER_COMPOSE) up -d service_2
 
 service_2.start: _is_env_dev
-	@echo ">>>>> http://127.0.0.1:8000/service-2/api/"
+	echo ">>>>> http://127.0.0.1:8000/service-2/api/"
 	$(DOCKER_COMPOSE) up --no-log-prefix service_2
 
 service_2.stop: _is_env_prod_or_dev
@@ -319,18 +320,21 @@ service_2.compile_protos: _is_env_dev
 # =========================
 # Scripts
 # =====
-script.file_checker: _is_env_dev
-	PYTHONPATH=. python scripts/file_checker/file_checker.py
-
 script.dir_checker: _is_env_dev
-	PYTHONPATH=. python scripts/dir_checker/dir_checker.py
+	PYTHONPATH=. python scripts/dir_checker/main.py
+
+script.python_checker: _is_env_dev
+	PYTHONPATH=. python scripts/python_checker/main.py
+
+script.compose_checker: _is_env_dev
+	scripts/compose_checker/main.sh docker-compose.yaml docker-compose.dev.yaml docker-compose.prod.yaml --env-file settings/docker_compose/.env
 
 # =========================
 # Help
 # =====
 help:
-	@echo "Available targets:"
-	@grep -E '^[a-zA-Z0-9][a-zA-Z0-9._-]*:' Makefile | sort | awk -F: '{print "  "$$1}'
+	echo "Available targets:"
+	grep -E '^[a-zA-Z0-9][a-zA-Z0-9._-]*:' Makefile | sort | awk -F: '{print "  "$$1}'
 
 # =========================
 # Env Checks

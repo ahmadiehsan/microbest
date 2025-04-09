@@ -1,14 +1,14 @@
 import sys
 
 from django.apps import AppConfig
+from helpers.logger import setup_python_logger
+from helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
 from opentelemetry.instrumentation.django import DjangoInstrumentor
 from opentelemetry.instrumentation.grpc import GrpcInstrumentorClient
 from opentelemetry.instrumentation.kafka import KafkaInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 from opentelemetry.instrumentation.sqlite3 import SQLite3Instrumentor
-from utils.logger import setup_python_logger
-from utils.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
 
 
 class MainAppConfig(AppConfig):
