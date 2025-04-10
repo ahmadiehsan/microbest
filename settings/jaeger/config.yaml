@@ -55,6 +55,9 @@ processors:
     limit_percentage: 80
     spike_limit_percentage: 25
 
+# =========================
+# Connectors (Data Interpolation)
+# =====
 connectors:
   spanmetrics:
 

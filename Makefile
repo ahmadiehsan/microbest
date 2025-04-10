@@ -48,7 +48,7 @@ compose.stop: _is_env_prod_or_dev
 compose.logs: _is_env_prod_or_dev
 	$(COMPOSE) logs -f
 
-compose.ls:
+compose.ls: _is_env_prod_or_dev
 	$(COMPOSE) ps --format "table {{.ID}}\t{{.Name}}\t{{.Status}}"
 
 # =========================
