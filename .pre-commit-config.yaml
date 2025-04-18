@@ -63,6 +63,7 @@ repos:
         language: script
         entry: scripts/compose_checker/main.sh
         args: [--env-file, "./settings/compose/.env"]
+        files: (docker-)?compose.*\.ya?ml$
         pass_filenames: false
 
   - repo: https://github.com/hadolint/hadolint
