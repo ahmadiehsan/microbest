@@ -1,3 +1,3 @@
 ignored:
-  - DL3018  # Pin versions in apk add
+  - DL3008  # Pin versions in apt-get install
   - DL4006  # Set the SHELL option -o pipefail before RUN with a pipe in

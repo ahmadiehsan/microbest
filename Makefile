@@ -8,24 +8,34 @@ COMPOSE := docker compose -f compose.yaml -f compose.$(PROJECT_ENV_VALUE).yaml -
 .SILENT:
 
 # =========================
-# Requirements
+# Dependencies
 # =====
-requirements.install: _is_env_dev
-	pip freeze | xargs pip uninstall -y
-	pip install -r src/service_1/requirements.txt
-	pip install -r src/service_2/requirements.txt
+dependencies.install: _is_env_dev
+	uv sync
+	uv sync --project src/service_1
+	uv sync --project src/service_2
+
+dependencies.upgrade: _is_env_dev
+	uv sync --upgrade
+	uv sync --project src/service_1 --upgrade
+	uv sync --project src/service_2 --upgrade
+
+dependencies.lock: _is_env_dev
+	uv lock
+	uv lock --project src/service_1
+	uv lock --project src/service_2
 
 # =========================
-# PreCommit
+# Git
 # =====
-pre_commit.init: _is_env_dev
-	pre-commit install
-	pre-commit install --hook-type pre-push
-	pre-commit install --hook-type commit-msg
+git.init_hooks: _is_env_dev
+	uv run --only-dev pre-commit install
+	uv run --only-dev pre-commit install --hook-type pre-push
+	uv run --only-dev pre-commit install --hook-type commit-msg
 	oco hook set
 
-pre_commit.run_for_all: _is_env_dev
-	pre-commit run --all-files
+git.run_hooks_for_all: _is_env_dev
+	uv run --only-dev pre-commit run --all-files
 
 # =========================
 # Compose
@@ -285,11 +295,11 @@ service_1.logs: _is_env_prod_or_dev
 service_1.shell: _is_env_prod_or_dev service_1.up
 	$(COMPOSE) exec service_1 /bin/bash
 
-service_1.build: _is_env_dev
+service_1.docker_build: _is_env_dev
 	$(COMPOSE) build service_1
 
 service_1.compile_protos: _is_env_dev
-	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_1/api/compiled_protos --mypy_out=./src/service_1/api/compiled_protos --grpc_python_out=./src/service_1/api/compiled_protos ./protos/*.proto
+	uv run --project src/service_1 python -m grpc_tools.protoc -I=./src/protos --python_out=./src/service_1/api/compiled_protos --mypy_out=./src/service_1/api/compiled_protos --grpc_python_out=./src/service_1/api/compiled_protos ./src/protos/*.proto
 	for file in ./src/service_1/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
@@ -316,30 +326,30 @@ service_2.logs: _is_env_prod_or_dev
 service_2.shell: _is_env_prod_or_dev service_2.up
 	$(COMPOSE) exec service_2 /bin/bash
 
-service_2.build: _is_env_dev
+service_2.docker_build: _is_env_dev
 	$(COMPOSE) build service_2
 
 service_2.compile_protos: _is_env_dev
-	python -m grpc_tools.protoc -I=./protos --python_out=./src/service_2/rpc/compiled_protos --mypy_out=./src/service_2/rpc/compiled_protos --grpc_python_out=./src/service_2/rpc/compiled_protos ./protos/*.proto
+	uv run --project src/service_2 python -m grpc_tools.protoc -I=./src/protos --python_out=./src/service_2/rpc/compiled_protos --mypy_out=./src/service_2/rpc/compiled_protos --grpc_python_out=./src/service_2/rpc/compiled_protos ./src/protos/*.proto
 	for file in ./src/service_2/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
 # Scripts
 # =====
-script.dir_checker: _is_env_dev
-	PYTHONPATH=. python scripts/dir_checker/main.py
+script.dir_checker: _is_env_prod_or_dev
+	PYTHONPATH=. uv run --no-sync scripts/dir_checker/main.py
 
 script.python_checker: _is_env_dev
-	PYTHONPATH=. python scripts/python_checker/main.py
+	PYTHONPATH=. uv run --no-sync scripts/python_checker/main.py
 
 script.compose_checker: _is_env_dev
-	scripts/compose_checker/main.sh compose.yaml compose.dev.yaml compose.prod.yaml --env-file settings/compose/.env
+	scripts/compose_checker/main.sh --env-file settings/compose/.env
 
 # =========================
 # Help
 # =====
 help:
-	echo "Available targets:"
+	echo "available targets:"
 	grep -E '^[a-zA-Z0-9][a-zA-Z0-9._-]*:' Makefile | sort | awk -F: '{print "  "$$1}'
 
 # =========================

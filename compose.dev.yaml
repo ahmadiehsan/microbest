@@ -51,13 +51,17 @@ services:
           memory: 620M
 
   service_1:
-    build: ./src/service_1
+    build:
+      context: ./src/service_1
+      target: dev
     restart: on-failure
     volumes:
       - ./src/service_1:/app
 
   service_2:
-    build: ./src/service_2
+    build:
+      context: ./src/service_2
+      target: dev
     restart: on-failure
     volumes:
       - ./src/service_2:/app

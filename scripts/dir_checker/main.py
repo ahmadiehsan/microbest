@@ -29,38 +29,25 @@ class DirChecker:
         raise SystemExit(0)
 
     def _validate_dirs(self, repo_abs_path: Path) -> list[str]:
-        black_list_dirs = [
-            "__pycache__",
-            ".git",
-            ".idea",
-            ".vscode",
-            ".mypy_cache",
-            ".ruff_cache",
-            ".import_linter_cache",
-            ".pytest_cache",
-            ".coverage",
-            ".nox",
-            ".tox",
-            "virtualenv.virtualenv.venv",
-            "venv",
-            "env",
-            ".env",
-        ]
         errors: list[str] = []
 
         for dir_abs_path in repo_abs_path.rglob("*"):
-            if dir_abs_path.is_dir() and dir_abs_path.name not in black_list_dirs:
-                errors.extend(self._validate_dir(dir_abs_path, repo_abs_path))
+            dir_rel_path = dir_abs_path.relative_to(repo_abs_path)
+
+            if dir_abs_path.is_dir() and not self._is_hidden(dir_rel_path) and not self._is_in_black_list(dir_rel_path):
+                errors.extend(self._validate_dir(dir_abs_path, dir_rel_path, repo_abs_path))
 
         return errors
 
-    def _validate_dir(self, dir_abs_path: Path, repo_abs_path: Path) -> list[str]:
-        dir_specs = DirSpecsDto(
-            repo_abs_path=repo_abs_path,
-            abs_path=dir_abs_path,
-            rel_path=dir_abs_path.relative_to(repo_abs_path),
-            errors=[],
-        )
+    def _is_hidden(self, dir_rel_path: Path) -> bool:
+        return dir_rel_path.name.startswith(".") or any(p.name.startswith(".") for p in dir_rel_path.parents)
+
+    def _is_in_black_list(self, dir_rel_path: Path) -> bool:
+        black_list = ["__pycache__", "venv", "env"]
+        return dir_rel_path.name in black_list or any(p.name in black_list for p in dir_rel_path.parents)
+
+    def _validate_dir(self, dir_abs_path: Path, dir_rel_path: Path, repo_abs_path: Path) -> list[str]:
+        dir_specs = DirSpecsDto(repo_abs_path=repo_abs_path, abs_path=dir_abs_path, rel_path=dir_rel_path, errors=[])
         self._run_validators(dir_specs)
         return dir_specs.errors
 

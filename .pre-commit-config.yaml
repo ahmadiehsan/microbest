@@ -1,4 +1,4 @@
-exclude: ^(.*assets|.*_pb2\.py|.*_pb2\.pyi|.*_pb2_grpc\.py)
+exclude: ^(.*assets|.*_pb2\.py|.*_pb2\.pyi|.*_pb2_grpc\.py|\.venv)
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -24,8 +24,19 @@ repos:
       - id: checkmake
         args: [--config, "./.checkmake.ini"]
 
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.14
+    hooks:
+      - id: uv-lock
+      - id: uv-lock
+        files: src/service_1/pyproject.toml
+        args: [--project, "src/service_1"]
+      - id: uv-lock
+        files: src/service_2/pyproject.toml
+        args: [--project, "src/service_2"]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.2
+    rev: v0.11.5
     hooks:
       - id: ruff
       - id: ruff-format
@@ -35,7 +46,7 @@ repos:
       - id: dir_checker
         name: validate directories
         language: python
-        entry: env PYTHONPATH=. python scripts/dir_checker/main.py
+        entry: env PYTHONPATH=. uv run --active --no-sync scripts/dir_checker/main.py
         pass_filenames: false
 
   - repo: local
@@ -43,7 +54,7 @@ repos:
       - id: python_checker
         name: validate python files
         language: python
-        entry: env PYTHONPATH=. python scripts/python_checker/main.py
+        entry: env PYTHONPATH=. uv run --active --no-sync scripts/python_checker/main.py
 
   - repo: local
     hooks:
@@ -52,19 +63,12 @@ repos:
         language: script
         entry: scripts/compose_checker/main.sh
         args: [--env-file, "./settings/compose/.env"]
-        require_serial: true
-        files: (docker-)?compose.*\.ya?ml$
+        pass_filenames: false
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
       - id: hadolint-docker
-
-  - repo: https://github.com/pycqa/bandit
-    rev: 1.8.3
-    hooks:
-      - id: bandit
-        args: [--configfile, "pyproject.toml", --recursive, "."]
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.15.0

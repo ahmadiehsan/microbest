@@ -27,7 +27,13 @@ services:
     restart: always
 
   service_1:
+    build:
+      context: ./src/service_1
+      target: prod
     restart: always
 
   service_2:
+    build:
+      context: ./src/service_2
+      target: prod
     restart: always

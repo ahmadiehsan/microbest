@@ -45,21 +45,31 @@ class PythonChecker:
             file_abs_paths.extend(repo_abs_path.rglob("*.py"))
 
         for file_abs_path in file_abs_paths:
-            if file_abs_path.is_file():
-                errors.extend(self._validate_file(file_abs_path, repo_abs_path))
+            file_rel_path = file_abs_path.relative_to(repo_abs_path)
+
+            if (
+                file_abs_path.is_file()
+                and not self._is_hidden(file_rel_path)
+                and not self._is_in_black_list(file_rel_path)
+            ):
+                errors.extend(self._validate_file(file_abs_path, file_rel_path, repo_abs_path))
 
         return errors
 
-    def _validate_file(self, file_abs_path: Path, repo_abs_path: Path) -> list[str]:
+    def _is_hidden(self, file_rel_path: Path) -> bool:
+        return file_rel_path.name.startswith(".") or any(p.name.startswith(".") for p in file_rel_path.parents)
+
+    def _is_in_black_list(self, file_rel_path: Path) -> bool:
+        black_list = ["__pycache__", "venv", "env"]
+        return any(p.name in black_list for p in file_rel_path.parents)
+
+    def _validate_file(self, file_abs_path: Path, file_rel_path: Path, repo_abs_path: Path) -> list[str]:
         with file_abs_path.open() as f:
             tree = ast.parse(f.read(), filename=str(file_abs_path))
 
         self._set_parents(tree)
         file_specs = FileSpecsDto(
-            repo_abs_path=repo_abs_path,
-            abs_path=file_abs_path,
-            rel_path=file_abs_path.relative_to(repo_abs_path),
-            errors=[],
+            repo_abs_path=repo_abs_path, abs_path=file_abs_path, rel_path=file_rel_path, errors=[]
         )
         self._run_validators(tree, file_specs)
         return file_specs.errors

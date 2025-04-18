@@ -5,7 +5,6 @@ set -e
 
 # Parse arguments
 env_file=""
-files=()
 while [[ $# -gt 0 ]]; do
   case $1 in
   --env-file)
@@ -13,8 +12,8 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
   *)
-    files+=("$1")
-    shift
+    echo "error: unknown argument: $1"
+    exit 1
     ;;
   esac
 done
@@ -40,6 +39,11 @@ else
   echo "error: neither '${CONTAINER_ENGINE}-compose' or '${CONTAINER_ENGINE} compose' were found"
   exit 1
 fi
+
+# Function to discover compose files
+discover_compose_files() {
+  find . -type f -regextype posix-extended -regex ".*/(docker-)?compose.*\.ya?ml$"
+}
 
 # Get base name of compose file
 get_base_name() {
@@ -106,6 +110,13 @@ check_files() {
 }
 
 # Main
+files=($(discover_compose_files))
+
+if [ ${#files[@]} -eq 0 ]; then
+  echo "error: no compose files found"
+  exit 1
+fi
+
 if ! check_files "${files[@]}"; then
   echo "some compose files failed"
   exit 1
