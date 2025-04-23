@@ -28,43 +28,40 @@ repos:
     rev: 0.6.14
     hooks:
       - id: uv-lock
+        name: uv-lock (service_1)
+        args: [--project, "./apps/service_1"]
+        files: apps/service_1/pyproject.toml
       - id: uv-lock
-        files: src/service_1/pyproject.toml
-        args: [--project, "src/service_1"]
-      - id: uv-lock
-        files: src/service_2/pyproject.toml
-        args: [--project, "src/service_2"]
+        name: uv-lock (service_2)
+        args: [--project, "./apps/service_2"]
+        files: apps/service_2/pyproject.toml
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.11.5
     hooks:
       - id: ruff
+        name: ruff (service_1)
+        args: [--config, "./apps/service_1/pyproject.toml"]
+        files: ^apps/service_1/.*\.py
       - id: ruff-format
+        name: ruff-format (service_1)
+        args: [--config, "./apps/service_1/pyproject.toml"]
+        files: ^apps/service_1/.*\.py
+      - id: ruff
+        name: ruff (service_2)
+        args: [--config, "./apps/service_2/pyproject.toml"]
+        files: ^apps/service_2/.*\.py
+      - id: ruff-format
+        name: ruff-format (service_2)
+        args: [--config, "./apps/service_2/pyproject.toml"]
+        files: ^apps/service_2/.*\.py
 
-  - repo: local
+  - repo: https://github.com/ahmadiehsan/fixmate
+    rev: 1.0.1
     hooks:
       - id: dir_checker
-        name: validate directories
-        language: python
-        entry: env PYTHONPATH=. uv run --active --no-sync scripts/dir_checker/main.py
-        pass_filenames: false
-
-  - repo: local
-    hooks:
-      - id: python_checker
-        name: validate python files
-        language: python
-        entry: env PYTHONPATH=. uv run --active --no-sync scripts/python_checker/main.py
-
-  - repo: local
-    hooks:
       - id: compose_checker
-        name: validate docker compose files
-        language: script
-        entry: scripts/compose_checker/main.sh
         args: [--env-file, "./settings/compose/.env"]
-        files: (docker-)?compose.*\.ya?ml$
-        pass_filenames: false
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
@@ -75,9 +72,35 @@ repos:
     rev: v1.15.0
     hooks:
       - id: mypy
+        name: mypy (service_1)
+        args:
+          [
+            --ignore-missing-imports,
+            --scripts-are-modules,
+            --config-file,
+            "./apps/service_1/pyproject.toml",
+          ]
+        files: ^apps/service_1/.*\.py
         additional_dependencies: [types-requests==2.32.0.20250328]
+      - id: mypy
+        name: mypy (service_2)
+        args:
+          [
+            --ignore-missing-imports,
+            --scripts-are-modules,
+            --config-file,
+            "./apps/service_2/pyproject.toml",
+          ]
+        files: ^apps/service_2/.*\.py
 
   - repo: https://github.com/pycqa/pylint
     rev: v3.3.6
     hooks:
       - id: pylint
+        name: pylint (service_1)
+        args: [--rcfile, "./apps/service_1/pyproject.toml"]
+        files: ^apps/service_1/.*\.py
+      - id: pylint
+        name: pylint (service_2)
+        args: [--rcfile, "./apps/service_2/pyproject.toml"]
+        files: ^apps/service_2/.*\.py

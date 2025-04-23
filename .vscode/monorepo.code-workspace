@@ -1,0 +1,20 @@
+{
+    "folders": [
+        {
+            "name": "ROOT",
+            "path": "../"
+        },
+        {
+            "name": "apps/service_1",
+            "path": "../apps/service_1"
+        },
+        {
+            "name": "apps/service_2",
+            "path": "../apps/service_2"
+        },
+        {
+            "name": "apps/protos",
+            "path": "../apps/protos"
+        },
+    ]
+}

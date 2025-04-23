@@ -6,36 +6,35 @@ PROJECT_ENV_VALUE := $($(PROJECT_ENV_NAME))
 COMPOSE := docker compose -f compose.yaml -f compose.$(PROJECT_ENV_VALUE).yaml --env-file settings/compose/.env -p microbest
 .DEFAULT_GOAL := help
 .SILENT:
+SERVICE_1_ROOT := ./apps/service_1
+SERVICE_2_ROOT := ./apps/service_2
 
 # =========================
 # Dependencies
 # =====
 dependencies.install: _is_env_dev
-	uv sync
-	uv sync --project src/service_1
-	uv sync --project src/service_2
+	uv sync --project $(SERVICE_1_ROOT)
+	uv sync --project $(SERVICE_2_ROOT)
 
 dependencies.upgrade: _is_env_dev
-	uv sync --upgrade
-	uv sync --project src/service_1 --upgrade
-	uv sync --project src/service_2 --upgrade
+	uv sync --project $(SERVICE_1_ROOT) --upgrade
+	uv sync --project $(SERVICE_2_ROOT) --upgrade
 
 dependencies.lock: _is_env_dev
-	uv lock
-	uv lock --project src/service_1
-	uv lock --project src/service_2
+	uv lock --project $(SERVICE_1_ROOT)
+	uv lock --project $(SERVICE_2_ROOT)
 
 # =========================
 # Git
 # =====
 git.init_hooks: _is_env_dev
-	uv run --only-dev pre-commit install
-	uv run --only-dev pre-commit install --hook-type pre-push
-	uv run --only-dev pre-commit install --hook-type commit-msg
+	uvx pre-commit install
+	uvx pre-commit install --hook-type pre-push
+	uvx pre-commit install --hook-type commit-msg
 	oco hook set
 
 git.run_hooks_for_all: _is_env_dev
-	uv run --only-dev pre-commit run --all-files
+	uvx pre-commit run --all-files
 
 # =========================
 # Compose
@@ -299,8 +298,8 @@ service_1.docker_build: _is_env_dev
 	$(COMPOSE) build service_1
 
 service_1.compile_protos: _is_env_dev
-	uv run --project src/service_1 python -m grpc_tools.protoc -I=./src/protos --python_out=./src/service_1/api/compiled_protos --mypy_out=./src/service_1/api/compiled_protos --grpc_python_out=./src/service_1/api/compiled_protos ./src/protos/*.proto
-	for file in ./src/service_1/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+	uv run --project $(SERVICE_1_ROOT) python -m grpc_tools.protoc -I=./apps/protos --python_out=$(SERVICE_1_ROOT)/api/compiled_protos --mypy_out=$(SERVICE_1_ROOT)/api/compiled_protos --grpc_python_out=$(SERVICE_1_ROOT)/api/compiled_protos ./apps/protos/*.proto
+	for file in $(SERVICE_1_ROOT)/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
 # Service 2
@@ -330,20 +329,19 @@ service_2.docker_build: _is_env_dev
 	$(COMPOSE) build service_2
 
 service_2.compile_protos: _is_env_dev
-	uv run --project src/service_2 python -m grpc_tools.protoc -I=./src/protos --python_out=./src/service_2/rpc/compiled_protos --mypy_out=./src/service_2/rpc/compiled_protos --grpc_python_out=./src/service_2/rpc/compiled_protos ./src/protos/*.proto
-	for file in ./src/service_2/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+	uv run --project $(SERVICE_2_ROOT) python -m grpc_tools.protoc -I=./apps/protos --python_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos --mypy_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos --grpc_python_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos ./apps/protos/*.proto
+	for file in $(SERVICE_2_ROOT)/src/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
 
 # =========================
 # Scripts
 # =====
 script.dir_checker: _is_env_prod_or_dev
-	PYTHONPATH=. uv run --no-sync scripts/dir_checker/main.py
+	cd $(SERVICE_1_ROOT) && uv run --only-dev dir_checker
+	cd $(SERVICE_2_ROOT) && uv run --only-dev dir_checker
 
 script.python_checker: _is_env_dev
-	PYTHONPATH=. uv run --no-sync scripts/python_checker/main.py
-
-script.compose_checker: _is_env_dev
-	scripts/compose_checker/main.sh --env-file settings/compose/.env
+	cd $(SERVICE_1_ROOT) && uv run --only-dev python_checker
+	cd $(SERVICE_2_ROOT) && uv run --only-dev python_checker
 
 # =========================
 # Help
