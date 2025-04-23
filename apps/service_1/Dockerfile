@@ -21,7 +21,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 
 # Machine dependencies
 RUN apt-get update && \
-    apt-get install curl -y --no-install-recommends && \
+    apt-get install curl git -y --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

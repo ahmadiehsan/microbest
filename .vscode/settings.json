@@ -6,8 +6,12 @@
         "**/.ruff_cache": true
     },
     "cSpell.words": [
+        "nodaemon",
         "protoc",
         "protos",
-        "rcfile"
+        "rcfile",
+        "rpcinterface",
+        "supervisorctl",
+        "Supervisord"
     ]
 }
