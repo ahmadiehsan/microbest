@@ -119,3 +119,8 @@ repos:
         name: pylint (service_2)
         args: [--rcfile, "./apps/service_2/pyproject.toml"]
         files: ^apps/service_2/.*\.py
+
+  - repo: https://github.com/yoheimuta/protolint
+    rev: v0.53.0
+    hooks:
+      - id: protolint-docker
