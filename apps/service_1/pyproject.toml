@@ -41,7 +41,7 @@ dev = [
 package = false
 
 [tool.uv.sources]
-fixmate = { git = "https://github.com/ahmadiehsan/fixmate.git", rev = "1.0.1" }
+fixmate = { git = "https://github.com/ahmadiehsan/fixmate.git", rev = "1.1.0" }
 
 # =========================
 # Ruff
@@ -140,7 +140,7 @@ disable = [
 # Python Checker
 # =====
 [tool.python_checker.per-file-ignores]
-"apps/service_1/helpers" = ["func_validator"]
-"apps/service_1/helpers/otel.py" = ["import_validator"]
-"apps/service_1/api/views.py" = ["func_validator"]
-"apps/service_1/api/compiled_protos" = ["all"]
+"*helpers/*" = ["func_validator"]
+"*helpers/otel.py" = ["import_validator"]
+"*api/views.py" = ["func_validator"]
+"*api/compiled_protos/*" = ["all"]

@@ -13,15 +13,21 @@ SERVICE_2_ROOT := ./apps/service_2
 # Dependencies
 # =====
 dependencies.install: _is_env_dev
+	echo ">>>>> Service 1"
 	uv sync --project $(SERVICE_1_ROOT)
+	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT)
 
 dependencies.upgrade: _is_env_dev
+	echo ">>>>> Service 1"
 	uv sync --project $(SERVICE_1_ROOT) --upgrade
+	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT) --upgrade
 
 dependencies.lock: _is_env_dev
+	echo ">>>>> Service 1"
 	uv lock --project $(SERVICE_1_ROOT)
+	echo ">>>>> Service 2"
 	uv lock --project $(SERVICE_2_ROOT)
 
 # =========================
@@ -336,11 +342,15 @@ service_2.compile_protos: _is_env_dev
 # Scripts
 # =====
 script.dir_checker: _is_env_prod_or_dev
+	echo ">>>>> Service 1"
 	cd $(SERVICE_1_ROOT) && uv run --only-dev dir_checker
+	echo ">>>>> Service 2"
 	cd $(SERVICE_2_ROOT) && uv run --only-dev dir_checker
 
 script.python_checker: _is_env_dev
+	echo ">>>>> Service 1"
 	cd $(SERVICE_1_ROOT) && uv run --only-dev python_checker
+	echo ">>>>> Service 2"
 	cd $(SERVICE_2_ROOT) && uv run --only-dev python_checker
 
 # =========================

@@ -57,9 +57,24 @@ repos:
         files: ^apps/service_2/.*\.py
 
   - repo: https://github.com/ahmadiehsan/fixmate
-    rev: 1.0.1
+    rev: 1.1.0
     hooks:
       - id: dir_checker
+        name: dir_checker (service_1)
+        args: [--config, "./apps/service_1/pyproject.toml"]
+      - id: python_checker
+        name: python_checker (service_1)
+        args: [--config, "./apps/service_1/pyproject.toml"]
+        files: ^apps/service_1/.*\.py
+      - id: dir_checker
+        name: dir_checker (service_2)
+        args: [--config, "./apps/service_2/pyproject.toml"]
+      - id: python_checker
+        name: python_checker (service_2)
+        args: [--config, "./apps/service_2/pyproject.toml"]
+        files: ^apps/service_2/.*\.py
+      - id: dir_checker
+        name: dir_checker (protos)
       - id: compose_checker
         args: [--env-file, "./settings/compose/.env"]
 

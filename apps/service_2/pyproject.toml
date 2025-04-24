@@ -36,7 +36,7 @@ dev = [
 package = false
 
 [tool.uv.sources]
-fixmate = { git = "https://github.com/ahmadiehsan/fixmate.git", rev = "1.0.1" }
+fixmate = { git = "https://github.com/ahmadiehsan/fixmate.git", rev = "1.1.0" }
 
 # =========================
 # Ruff
@@ -135,7 +135,7 @@ disable = [
 # Python Checker
 # =====
 [tool.python_checker.per-file-ignores]
-"apps/service_2/src/helpers" = ["func_validator"]
-"apps/service_2/src/helpers/otel.py" = ["import_validator"]
-"apps/service_2/src/fast_api/end_points.py" = ["func_validator"]
-"apps/service_2/src/rpc/compiled_protos" = ["all"]
+"*src/helpers/*" = ["func_validator"]
+"*src/helpers/otel.py" = ["import_validator"]
+"*src/fast_api/end_points.py" = ["func_validator"]
+"*src/rpc/compiled_protos/*" = ["all"]
