@@ -2,7 +2,7 @@ import logging
 
 import grpc
 
-from src.rpc.compiled_protos import service_2_pb2, service_2_pb2_grpc
+from src.pb.service_2 import service_2_pb2, service_2_pb2_grpc
 
 _logger = logging.getLogger(__name__)
 

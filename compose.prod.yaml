@@ -31,6 +31,9 @@ services:
       context: ./apps/service_1
       target: prod
     restart: always
+    volumes:
+      - ./settings/service_1/entrypoint_prod.sh:/etc/_entrypoint.sh:ro
+    entrypoint: /etc/_entrypoint.sh
 
   service_2:
     build:

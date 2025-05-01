@@ -1,47 +1,39 @@
 # For this project
 output/
 settings/
-
-# Python
-__pycache__
-*.pyc
-*.egg-info
-*.egg/
-build/
-dist/
-.tox/
-.coverage
-.pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .import_linter_cache/
+.pytest_cache/
+celerybeat-schedule
 
-# Editor
+# Common
 .idea
 .vscode
 
-# Git
 .git/
 .gitignore
 
-# Env
 .venv/
 venv/
 .env/
 env/
-*.env
 
-# OS
+build
+dist
+*.egg-info
+*.egg/
+*.pyc
 *.swp
-.DS_Store
-*~
 
-# Doc and misc
+.tox
+.coverage
+html/*
+__pycache__
+
 LICENSE
 VERSION
 README.md
 Changelog.md
-docs/
-logs/
-html/
-celerybeat-schedule
+docs
+logs

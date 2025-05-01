@@ -24,13 +24,14 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fservice_2.proto\x12\tservice_2\"\x1e\n\x0b\x45\x63hoRequest\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1f\n\x0c\x45\x63hoResponse\x12\x0f\n\x07message\x18\x01 \x01(\t2A\n\x04\x45\x63ho\x12\x39\n\x04\x45\x63ho\x12\x16.service_2.EchoRequest\x1a\x17.service_2.EchoResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fservice_2.proto\x12\tservice_2\"\x1e\n\x0b\x45\x63hoRequest\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1f\n\x0c\x45\x63hoResponse\x12\x0f\n\x07message\x18\x01 \x01(\t2A\n\x04\x45\x63ho\x12\x39\n\x04\x45\x63ho\x12\x16.service_2.EchoRequest\x1a\x17.service_2.EchoResponse\"\x00\x42\rZ\x0b/service2pbb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'service_2_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
-  DESCRIPTOR._loaded_options = None
+  _globals['DESCRIPTOR']._loaded_options = None
+  _globals['DESCRIPTOR']._serialized_options = b'Z\013/service2pb'
   _globals['_ECHOREQUEST']._serialized_start=30
   _globals['_ECHOREQUEST']._serialized_end=60
   _globals['_ECHORESPONSE']._serialized_start=62

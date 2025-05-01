@@ -4,4 +4,4 @@
 /etc/_wait
 
 # Run default Entrypoint and CMD
-exec supervisord -c /etc/_supervisord.conf
+exec air --build.cmd "go build -o ./tmp/main ./cmd/http/."

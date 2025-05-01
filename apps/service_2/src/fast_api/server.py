@@ -36,7 +36,6 @@ class _FastApiApp:
 
     def _add_routers(self, app: FastAPI) -> None:
         app.include_router(API_ROUTER)
-        KafkaInstrumentor().instrument()
 
     def _add_exception_handlers(self, app: FastAPI) -> None:
         @app.exception_handler(Exception)

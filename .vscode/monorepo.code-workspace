@@ -9,6 +9,10 @@
             "path": "../apps/service_1"
         },
         {
+            "name": "apps/service_1_old",
+            "path": "../apps/service_1_old"
+        },
+        {
             "name": "apps/service_2",
             "path": "../apps/service_2"
         },

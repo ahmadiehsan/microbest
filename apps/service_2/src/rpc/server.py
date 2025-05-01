@@ -8,7 +8,7 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from src.helpers.configs import Configs
 from src.helpers.logger import setup_python_logger
 from src.helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
-from src.rpc.compiled_protos import service_2_pb2_grpc
+from src.pb.service_2 import service_2_pb2_grpc
 from src.rpc.services import EchoService
 
 _logger = logging.getLogger(__name__)
