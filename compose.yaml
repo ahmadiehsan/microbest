@@ -162,6 +162,8 @@ services:
       - ./settings/service_1/.env
     volumes:
       - ./settings/compose/wait:/etc/_wait:ro
+      - ./settings/service_1/entrypoint.sh:/etc/_entrypoint.sh:ro
+    entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong
       - otel_collector

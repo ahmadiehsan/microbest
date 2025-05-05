@@ -57,8 +57,6 @@ services:
     restart: on-failure
     volumes:
       - ./apps/service_1:/app
-      - ./settings/service_1/entrypoint_dev.sh:/etc/_entrypoint.sh:ro
-    entrypoint: /etc/_entrypoint.sh
 
   service_2:
     build:
