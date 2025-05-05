@@ -9,6 +9,7 @@ import (
 	"service_1/internal/helpers"
 
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
 
 func main() {
@@ -30,8 +31,11 @@ func main() {
 	// Set up logging.
 	helpers.SwitchLoggerToHumanReadableMode()
 
-	// Start HTTP server.
+	// Set up Gin app.
 	app := http.NewGinApp()
+	app.Use(otelgin.Middleware("gin"))
+
+	// Start HTTP server.
 	err = app.Run()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to run server")
