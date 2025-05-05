@@ -85,7 +85,7 @@ func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
 	}
 
 	provider := trace.NewTracerProvider(
-		trace.WithSpanProcessor(trace.NewBatchSpanProcessor(exporter)),
+		trace.WithBatcher(exporter),
 	)
 	return provider, nil
 }
