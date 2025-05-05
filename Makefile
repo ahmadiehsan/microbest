@@ -14,7 +14,7 @@ SERVICE_2_ROOT := ./apps/service_2
 # =====
 dependencies.install: _is_env_dev
 	echo ">>>>> Service 1"
-	cd $(SERVICE_1_ROOT) && go mod download && go install tool
+	cd $(SERVICE_1_ROOT) && go mod download -x && go install tool
 	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT)
 
