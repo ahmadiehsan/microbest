@@ -9,7 +9,7 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 from src.fastapi.end_points import API_ROUTER
 from src.helpers.configs import Configs
 from src.helpers.logger import setup_python_logger
-from src.helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
+from src.helpers.otel import setup_otel
 
 _logger = logging.getLogger(__name__)
 
@@ -27,9 +27,7 @@ class FastApiApp:
 
     def _startup_setups(self, app: FastAPI) -> None:
         setup_python_logger(process_name="fastapi")
-        setup_otel_logs()
-        setup_otel_traces()
-        setup_otel_metrics()
+        setup_otel()
         LoggingInstrumentor().instrument()
         FastAPIInstrumentor.instrument_app(app)
         KafkaInstrumentor().instrument()

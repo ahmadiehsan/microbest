@@ -15,7 +15,13 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 _resource = Resource.create({"service.name": "service-2"})
 
 
-def setup_otel_logs() -> None:
+def setup_otel() -> None:
+    _setup_otel_logs()
+    _setup_otel_traces()
+    _setup_otel_metrics()
+
+
+def _setup_otel_logs() -> None:
     provider = LoggerProvider(resource=_resource)
     exporter = OTLPLogExporter()
     provider.add_log_record_processor(BatchLogRecordProcessor(exporter))
@@ -25,14 +31,14 @@ def setup_otel_logs() -> None:
     root_logger.addHandler(handler)
 
 
-def setup_otel_traces() -> None:
+def _setup_otel_traces() -> None:
     provider = TracerProvider(resource=_resource)
     exporter = OTLPSpanExporter()
     provider.add_span_processor(BatchSpanProcessor(exporter))
     trace.set_tracer_provider(provider)
 
 
-def setup_otel_metrics() -> None:
+def _setup_otel_metrics() -> None:
     exporter = OTLPMetricExporter()
     reader = PeriodicExportingMetricReader(exporter)
     provider = MeterProvider(resource=_resource, metric_readers=[reader])

@@ -7,7 +7,7 @@ from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
 from src.helpers.configs import Configs
 from src.helpers.logger import setup_python_logger
-from src.helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
+from src.helpers.otel import setup_otel
 from src.pb.service_2 import service_2_pb2_grpc
 from src.rpc.services import EchoService
 
@@ -32,9 +32,7 @@ class GrpcServer:
     @staticmethod
     def _startup_setups() -> None:
         setup_python_logger(process_name="rpc")
-        setup_otel_logs()
-        setup_otel_traces()
-        setup_otel_metrics()
+        setup_otel()
         LoggingInstrumentor().instrument()
         GrpcInstrumentorServer().instrument()
 
