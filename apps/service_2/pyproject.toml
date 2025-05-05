@@ -137,5 +137,5 @@ disable = [
 [tool.python_checker.per-file-ignores]
 "*src/helpers/*" = ["func_validator"]
 "*src/helpers/otel.py" = ["import_validator"]
-"*src/fast_api/end_points.py" = ["func_validator"]
+"*src/fastapi/end_points.py" = ["func_validator"]
 "*src/pb/*" = ["all"]

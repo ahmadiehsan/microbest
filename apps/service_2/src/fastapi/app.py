@@ -6,7 +6,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.kafka import KafkaInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
-from src.fast_api.end_points import API_ROUTER
+from src.fastapi.end_points import API_ROUTER
 from src.helpers.configs import Configs
 from src.helpers.logger import setup_python_logger
 from src.helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_traces
@@ -14,7 +14,7 @@ from src.helpers.otel import setup_otel_logs, setup_otel_metrics, setup_otel_tra
 _logger = logging.getLogger(__name__)
 
 
-class _FastApiApp:
+class FastApiApp:
     def create(self) -> FastAPI:
         app = self._create_app()
         self._startup_setups(app)
@@ -42,6 +42,3 @@ class _FastApiApp:
         async def internal_error(_: Request, exc: Exception) -> JSONResponse:
             _logger.error("unhandled error occurred: %s", exc, exc_info=True)
             return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
-
-
-APP = _FastApiApp().create()
