@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"service_1/internal/conf"
+	"service_1/internal/helpers"
 	"service_1/internal/pb/service2pb"
 	"time"
 
@@ -49,7 +49,7 @@ func externalApiHttp(c *gin.Context) {
 
 func service2PingHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 ping API")
-	url := "http://" + conf.LoadConfigs().Service2HttpAddress + "/api/ping/"
+	url := "http://" + helpers.LoadConfigs().Service2HttpAddress + "/api/ping/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	resp, err := client.Get(url)
@@ -70,7 +70,7 @@ func service2PingHttp(c *gin.Context) {
 
 func service2EventHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 event API")
-	url := "http://" + conf.LoadConfigs().Service2HttpAddress + "/api/event/"
+	url := "http://" + helpers.LoadConfigs().Service2HttpAddress + "/api/event/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	resp, err := client.Get(url)
@@ -92,7 +92,7 @@ func service2EventHttp(c *gin.Context) {
 func service2EchoGrpc(c *gin.Context) {
 	log.Info().Msg("call Service 2 echo RPC")
 
-	conn, err := grpc.NewClient(conf.LoadConfigs().Service2GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(helpers.LoadConfigs().Service2GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error: " + err.Error()})
 		return

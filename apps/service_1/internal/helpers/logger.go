@@ -1,4 +1,4 @@
-package logger
+package helpers
 
 import (
 	"os"
@@ -7,6 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func SwitchToHumanReadableMode() {
+func SwitchLoggerToHumanReadableMode() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 }

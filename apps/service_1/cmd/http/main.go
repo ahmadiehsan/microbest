@@ -2,7 +2,7 @@ package main
 
 import (
 	"service_1/api/http"
-	"service_1/internal/logger"
+	"service_1/internal/helpers"
 
 	"github.com/rs/zerolog/log"
 )
@@ -18,5 +18,5 @@ func main() {
 }
 
 func startupSetup() {
-	logger.SwitchToHumanReadableMode()
+	helpers.SwitchLoggerToHumanReadableMode()
 }
