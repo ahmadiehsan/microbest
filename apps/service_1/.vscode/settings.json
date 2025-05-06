@@ -1,4 +1,7 @@
 {
+    "files.exclude": {
+        "**/tmp": true,
+    },
     "cSpell.words": [
         "gcflags",
         "gonic",

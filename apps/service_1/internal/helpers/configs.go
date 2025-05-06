@@ -1,19 +1,30 @@
 package helpers
 
-import "os"
+import (
+	"os"
+	"sync"
+)
 
-type Configs struct {
+type configs struct {
 	IsDebug             bool
 	KafkaAddress        string
 	Service2HttpAddress string
 	Service2GrpcAddress string
 }
 
-func LoadConfigs() *Configs {
-	return &Configs{
-		IsDebug:             os.Getenv("IS_DEBUG") == "true",
-		KafkaAddress:        os.Getenv("KAFKA_HOST") + ":" + os.Getenv("KAFKA_BROKER_PORT"),
-		Service2HttpAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_HTTP_PORT"),
-		Service2GrpcAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_GRPC_PORT"),
-	}
+var (
+	instance *configs
+	once     sync.Once
+)
+
+func GetConfigs() *configs {
+	once.Do(func() {
+		instance = &configs{
+			IsDebug:             os.Getenv("PROJECT_ENV") == "dev",
+			KafkaAddress:        os.Getenv("KAFKA_HOST") + ":" + os.Getenv("KAFKA_BROKER_PORT"),
+			Service2HttpAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_HTTP_PORT"),
+			Service2GrpcAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_GRPC_PORT"),
+		}
+	})
+	return instance
 }

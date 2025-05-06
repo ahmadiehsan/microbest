@@ -10,6 +10,7 @@ import (
 	"service_1/internal/ginserver"
 	"service_1/internal/helpers"
 
+	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 )
@@ -21,9 +22,6 @@ func main() {
 }
 
 func run() (err error) {
-	// Set up logging.
-	helpers.SwitchLoggerToHumanReadableMode()
-
 	// Handle SIGINT (CTRL+C) gracefully.
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -64,7 +62,22 @@ func run() (err error) {
 }
 
 func newHttpHandler() http.Handler {
-	server := ginserver.NewServer()
-	server.App.Use(otelgin.Middleware("gin"))
-	return server.App
+	setupModes()
+	engine := ginserver.NewEngine()
+	setupAdditionalMiddlewares(engine)
+	return engine
+}
+
+func setupModes() {
+	configs := helpers.GetConfigs()
+	if configs.IsDebug {
+		gin.SetMode(gin.DebugMode)
+		helpers.SwitchLoggerToHumanReadableMode()
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
+}
+
+func setupAdditionalMiddlewares(e *gin.Engine) {
+	e.Use(otelgin.Middleware("gin"))
 }

@@ -18,7 +18,7 @@ RUN go mod download -x && go install tool
 FROM builder_base AS builder_prod
 RUN go mod download -x
 COPY . ./
-RUN go build -v -ldflags="-s -w" -o ./http_server ./cmd/http
+RUN go build -v -ldflags="-s -w" -o ./ginserver ./cmd/ginserver
 
 # =========================
 # App (dev)
