@@ -6,6 +6,7 @@
         "**/.ruff_cache": true
     },
     "cSpell.words": [
+        "golangci",
         "nodaemon",
         "protoc",
         "protos",

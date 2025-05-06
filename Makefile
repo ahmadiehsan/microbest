@@ -15,18 +15,21 @@ SERVICE_2_ROOT := ./apps/service_2
 dependencies.install: _is_env_dev
 	echo ">>>>> Service 1"
 	cd $(SERVICE_1_ROOT) && go mod download -x && go install tool
+
 	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT)
 
 dependencies.upgrade: _is_env_dev
 	echo ">>>>> Service 1"
 	cd $(SERVICE_1_ROOT) && go get -u ./...
+
 	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT) --upgrade
 
 dependencies.lock: _is_env_dev
 	echo ">>>>> Service 1"
 	cd $(SERVICE_1_ROOT) && go mod tidy
+
 	echo ">>>>> Service 2"
 	uv lock --project $(SERVICE_2_ROOT)
 
