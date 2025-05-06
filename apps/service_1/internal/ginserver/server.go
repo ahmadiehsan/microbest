@@ -1,4 +1,4 @@
-package http
+package ginserver
 
 import (
 	"service_1/internal/helpers"
@@ -16,8 +16,17 @@ func NewServer() *Server {
 		App:     gin.Default(),
 		Configs: helpers.LoadConfigs(),
 	}
+	server.setupMode()
 	server.setupRoutes()
 	return server
+}
+
+func (s *Server) setupMode() {
+	if s.Configs.IsDebug {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
+	}
 }
 
 func (s *Server) setupRoutes() {
