@@ -72,7 +72,7 @@ func mustCreateRpcConn(addr string) *grpc.ClientConn {
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
-		log.Fatal().Err(err).Msg("could not connect to service")
+		log.Fatal().Err(err).Msgf("could not connect to service address %q", addr)
 	}
 	return conn
 }
