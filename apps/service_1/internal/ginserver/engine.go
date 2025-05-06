@@ -1,13 +1,21 @@
 package ginserver
 
 import (
+	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
 )
 
-func NewEngine() *gin.Engine {
-	e := gin.Default()
+func NewEngine(middlewares ...gin.HandlerFunc) *gin.Engine {
+	e := gin.New()
+	setupMiddlewares(e, middlewares...)
 	setupRoutes(e)
 	return e
+}
+
+func setupMiddlewares(e *gin.Engine, middlewares ...gin.HandlerFunc) {
+	e.Use(gin.Recovery())
+	e.Use(logger.SetLogger())
+	e.Use(middlewares...)
 }
 
 func setupRoutes(e *gin.Engine) {

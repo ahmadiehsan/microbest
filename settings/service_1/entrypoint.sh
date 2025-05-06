@@ -7,7 +7,7 @@
 if [ "$PROJECT_ENV" = "prod" ]; then
   exec /app/ginserver
 elif [ "$PROJECT_ENV" = "dev" ]; then
-  exec air --build.cmd "go build -o ./tmp/main ./cmd/ginserver/."
+  exec air --build.cmd "go build -o ./tmp/main ./cmd/ginserver/main.go" --build.bin "./tmp/main"
 else
   echo "error: not supported env: $PROJECT_ENV" >&2
   exit 1

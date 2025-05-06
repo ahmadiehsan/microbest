@@ -3,6 +3,7 @@ module service_1
 go 1.24.2
 
 require (
+	github.com/gin-contrib/logger v1.2.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/rs/zerolog v1.34.0
 	go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin v0.60.0
