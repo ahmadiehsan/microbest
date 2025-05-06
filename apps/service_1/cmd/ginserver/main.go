@@ -34,9 +34,9 @@ func main() {
 	setupModes()
 
 	// Set up Gin server.
-	ginSrv := ginserver.NewServer()
+	ginShutdown, ginSrv := ginserver.NewServer()
 	defer func() {
-		err = ginSrv.Shutdown()
+		err = ginShutdown()
 		if err != nil {
 			log.Error().Err(err).Msg("failed to shut down Gin server")
 		}
@@ -48,14 +48,14 @@ func main() {
 		BaseContext: func(_ net.Listener) context.Context { return ctx },
 		Handler:     ginSrv.GinEngine,
 	}
-	srvErr := make(chan error, 1)
+	httpSrvErr := make(chan error, 1)
 	go func() {
-		srvErr <- httpSrv.ListenAndServe()
+		httpSrvErr <- httpSrv.ListenAndServe()
 	}()
 
 	// Wait for interruption.
 	select {
-	case err = <-srvErr:
+	case err = <-httpSrvErr:
 		log.Fatal().Err(err).Msg("failed to run HTTP server")
 	case <-ctx.Done():
 		stop() // Stop receiving signal notifications as soon as possible.

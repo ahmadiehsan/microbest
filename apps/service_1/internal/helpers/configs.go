@@ -3,6 +3,8 @@ package helpers
 import (
 	"os"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Configs struct {
@@ -20,11 +22,19 @@ var (
 func GetConfigs() *Configs {
 	once.Do(func() {
 		instance = &Configs{
-			IsDebug:             os.Getenv("PROJECT_ENV") == "dev",
-			KafkaAddress:        os.Getenv("KAFKA_HOST") + ":" + os.Getenv("KAFKA_BROKER_PORT"),
-			Service2HttpAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_HTTP_PORT"),
-			Service2GrpcAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_GRPC_PORT"),
+			IsDebug:             mustGetenv("PROJECT_ENV") == "dev",
+			KafkaAddress:        mustGetenv("KAFKA_HOST") + ":" + mustGetenv("KAFKA_BROKER_PORT"),
+			Service2HttpAddress: mustGetenv("SERVICE_2_HOST") + ":" + mustGetenv("SERVICE_2_HTTP_PORT"),
+			Service2GrpcAddress: mustGetenv("SERVICE_2_HOST") + ":" + mustGetenv("SERVICE_2_GRPC_PORT"),
 		}
 	})
 	return instance
+}
+
+func mustGetenv(envKey string) string {
+	val := os.Getenv(envKey)
+	if val == "" {
+		log.Fatal().Msgf("environment variable %q not set", envKey)
+	}
+	return val
 }

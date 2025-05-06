@@ -15,27 +15,8 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-// SetupOtel bootstraps the OpenTelemetry pipeline.
-// If it does not return an error, make sure to call shutdown for proper cleanup.
-func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err error) {
+func SetupOtel(ctx context.Context) (func(context.Context) error, error) {
 	var shutdownFuncs []func(context.Context) error
-
-	// shutdown calls cleanup functions registered via shutdownFuncs.
-	// The errors from the calls are joined.
-	// Each registered cleanup will be invoked once.
-	shutdown = func(ctx context.Context) error {
-		var err error
-		for _, fn := range shutdownFuncs {
-			err = errors.Join(err, fn(ctx))
-		}
-		shutdownFuncs = nil
-		return err
-	}
-
-	// handleErr calls shutdown for cleanup and makes sure that all errors are returned.
-	handleErr := func(inErr error) {
-		err = errors.Join(inErr, shutdown(ctx))
-	}
 
 	// Set up propagator.
 	prop := newPropagator()
@@ -44,8 +25,7 @@ func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err e
 	// Set up logger provider.
 	loggerProvider, err := newLoggerProvider(ctx)
 	if err != nil {
-		handleErr(err)
-		return
+		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, loggerProvider.Shutdown)
 	global.SetLoggerProvider(loggerProvider)
@@ -53,8 +33,7 @@ func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err e
 	// Set up trace provider.
 	tracerProvider, err := newTracerProvider(ctx)
 	if err != nil {
-		handleErr(err)
-		return
+		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, tracerProvider.Shutdown)
 	otel.SetTracerProvider(tracerProvider)
@@ -62,13 +41,22 @@ func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err e
 	// Set up meter provider.
 	meterProvider, err := newMeterProvider(ctx)
 	if err != nil {
-		handleErr(err)
-		return
+		return nil, err
 	}
 	shutdownFuncs = append(shutdownFuncs, meterProvider.Shutdown)
 	otel.SetMeterProvider(meterProvider)
 
-	return
+	// shutdown calls cleanup functions registered via shutdownFuncs.
+	shutdown := func(ctx context.Context) error {
+		var shutErr error
+		for _, fn := range shutdownFuncs {
+			shutErr = errors.Join(shutErr, fn(ctx))
+		}
+		shutdownFuncs = nil
+		return shutErr
+	}
+
+	return shutdown, nil
 }
 
 func newPropagator() propagation.TextMapPropagator {

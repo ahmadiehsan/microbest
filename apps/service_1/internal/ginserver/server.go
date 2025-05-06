@@ -1,6 +1,7 @@
 package ginserver
 
 import (
+	"errors"
 	"service_1/internal/helpers"
 	"service_1/internal/pb/service2pb"
 
@@ -15,32 +16,38 @@ import (
 )
 
 type Server struct {
-	configs   *helpers.Configs
-	GinEngine *gin.Engine
-
-	service2RpcConn   *grpc.ClientConn
+	configs           *helpers.Configs
+	GinEngine         *gin.Engine
 	Service2RpcClient service2pb.EchoClient
 }
 
-func NewServer(middlewares ...gin.HandlerFunc) *Server {
+func NewServer() (func() error, *Server) {
+	var closeFuncs []func() error
+
 	configs := helpers.GetConfigs()
 	engine := gin.New()
 
-	server := &Server{
-		configs:   configs,
-		GinEngine: engine,
+	srv := &Server{}
+	srv.configs = configs
+	srv.GinEngine = engine
+
+	srv.setupMiddlewares()
+	srv.setupRoutes()
+
+	service2RpcConn := mustCreateRpcConn(configs.Service2GrpcAddress)
+	closeFuncs = append(closeFuncs, service2RpcConn.Close)
+	srv.Service2RpcClient = service2pb.NewEchoClient(service2RpcConn)
+
+	shutdown := func() error {
+		var shutErr error
+		for _, fn := range closeFuncs {
+			shutErr = errors.Join(shutErr, fn())
+		}
+		closeFuncs = nil
+		return shutErr
 	}
-	server.setupMiddlewares()
-	server.setupRoutes()
 
-	server.service2RpcConn = mustCreateRpcConn(configs.Service2GrpcAddress)
-	server.Service2RpcClient = service2pb.NewEchoClient(server.service2RpcConn)
-
-	return server
-}
-
-func (s *Server) Shutdown() error {
-	return s.service2RpcConn.Close()
+	return shutdown, srv
 }
 
 func (s *Server) setupRoutes() {
