@@ -13,12 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
-
-func init() {
-	http.DefaultTransport = otelhttp.NewTransport(http.DefaultTransport)
-}
 
 func main() {
 	if err := run(); err != nil {

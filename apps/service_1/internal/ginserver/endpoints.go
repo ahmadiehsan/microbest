@@ -10,9 +10,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
-	"golang.org/x/net/context/ctxhttp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 )
 
 func hello(c *gin.Context) {
@@ -30,9 +32,8 @@ func hello(c *gin.Context) {
 func externalApiHttp(c *gin.Context) {
 	log.Info().Msg("call external API")
 	url := "https://httpbin.org/get"
-	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
+	resp, err := otelhttp.Get(c.Request.Context(), url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -52,9 +53,8 @@ func service2PingHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 ping API")
 	configs := helpers.GetConfigs()
 	url := "http://" + configs.Service2HttpAddress + "/api/ping/"
-	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
+	resp, err := otelhttp.Get(c.Request.Context(), url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -74,9 +74,8 @@ func service2EventHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 event API")
 	configs := helpers.GetConfigs()
 	url := "http://" + configs.Service2HttpAddress + "/api/event/"
-	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
+	resp, err := otelhttp.Get(c.Request.Context(), url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -96,7 +95,11 @@ func service2EchoGrpc(c *gin.Context) {
 	log.Info().Msg("call Service 2 echo RPC")
 	configs := helpers.GetConfigs()
 
-	conn, err := grpc.NewClient(configs.Service2GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(
+		configs.Service2GrpcAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error: " + err.Error()})
 		return
@@ -105,10 +108,7 @@ func service2EchoGrpc(c *gin.Context) {
 
 	client := service2pb.NewEchoClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	resp, err := client.Echo(ctx, &service2pb.EchoRequest{Message: "hello from Service 1"})
+	resp, err := client.Echo(c.Request.Context(), &service2pb.EchoRequest{Message: "hello from Service 1"})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error: " + err.Error()})
 		return
