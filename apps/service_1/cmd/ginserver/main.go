@@ -13,7 +13,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
+
+func init() {
+	http.DefaultTransport = otelhttp.NewTransport(http.DefaultTransport)
+}
 
 func main() {
 	if err := run(); err != nil {
@@ -63,7 +68,7 @@ func run() (err error) {
 
 func newHttpHandler() http.Handler {
 	setupModes()
-	middlewares := getAdditionalMiddlewares()
+	middlewares := []gin.HandlerFunc{otelgin.Middleware("gin")}
 	return ginserver.NewEngine(middlewares...)
 }
 
@@ -74,11 +79,5 @@ func setupModes() {
 		helpers.SwitchLoggerToHumanReadableMode()
 	} else {
 		gin.SetMode(gin.ReleaseMode)
-	}
-}
-
-func getAdditionalMiddlewares() []gin.HandlerFunc {
-	return []gin.HandlerFunc{
-		otelgin.Middleware("gin"),
 	}
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/net/context/ctxhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -31,7 +32,7 @@ func externalApiHttp(c *gin.Context) {
 	url := "https://httpbin.org/get"
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := client.Get(url)
+	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -53,7 +54,7 @@ func service2PingHttp(c *gin.Context) {
 	url := "http://" + configs.Service2HttpAddress + "/api/ping/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := client.Get(url)
+	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -75,7 +76,7 @@ func service2EventHttp(c *gin.Context) {
 	url := "http://" + configs.Service2HttpAddress + "/api/event/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
-	resp, err := client.Get(url)
+	resp, err := ctxhttp.Get(c.Request.Context(), client, url)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

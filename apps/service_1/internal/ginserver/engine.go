@@ -12,12 +12,6 @@ func NewEngine(middlewares ...gin.HandlerFunc) *gin.Engine {
 	return e
 }
 
-func setupMiddlewares(e *gin.Engine, middlewares ...gin.HandlerFunc) {
-	e.Use(gin.Recovery())
-	e.Use(logger.SetLogger())
-	e.Use(middlewares...)
-}
-
 func setupRoutes(e *gin.Engine) {
 	api := e.Group("/api")
 	api.GET("", hello)
@@ -25,4 +19,10 @@ func setupRoutes(e *gin.Engine) {
 	api.GET("/service-2-ping-http", service2PingHttp)
 	api.GET("/service-2-event-http", service2EventHttp)
 	api.GET("/service-2-echo-grpc", service2EchoGrpc)
+}
+
+func setupMiddlewares(e *gin.Engine, middlewares ...gin.HandlerFunc) {
+	e.Use(gin.Recovery())
+	e.Use(logger.SetLogger())
+	e.Use(middlewares...)
 }
