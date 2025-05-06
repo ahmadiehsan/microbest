@@ -9,6 +9,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/log/global"
+	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/trace"
@@ -35,6 +36,10 @@ func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err e
 	handleErr := func(inErr error) {
 		err = errors.Join(inErr, shutdown(ctx))
 	}
+
+	// Set up propagator.
+	prop := newPropagator()
+	otel.SetTextMapPropagator(prop)
 
 	// Set up logger provider.
 	loggerProvider, err := newLoggerProvider(ctx)
@@ -64,6 +69,13 @@ func SetupOtel(ctx context.Context) (shutdown func(context.Context) error, err e
 	otel.SetMeterProvider(meterProvider)
 
 	return
+}
+
+func newPropagator() propagation.TextMapPropagator {
+	return propagation.NewCompositeTextMapPropagator(
+		propagation.TraceContext{},
+		propagation.Baggage{},
+	)
 }
 
 func newLoggerProvider(ctx context.Context) (*log.LoggerProvider, error) {
