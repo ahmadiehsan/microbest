@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-	"service_1/internal/helpers"
 	"service_1/internal/pb/service2pb"
 	"time"
 
@@ -14,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func hello(c *gin.Context) {
+func (s *Server) hello(c *gin.Context) {
 	log.Info().Msg("hello API")
 	endpoints := []string{
 		"/api",
@@ -26,7 +25,7 @@ func hello(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Hello from Gin!", "end_points": endpoints})
 }
 
-func externalApiHttp(c *gin.Context) {
+func (s *Server) externalApiHttp(c *gin.Context) {
 	log.Info().Msg("call external API")
 	url := "https://httpbin.org/get"
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -47,9 +46,9 @@ func externalApiHttp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func service2PingHttp(c *gin.Context) {
+func (s *Server) service2PingHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 ping API")
-	url := "http://" + helpers.LoadConfigs().Service2HttpAddress + "/api/ping/"
+	url := "http://" + s.Configs.Service2HttpAddress + "/api/ping/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	resp, err := client.Get(url)
@@ -68,9 +67,9 @@ func service2PingHttp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func service2EventHttp(c *gin.Context) {
+func (s *Server) service2EventHttp(c *gin.Context) {
 	log.Info().Msg("call Service 2 event API")
-	url := "http://" + helpers.LoadConfigs().Service2HttpAddress + "/api/event/"
+	url := "http://" + s.Configs.Service2HttpAddress + "/api/event/"
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	resp, err := client.Get(url)
@@ -89,10 +88,10 @@ func service2EventHttp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func service2EchoGrpc(c *gin.Context) {
+func (s *Server) service2EchoGrpc(c *gin.Context) {
 	log.Info().Msg("call Service 2 echo RPC")
 
-	conn, err := grpc.NewClient(helpers.LoadConfigs().Service2GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(s.Configs.Service2GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "error: " + err.Error()})
 		return

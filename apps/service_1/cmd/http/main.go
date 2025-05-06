@@ -31,12 +31,12 @@ func main() {
 	// Set up logging.
 	helpers.SwitchLoggerToHumanReadableMode()
 
-	// Set up Gin app.
-	app := http.NewGinApp()
-	app.Use(otelgin.Middleware("gin"))
+	// Set up server.
+	server := http.NewServer()
+	server.App.Use(otelgin.Middleware("gin"))
 
 	// Start HTTP server.
-	err = app.Run()
+	err = server.App.Run()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to run server")
 	}
