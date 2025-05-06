@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-type configs struct {
+type Configs struct {
 	IsDebug             bool
 	KafkaAddress        string
 	Service2HttpAddress string
@@ -13,13 +13,13 @@ type configs struct {
 }
 
 var (
-	instance *configs
+	instance *Configs
 	once     sync.Once
 )
 
-func GetConfigs() *configs {
+func GetConfigs() *Configs {
 	once.Do(func() {
-		instance = &configs{
+		instance = &Configs{
 			IsDebug:             os.Getenv("PROJECT_ENV") == "dev",
 			KafkaAddress:        os.Getenv("KAFKA_HOST") + ":" + os.Getenv("KAFKA_BROKER_PORT"),
 			Service2HttpAddress: os.Getenv("SERVICE_2_HOST") + ":" + os.Getenv("SERVICE_2_HTTP_PORT"),
