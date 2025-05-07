@@ -3,6 +3,7 @@
         "**/tmp": true,
     },
     "cSpell.words": [
+        "exhaustruct",
         "gcflags",
         "golangci",
         "gonic",

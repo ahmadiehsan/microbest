@@ -23,16 +23,16 @@ type Server struct {
 func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 	var closeFuncs []func() error
 
-	srv := &Server{}
-	srv.configs = cfg
-	srv.GinEngine = gin.New()
-
-	srv.setupMiddlewares()
-	srv.setupRoutes()
-
 	service2RpcConn := mustCreateRPCConn(cfg.Service2GrpcAddress)
 	closeFuncs = append(closeFuncs, service2RpcConn.Close)
-	srv.Service2RpcClient = service2pb.NewEchoClient(service2RpcConn)
+
+	srv := &Server{
+		configs:           cfg,
+		GinEngine:         gin.New(),
+		Service2RpcClient: service2pb.NewEchoClient(service2RpcConn),
+	}
+	srv.setupMiddlewares()
+	srv.setupRoutes()
 
 	shutdown := func() error {
 		var shutErr error
