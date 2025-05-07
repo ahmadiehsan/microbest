@@ -10,6 +10,7 @@
         "isatty",
         "ldflags",
         "mattn",
+        "nolint",
         "otelgin",
         "ugorji",
         "vasile"
