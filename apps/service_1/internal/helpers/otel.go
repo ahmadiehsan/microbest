@@ -48,12 +48,12 @@ func SetupOtel(ctx context.Context) (func(context.Context) error, error) {
 
 	// shutdown calls cleanup functions registered via shutdownFuncs.
 	shutdown := func(ctx context.Context) error {
-		var shutErr error
+		var errShut error
 		for _, fn := range shutdownFuncs {
-			shutErr = errors.Join(shutErr, fn(ctx))
+			errShut = errors.Join(errShut, fn(ctx))
 		}
 		shutdownFuncs = nil
-		return shutErr
+		return errShut
 	}
 
 	return shutdown, nil

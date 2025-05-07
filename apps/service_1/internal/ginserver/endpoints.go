@@ -88,7 +88,7 @@ func (s *Server) service2EventHTTP(ginCtx *gin.Context) {
 func (s *Server) service2EchoGrpc(ginCtx *gin.Context) {
 	log.Info().Msg("call Service 2 echo RPC")
 
-	resp, err := s.Service2RpcClient.Echo(
+	resp, err := s.service2RpcClient.Echo(
 		ginCtx.Request.Context(),
 		&service2pb.EchoRequest{Message: "hello from Service 1"},
 	)

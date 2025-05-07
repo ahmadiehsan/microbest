@@ -16,8 +16,8 @@ import (
 
 type Server struct {
 	configs           *helpers.Configs
-	GinEngine         *gin.Engine
-	Service2RpcClient service2pb.EchoClient
+	ginEngine         *gin.Engine
+	service2RpcClient service2pb.EchoClient
 }
 
 func NewServer(cfg *helpers.Configs) (func() error, *Server) {
@@ -28,26 +28,30 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 
 	srv := &Server{
 		configs:           cfg,
-		GinEngine:         gin.New(),
-		Service2RpcClient: service2pb.NewEchoClient(service2RpcConn),
+		ginEngine:         gin.New(),
+		service2RpcClient: service2pb.NewEchoClient(service2RpcConn),
 	}
 	srv.setupMiddlewares()
 	srv.setupRoutes()
 
 	shutdown := func() error {
-		var shutErr error
+		var errShut error
 		for _, fn := range closeFuncs {
-			shutErr = errors.Join(shutErr, fn())
+			errShut = errors.Join(errShut, fn())
 		}
 		closeFuncs = nil
-		return shutErr
+		return errShut
 	}
 
 	return shutdown, srv
 }
 
+func (s *Server) Handler() *gin.Engine {
+	return s.ginEngine
+}
+
 func (s *Server) setupRoutes() {
-	api := s.GinEngine.Group("/api")
+	api := s.ginEngine.Group("/api")
 	api.GET("", s.hello)
 	api.GET("/external-api-http", s.externalAPIHTTP)
 	api.GET("/service-2-ping-http", s.service2PingHTTP)
@@ -56,9 +60,9 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) setupMiddlewares() {
-	s.GinEngine.Use(gin.Recovery())
-	s.GinEngine.Use(logger.SetLogger())
-	s.GinEngine.Use(otelgin.Middleware("gin"))
+	s.ginEngine.Use(gin.Recovery())
+	s.ginEngine.Use(logger.SetLogger())
+	s.ginEngine.Use(otelgin.Middleware("gin"))
 }
 
 func mustCreateRPCConn(addr string) *grpc.ClientConn {

@@ -27,9 +27,9 @@ func main() {
 		log.Panic().Err(err).Msg("failed to set up OpenTelemetry")
 	}
 	defer func() {
-		shutErr := otelShutdown(context.Background())
-		if shutErr != nil {
-			log.Error().Err(shutErr).Msg("failed to shut down OpenTelemetry")
+		errShut := otelShutdown(context.Background())
+		if errShut != nil {
+			log.Error().Err(errShut).Msg("failed to shut down OpenTelemetry")
 		}
 	}()
 
@@ -42,9 +42,9 @@ func main() {
 	// Set up Gin server.
 	ginShutdown, ginSrv := ginserver.NewServer(cfg)
 	defer func() {
-		shutErr := ginShutdown()
-		if shutErr != nil {
-			log.Error().Err(shutErr).Msg("failed to shut down Gin server")
+		errShut := ginShutdown()
+		if errShut != nil {
+			log.Error().Err(errShut).Msg("failed to shut down Gin server")
 		}
 	}()
 
@@ -53,19 +53,19 @@ func main() {
 		Addr:              ":8080",
 		ReadHeaderTimeout: httpSrvReadHeaderTimeout,
 		BaseContext:       func(_ net.Listener) context.Context { return ctx },
-		Handler:           ginSrv.GinEngine,
+		Handler:           ginSrv.Handler(),
 	}
-	httpSrvErr := make(chan error, 1)
+	errHTTPSrv := make(chan error, 1)
 	go func() {
-		httpSrvErr <- httpSrv.ListenAndServe()
+		errHTTPSrv <- httpSrv.ListenAndServe()
 	}()
 
 	// Wait for interruption.
 	select {
-	case err = <-httpSrvErr:
+	case err = <-errHTTPSrv:
 		log.Panic().Err(err).Msg("failed to run HTTP server")
 	case <-ctx.Done():
-		stop() // Stop receiving signal notifications as soon as possible.
+		stop()
 	}
 
 	// When Shutdown is called, ListenAndServe immediately returns ErrServerClosed.
