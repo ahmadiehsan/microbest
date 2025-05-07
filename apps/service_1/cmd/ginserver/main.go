@@ -6,12 +6,15 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"service_1/internal/ginserver"
-	"service_1/internal/helpers"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
+	"service_1/internal/ginserver"
+	"service_1/internal/helpers"
 )
+
+const httpSrvReadHeaderTimeout = 5 * time.Second
 
 func main() {
 	// Handle SIGINT (CTRL+C) gracefully.
@@ -21,32 +24,36 @@ func main() {
 	// Set up OpenTelemetry.
 	otelShutdown, err := helpers.SetupOtel(ctx)
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to set up OpenTelemetry")
+		log.Panic().Err(err).Msg("failed to set up OpenTelemetry")
 	}
 	defer func() {
-		err := otelShutdown(context.Background())
-		if err != nil {
-			log.Error().Err(err).Msg("failed to shut down OpenTelemetry")
+		shutErr := otelShutdown(context.Background())
+		if shutErr != nil {
+			log.Error().Err(shutErr).Msg("failed to shut down OpenTelemetry")
 		}
 	}()
 
+	// Set up configs.
+	cfg := helpers.NewConfigs()
+
 	// Set up modes.
-	setupModes()
+	setupModes(cfg)
 
 	// Set up Gin server.
-	ginShutdown, ginSrv := ginserver.NewServer()
+	ginShutdown, ginSrv := ginserver.NewServer(cfg)
 	defer func() {
-		err = ginShutdown()
-		if err != nil {
-			log.Error().Err(err).Msg("failed to shut down Gin server")
+		shutErr := ginShutdown()
+		if shutErr != nil {
+			log.Error().Err(shutErr).Msg("failed to shut down Gin server")
 		}
 	}()
 
 	// Start HTTP server.
 	httpSrv := &http.Server{
-		Addr:        ":8080",
-		BaseContext: func(_ net.Listener) context.Context { return ctx },
-		Handler:     ginSrv.GinEngine,
+		Addr:              ":8080",
+		ReadHeaderTimeout: httpSrvReadHeaderTimeout,
+		BaseContext:       func(_ net.Listener) context.Context { return ctx },
+		Handler:           ginSrv.GinEngine,
 	}
 	httpSrvErr := make(chan error, 1)
 	go func() {
@@ -56,7 +63,7 @@ func main() {
 	// Wait for interruption.
 	select {
 	case err = <-httpSrvErr:
-		log.Fatal().Err(err).Msg("failed to run HTTP server")
+		log.Panic().Err(err).Msg("failed to run HTTP server")
 	case <-ctx.Done():
 		stop() // Stop receiving signal notifications as soon as possible.
 	}
@@ -68,9 +75,8 @@ func main() {
 	}
 }
 
-func setupModes() {
-	configs := helpers.GetConfigs()
-	if configs.IsDebug {
+func setupModes(cfg *helpers.Configs) {
+	if cfg.IsDebug {
 		gin.SetMode(gin.DebugMode)
 		helpers.SwitchLoggerToHumanReadableMode()
 	} else {

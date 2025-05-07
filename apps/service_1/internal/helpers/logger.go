@@ -8,5 +8,5 @@ import (
 )
 
 func SwitchLoggerToHumanReadableMode() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}) //nolint:reassign // Library's suggested way
 }

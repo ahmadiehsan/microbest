@@ -3,11 +3,11 @@ package ginserver
 import (
 	"encoding/json"
 	"net/http"
-	"service_1/internal/pb/service2pb"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"service_1/internal/pb/service2pb"
 )
 
 func (s *Server) hello(c *gin.Context) {
@@ -22,7 +22,7 @@ func (s *Server) hello(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Hello from Gin!", "end_points": endpoints})
 }
 
-func (s *Server) externalApiHttp(c *gin.Context) {
+func (s *Server) externalAPIHTTP(c *gin.Context) {
 	log.Info().Msg("call external API")
 	url := "https://httpbin.org/get"
 
@@ -31,10 +31,11 @@ func (s *Server) externalApiHttp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	defer resp.Body.Close() // nolint:errcheck
+	defer resp.Body.Close() // nolint:errcheck // Popular projects don't check this error
 
 	var result map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,7 +43,7 @@ func (s *Server) externalApiHttp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func (s *Server) service2PingHttp(c *gin.Context) {
+func (s *Server) service2PingHTTP(c *gin.Context) {
 	log.Info().Msg("call Service 2 ping API")
 	url := "http://" + s.configs.Service2HttpAddress + "/api/ping/"
 
@@ -51,10 +52,11 @@ func (s *Server) service2PingHttp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	defer resp.Body.Close() // nolint:errcheck
+	defer resp.Body.Close() // nolint:errcheck // Popular projects don't check this error
 
 	var result map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -62,7 +64,7 @@ func (s *Server) service2PingHttp(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func (s *Server) service2EventHttp(c *gin.Context) {
+func (s *Server) service2EventHTTP(c *gin.Context) {
 	log.Info().Msg("call Service 2 event API")
 	url := "http://" + s.configs.Service2HttpAddress + "/api/event/"
 
@@ -71,10 +73,11 @@ func (s *Server) service2EventHttp(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	defer resp.Body.Close() // nolint:errcheck
+	defer resp.Body.Close() // nolint:errcheck // Popular projects don't check this error
 
 	var result map[string]any
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+	err = json.NewDecoder(resp.Body).Decode(&result)
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

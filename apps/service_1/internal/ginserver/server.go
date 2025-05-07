@@ -2,17 +2,16 @@ package ginserver
 
 import (
 	"errors"
-	"service_1/internal/helpers"
-	"service_1/internal/pb/service2pb"
 
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-
-	"github.com/rs/zerolog/log"
+	"service_1/internal/helpers"
+	"service_1/internal/pb/service2pb"
 )
 
 type Server struct {
@@ -21,20 +20,17 @@ type Server struct {
 	Service2RpcClient service2pb.EchoClient
 }
 
-func NewServer() (func() error, *Server) {
+func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 	var closeFuncs []func() error
 
-	configs := helpers.GetConfigs()
-	engine := gin.New()
-
 	srv := &Server{}
-	srv.configs = configs
-	srv.GinEngine = engine
+	srv.configs = cfg
+	srv.GinEngine = gin.New()
 
 	srv.setupMiddlewares()
 	srv.setupRoutes()
 
-	service2RpcConn := mustCreateRpcConn(configs.Service2GrpcAddress)
+	service2RpcConn := mustCreateRPCConn(cfg.Service2GrpcAddress)
 	closeFuncs = append(closeFuncs, service2RpcConn.Close)
 	srv.Service2RpcClient = service2pb.NewEchoClient(service2RpcConn)
 
@@ -53,9 +49,9 @@ func NewServer() (func() error, *Server) {
 func (s *Server) setupRoutes() {
 	api := s.GinEngine.Group("/api")
 	api.GET("", s.hello)
-	api.GET("/external-api-http", s.externalApiHttp)
-	api.GET("/service-2-ping-http", s.service2PingHttp)
-	api.GET("/service-2-event-http", s.service2EventHttp)
+	api.GET("/external-api-http", s.externalAPIHTTP)
+	api.GET("/service-2-ping-http", s.service2PingHTTP)
+	api.GET("/service-2-event-http", s.service2EventHTTP)
 	api.GET("/service-2-echo-grpc", s.service2EchoGrpc)
 }
 
@@ -65,14 +61,14 @@ func (s *Server) setupMiddlewares() {
 	s.GinEngine.Use(otelgin.Middleware("gin"))
 }
 
-func mustCreateRpcConn(addr string) *grpc.ClientConn {
+func mustCreateRPCConn(addr string) *grpc.ClientConn {
 	conn, err := grpc.NewClient(
 		addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
-		log.Fatal().Err(err).Msgf("could not connect to service address %q", addr)
+		log.Panic().Err(err).Msgf("could not connect to service address %q", addr)
 	}
 	return conn
 }
