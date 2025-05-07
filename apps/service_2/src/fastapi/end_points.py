@@ -1,9 +1,9 @@
 import logging
 
-from fastapi import APIRouter
 from kafka import KafkaProducer
 from opentelemetry import metrics
 
+from fastapi import APIRouter
 from src.helpers.configs import Configs
 
 _logger = logging.getLogger(__name__)

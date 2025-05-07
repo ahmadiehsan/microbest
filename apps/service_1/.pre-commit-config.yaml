@@ -1,0 +1,7 @@
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.1.6
+    hooks:
+      - id: golangci-lint-full
+      - id: golangci-lint-fmt

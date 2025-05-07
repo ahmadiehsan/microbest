@@ -1,0 +1,6 @@
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/yoheimuta/protolint
+    rev: v0.53.0
+    hooks:
+      - id: protolint-docker

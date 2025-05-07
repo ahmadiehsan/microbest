@@ -1,11 +1,11 @@
 import logging
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.kafka import KafkaInstrumentor
 from opentelemetry.instrumentation.logging import LoggingInstrumentor
 
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from src.fastapi.end_points import API_ROUTER
 from src.helpers.configs import Configs
 from src.helpers.logger import setup_python_logger
