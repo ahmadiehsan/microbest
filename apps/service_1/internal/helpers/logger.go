@@ -7,6 +7,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func SwitchLoggerToHumanReadableMode() {
+func SetupLogger(cfg *Configs, processName string) {
+	if cfg.IsDebug {
+		switchToHumanReadableMode()
+	}
+	log.Logger = log.Logger.With(). //nolint:reassign // Library's suggested way
+					Str("process_name", processName).
+					Logger()
+}
+
+func switchToHumanReadableMode() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}) //nolint:reassign // Library's suggested way
 }

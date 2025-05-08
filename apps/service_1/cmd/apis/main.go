@@ -36,6 +36,9 @@ func main() {
 	// Set up configs.
 	cfg := helpers.NewConfigs()
 
+	// Set up logger.
+	helpers.SetupLogger(cfg, "apis")
+
 	// Set up modes.
 	setupModes(cfg)
 
@@ -78,7 +81,6 @@ func main() {
 func setupModes(cfg *helpers.Configs) {
 	if cfg.IsDebug {
 		gin.SetMode(gin.DebugMode)
-		helpers.SwitchLoggerToHumanReadableMode()
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}

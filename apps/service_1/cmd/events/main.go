@@ -30,8 +30,8 @@ func main() {
 	// Set up configs.
 	cfg := helpers.NewConfigs()
 
-	// Set up modes.
-	setupModes(cfg)
+	// Set up logger.
+	helpers.SetupLogger(cfg, "events")
 
 	// Set up events listener.
 	eventsShutdown, eventsSrv := events.NewServer(cfg)
@@ -54,11 +54,5 @@ func main() {
 		log.Panic().Err(err).Msg("events server exited unexpectedly")
 	case <-ctx.Done():
 		stop()
-	}
-}
-
-func setupModes(cfg *helpers.Configs) {
-	if cfg.IsDebug {
-		helpers.SwitchLoggerToHumanReadableMode()
 	}
 }
