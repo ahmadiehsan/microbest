@@ -11,17 +11,17 @@ class Command:
         self._app = RPCsApp()
 
     def run_server(self) -> None:
-        self._setup_otel()
         self._setup_logger()
+        self._setup_otel()
         self._listen()
+
+    def _setup_logger(self) -> None:
+        setup_python_logger(process_name="rpcs")
 
     def _setup_otel(self) -> None:
         setup_otel()
         LoggingInstrumentor().instrument()
         GrpcInstrumentorServer().instrument()
-
-    def _setup_logger(self) -> None:
-        setup_python_logger(process_name="rpcs")
 
     def _listen(self) -> None:
         self._app.listen()
