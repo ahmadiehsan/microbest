@@ -78,7 +78,7 @@ func (s *Server) listenForReader(ctx context.Context, rha readerHandler, errChan
 }
 
 func newReader(cfg *helpers.Configs, topic string, groupID string) *kafka.Reader {
-	return kafka.NewReader(kafka.ReaderConfig{ //nolint:exhaustruct // Library's suggested way
+	return kafka.NewReader(kafka.ReaderConfig{
 		Brokers:     []string{cfg.KafkaAddress},
 		Topic:       topic,
 		GroupID:     groupID,

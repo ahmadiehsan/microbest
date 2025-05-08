@@ -1,4 +1,4 @@
-# Inspired by https://gist.github.com/maratori/47a4d00457a92aa426dbd48a18776322
+# Based on https://gist.github.com/maratori/47a4d00457a92aa426dbd48a18776322
 
 version: "2"
 
@@ -108,7 +108,6 @@ linters:
     - usetesting # reports uses of functions with replacement inside the testing package
     - wastedassign # finds wasted assignment statements
     - whitespace # detects leading and trailing whitespace
-    - exhaustruct # checks if all structure fields are initialized
     - godox # detects usage of FIXME, TODO and other keywords inside comments
     - prealloc # [premature optimization, but can be used in some cases] finds slice declarations that could potentially be preallocated
     - tagalign # checks that struct tags are well aligned
@@ -116,6 +115,7 @@ linters:
 
     ## you may want to enable
     #- decorder # checks declaration order and count of types, constants, variables and functions
+    #- exhaustruct # [highly recommend to enable] checks if all structure fields are initialized
     #- ginkgolinter # [if you use ginkgo/gomega] enforces standards of using ginkgo and gomega
     #- goheader # checks is file header matches to pattern
     #- inamedparam # [great idea, but too strict, need to ignore a lot of cases by default] reports interfaces with unnamed method parameters
