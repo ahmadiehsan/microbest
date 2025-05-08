@@ -4,19 +4,20 @@ import (
 	"context"
 	"errors"
 
+	"github.com/IBM/sarama"
 	"github.com/rs/zerolog/log"
-	"github.com/segmentio/kafka-go"
 	"service_1/internal/helpers"
 )
 
 type Server struct {
-	configs        *helpers.Configs
-	readerHandlers []readerHandler
+	configs               *helpers.Configs
+	consumerGroupHandlers []consumerGroupHandler
 }
 
-type readerHandler struct {
-	reader  *kafka.Reader
-	handler func(kafka.Message) error
+type consumerGroupHandler struct {
+	consumerGroup sarama.ConsumerGroup
+	topics        []string
+	handler       sarama.ConsumerGroupHandler
 }
 
 func NewServer(cfg *helpers.Configs) (func() error, *Server) {
@@ -25,7 +26,7 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 	srv := &Server{
 		configs: cfg,
 	}
-	srv.setupReaderHandlers(&closeFuncs)
+	srv.setupConsumerGroupHandlers(&closeFuncs)
 
 	shutdown := func() error {
 		var errShut error
@@ -41,48 +42,45 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 
 func (s *Server) Listen(ctx context.Context) error {
 	errChan := make(chan error, 1)
-	for _, rh := range s.readerHandlers {
-		go s.listenForReader(ctx, rh, errChan)
+	for _, cgh := range s.consumerGroupHandlers {
+		go s.listenForReader(ctx, cgh, errChan)
 	}
 
 	return <-errChan
 }
 
-func (s *Server) listenForReader(ctx context.Context, rha readerHandler, errChan chan error) {
-	log.Info().Msgf("start listening for %s events", rha.reader.Config().Topic)
+func (s *Server) listenForReader(ctx context.Context, cgh consumerGroupHandler, errChan chan error) {
+	log.Info().Msgf("start listening for %s events", cgh.topics)
 
 	for {
-		msg, err := rha.reader.FetchMessage(ctx)
+		err := cgh.consumerGroup.Consume(ctx, cgh.topics, cgh.handler)
 		if err != nil {
-			errChan <- err
-			return
-		}
-
-		err = rha.handler(msg)
-		if err != nil {
-			errChan <- err
-			return
-		}
-
-		err = rha.reader.CommitMessages(ctx, msg)
-		if err != nil {
+			if errors.Is(err, sarama.ErrClosedConsumerGroup) {
+				return
+			}
 			errChan <- err
 			return
 		}
 	}
 }
 
-func (s *Server) setupReaderHandlers(closeFuncs *[]func() error) {
-	myTopicReader := newReader(s.configs, "my_topic", "service_1_my_topic_consumer")
-	*closeFuncs = append(*closeFuncs, myTopicReader.Close)
-	s.readerHandlers = append(s.readerHandlers, readerHandler{myTopicReader, s.myTopicHandler})
-}
+func (s *Server) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
+	saramaCfg := sarama.NewConfig()
+	saramaCfg.Version = sarama.V4_0_0_0
+	saramaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
+	brokers := []string{s.configs.KafkaAddress}
 
-func newReader(cfg *helpers.Configs, topic string, groupID string) *kafka.Reader {
-	return kafka.NewReader(kafka.ReaderConfig{
-		Brokers:     []string{cfg.KafkaAddress},
-		Topic:       topic,
-		GroupID:     groupID,
-		StartOffset: kafka.FirstOffset,
-	})
+	client, err := sarama.NewConsumerGroup(brokers, "service_1_my_topic_consumer", saramaCfg)
+	if err != nil {
+		log.Panic().Err(err).Msg("error creating consumer group")
+	}
+	*closeFuncs = append(*closeFuncs, client.Close)
+	s.consumerGroupHandlers = append(
+		s.consumerGroupHandlers,
+		consumerGroupHandler{
+			consumerGroup: client,
+			topics:        []string{"my_topic"},
+			handler:       &MyTopicHandler{},
+		},
+	)
 }
