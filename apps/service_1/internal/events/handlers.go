@@ -7,7 +7,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-func myTopicHandler(msg kafka.Message) error {
+func (s *Server) myTopicHandler(msg kafka.Message) error {
 	log.Info().
 		Str("partition", strconv.Itoa(msg.Partition)).
 		Str("offset", strconv.FormatInt(msg.Offset, 10)).

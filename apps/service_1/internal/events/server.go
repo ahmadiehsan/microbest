@@ -21,16 +21,11 @@ type readerHandler struct {
 
 func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 	var closeFuncs []func() error
-	readerHandlers := []readerHandler{}
-
-	myTopicReader := newReader(cfg, "my_topic", "service_1_my_topic_consumer")
-	closeFuncs = append(closeFuncs, myTopicReader.Close)
-	readerHandlers = append(readerHandlers, readerHandler{myTopicReader, myTopicHandler})
 
 	srv := &Server{
-		configs:        cfg,
-		readerHandlers: readerHandlers,
+		configs: cfg,
 	}
+	srv.setupReaders(&closeFuncs)
 
 	shutdown := func() error {
 		var errShut error
@@ -75,6 +70,12 @@ func (s *Server) listenForReader(ctx context.Context, rha readerHandler, errChan
 			return
 		}
 	}
+}
+
+func (s *Server) setupReaders(closeFuncs *[]func() error) {
+	myTopicReader := newReader(s.configs, "my_topic", "service_1_my_topic_consumer")
+	*closeFuncs = append(*closeFuncs, myTopicReader.Close)
+	s.readerHandlers = append(s.readerHandlers, readerHandler{myTopicReader, s.myTopicHandler})
 }
 
 func newReader(cfg *helpers.Configs, topic string, groupID string) *kafka.Reader {
