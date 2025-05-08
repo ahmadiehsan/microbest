@@ -57,6 +57,7 @@ services:
     restart: on-failure
     volumes:
       - ./apps/service_1:/app
+      - ./apps/service_1/tmp/go-build-cache:/root/.cache/go-build
 
   service_2:
     build:

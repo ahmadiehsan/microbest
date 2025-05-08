@@ -25,7 +25,7 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 	srv := &Server{
 		configs: cfg,
 	}
-	srv.setupReaders(&closeFuncs)
+	srv.setupReaderHandlers(&closeFuncs)
 
 	shutdown := func() error {
 		var errShut error
@@ -72,7 +72,7 @@ func (s *Server) listenForReader(ctx context.Context, rha readerHandler, errChan
 	}
 }
 
-func (s *Server) setupReaders(closeFuncs *[]func() error) {
+func (s *Server) setupReaderHandlers(closeFuncs *[]func() error) {
 	myTopicReader := newReader(s.configs, "my_topic", "service_1_my_topic_consumer")
 	*closeFuncs = append(*closeFuncs, myTopicReader.Close)
 	s.readerHandlers = append(s.readerHandlers, readerHandler{myTopicReader, s.myTopicHandler})

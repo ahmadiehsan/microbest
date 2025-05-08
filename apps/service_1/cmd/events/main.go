@@ -33,25 +33,25 @@ func main() {
 	// Set up modes.
 	setupModes(cfg)
 
-	// Set up event listener.
-	eventShutdown, eventSrv := events.NewServer(cfg)
+	// Set up events listener.
+	eventsShutdown, eventsSrv := events.NewServer(cfg)
 	defer func() {
-		errShut := eventShutdown()
+		errShut := eventsShutdown()
 		if errShut != nil {
-			log.Error().Err(errShut).Msg("failed to shut down event server")
+			log.Error().Err(errShut).Msg("failed to shut down events server")
 		}
 	}()
 
-	// Start event server.
-	errEventSrv := make(chan error, 1)
+	// Start events server.
+	errEventsSrv := make(chan error, 1)
 	go func() {
-		errEventSrv <- eventSrv.Listen(ctx)
+		errEventsSrv <- eventsSrv.Listen(ctx)
 	}()
 
 	// Wait for interruption.
 	select {
-	case err = <-errEventSrv:
-		log.Panic().Err(err).Msg("failed to run event server")
+	case err = <-errEventsSrv:
+		log.Panic().Err(err).Msg("failed to run events server")
 	case <-ctx.Done():
 		stop()
 	}

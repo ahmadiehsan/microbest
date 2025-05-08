@@ -301,7 +301,7 @@ service_1.logs: _is_env_prod_or_dev
 	$(COMPOSE) logs  --no-log-prefix -f service_1
 
 service_1.shell: _is_env_prod_or_dev service_1.up
-	$(COMPOSE) exec service_1 /bin/bash
+	$(COMPOSE) exec service_1 /bin/sh
 
 service_1.docker_build: _is_env_dev
 	$(COMPOSE) build service_1
@@ -335,7 +335,7 @@ service_2.logs: _is_env_prod_or_dev
 	$(COMPOSE) logs  --no-log-prefix -f service_2
 
 service_2.shell: _is_env_prod_or_dev service_2.up
-	$(COMPOSE) exec service_2 /bin/bash
+	$(COMPOSE) exec service_2 /bin/sh
 
 service_2.docker_build: _is_env_dev
 	$(COMPOSE) build service_2

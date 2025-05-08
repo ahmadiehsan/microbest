@@ -5,9 +5,9 @@
 
 # Run default Entrypoint and CMD
 if [ "$PROJECT_ENV" = "prod" ]; then
-  exec /app/ginserver
+  exec /app/apis
 elif [ "$PROJECT_ENV" = "dev" ]; then
-  exec air --build.cmd "go build -o ./tmp/main ./cmd/ginserver/main.go" --build.bin "./tmp/main"
+  exec supervisord -c /etc/_supervisord.conf
 else
   echo "error: not supported env: $PROJECT_ENV" >&2
   exit 1

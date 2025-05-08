@@ -10,7 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
-	"service_1/internal/ginserver"
+	"service_1/internal/apis"
 	"service_1/internal/helpers"
 )
 
@@ -39,12 +39,12 @@ func main() {
 	// Set up modes.
 	setupModes(cfg)
 
-	// Set up Gin server.
-	ginShutdown, ginSrv := ginserver.NewServer(cfg)
+	// Set up APIs server.
+	apisShutdown, apisSrv := apis.NewServer(cfg)
 	defer func() {
-		errShut := ginShutdown()
+		errShut := apisShutdown()
 		if errShut != nil {
-			log.Error().Err(errShut).Msg("failed to shut down Gin server")
+			log.Error().Err(errShut).Msg("failed to shut down APIs server")
 		}
 	}()
 
@@ -53,7 +53,7 @@ func main() {
 		Addr:              ":8080",
 		ReadHeaderTimeout: httpSrvReadHeaderTimeout,
 		BaseContext:       func(_ net.Listener) context.Context { return ctx },
-		Handler:           ginSrv.Handler(),
+		Handler:           apisSrv.Handler(),
 	}
 	errHTTPSrv := make(chan error, 1)
 	go func() {

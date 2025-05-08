@@ -7,12 +7,14 @@
         "gcflags",
         "golangci",
         "gonic",
+        "GOPATH",
         "gopkg",
         "isatty",
         "ldflags",
         "mattn",
         "nolint",
         "otelgin",
+        "supervisord",
         "ugorji",
         "vasile"
     ]

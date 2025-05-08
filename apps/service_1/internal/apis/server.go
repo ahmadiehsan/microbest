@@ -1,4 +1,4 @@
-package ginserver
+package apis
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ import (
 
 type Server struct {
 	configs           *helpers.Configs
-	ginEngine         *gin.Engine
+	engine            *gin.Engine
 	service2RpcClient service2pb.EchoClient
 }
 
@@ -28,7 +28,7 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 
 	srv := &Server{
 		configs:           cfg,
-		ginEngine:         gin.New(),
+		engine:            gin.New(),
 		service2RpcClient: service2pb.NewEchoClient(service2RpcConn),
 	}
 	srv.setupMiddlewares()
@@ -47,11 +47,11 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 }
 
 func (s *Server) Handler() *gin.Engine {
-	return s.ginEngine
+	return s.engine
 }
 
 func (s *Server) setupRoutes() {
-	api := s.ginEngine.Group("/api")
+	api := s.engine.Group("/api")
 	api.GET("", s.hello)
 	api.GET("/external-api-http", s.externalAPIHTTP)
 	api.GET("/service-2-ping-http", s.service2PingHTTP)
@@ -60,9 +60,9 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) setupMiddlewares() {
-	s.ginEngine.Use(gin.Recovery())
-	s.ginEngine.Use(logger.SetLogger())
-	s.ginEngine.Use(otelgin.Middleware("gin"))
+	s.engine.Use(gin.Recovery())
+	s.engine.Use(logger.SetLogger())
+	s.engine.Use(otelgin.Middleware("gin"))
 }
 
 func mustCreateRPCConn(addr string) *grpc.ClientConn {

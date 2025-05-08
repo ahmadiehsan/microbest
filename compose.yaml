@@ -161,8 +161,9 @@ services:
       - ./settings/compose/.env
       - ./settings/service_1/.env
     volumes:
-      - ./settings/compose/wait:/etc/_wait:ro
+      - ./settings/service_1/supervisord.conf:/etc/_supervisord.conf:ro
       - ./settings/service_1/entrypoint.sh:/etc/_entrypoint.sh:ro
+      - ./settings/compose/wait:/etc/_wait:ro
     entrypoint: /etc/_entrypoint.sh
     depends_on:
       - kong

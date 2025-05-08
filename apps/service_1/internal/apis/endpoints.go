@@ -1,4 +1,4 @@
-package ginserver
+package apis
 
 import (
 	"encoding/json"
