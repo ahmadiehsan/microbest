@@ -13,17 +13,18 @@ class Command:
         self._app = APIsApp()
 
     def create_server(self) -> FastAPI:
+        server = self._app.create()
         self._setup_logger()
-        self._setup_otel()
-        return self._app.server
+        self._setup_otel(server)
+        return server
 
     def _setup_logger(self) -> None:
         setup_python_logger(process_name="apis")
 
-    def _setup_otel(self) -> None:
+    def _setup_otel(self, server: FastAPI) -> None:
         setup_otel()
         LoggingInstrumentor().instrument()
-        FastAPIInstrumentor.instrument_app(self._app.server)
+        FastAPIInstrumentor.instrument_app(server)
         KafkaInstrumentor().instrument()
 
 

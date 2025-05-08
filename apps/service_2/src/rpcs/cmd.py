@@ -13,7 +13,7 @@ class Command:
     def run_server(self) -> None:
         self._setup_logger()
         self._setup_otel()
-        self._listen()
+        self._app.run()
 
     def _setup_logger(self) -> None:
         setup_python_logger(process_name="rpcs")
@@ -22,9 +22,6 @@ class Command:
         setup_otel()
         LoggingInstrumentor().instrument()
         GrpcInstrumentorServer().instrument()
-
-    def _listen(self) -> None:
-        self._app.listen()
 
 
 if __name__ == "__main__":

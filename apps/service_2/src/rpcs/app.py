@@ -11,15 +11,11 @@ _logger = logging.getLogger(__name__)
 
 
 class RPCsApp:
-    def __init__(self) -> None:
-        self._server = self._create_server()
-        self._add_services()
-        self._setup_port()
-
-    def listen(self) -> None:
-        self._server.start()
-        _logger.info("rpcs server started")
-        self._server.wait_for_termination()
+    def run(self) -> None:
+        server = self._create_server()
+        self._add_services(server)
+        self._setup_port(server)
+        self._listen(server)
 
     @staticmethod
     def _create_server() -> grpc.Server:
@@ -33,8 +29,16 @@ class RPCsApp:
             ],
         )
 
-    def _add_services(self) -> None:
-        service_2_pb2_grpc.add_EchoServicer_to_server(EchoService(), self._server)
+    @staticmethod
+    def _add_services(server: grpc.Server) -> None:
+        service_2_pb2_grpc.add_EchoServicer_to_server(EchoService(), server)
 
-    def _setup_port(self) -> None:
-        self._server.add_insecure_port(f"[::]:{Configs.SERVICE_2_GRPC_PORT}")
+    @staticmethod
+    def _setup_port(server: grpc.Server) -> None:
+        server.add_insecure_port(f"[::]:{Configs.SERVICE_2_GRPC_PORT}")
+
+    @staticmethod
+    def _listen(server: grpc.Server) -> None:
+        server.start()
+        _logger.info("rpcs server started")
+        server.wait_for_termination()
