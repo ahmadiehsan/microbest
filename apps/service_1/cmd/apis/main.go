@@ -63,7 +63,7 @@ func main() {
 	// Wait for interruption.
 	select {
 	case err = <-errHTTPSrv:
-		log.Panic().Err(err).Msg("failed to run HTTP server")
+		log.Panic().Err(err).Msg("HTTP server exited unexpectedly")
 	case <-ctx.Done():
 		stop()
 	}

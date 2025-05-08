@@ -51,7 +51,7 @@ func main() {
 	// Wait for interruption.
 	select {
 	case err = <-errEventsSrv:
-		log.Panic().Err(err).Msg("failed to run events server")
+		log.Panic().Err(err).Msg("events server exited unexpectedly")
 	case <-ctx.Done():
 		stop()
 	}

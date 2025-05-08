@@ -40,7 +40,7 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 }
 
 func (s *Server) Listen(ctx context.Context) error {
-	errChan := make(chan error, len(s.readerHandlers))
+	errChan := make(chan error, 1)
 	for _, rh := range s.readerHandlers {
 		go s.listenForReader(ctx, rh, errChan)
 	}
