@@ -8,5 +8,7 @@ repos:
   - repo: https://github.com/golangci/golangci-lint
     rev: v2.1.6
     hooks:
+      - id: golangci-lint-config-verify
       - id: golangci-lint
+        entry: golangci-lint run --new-from-rev HEAD --fix 2>/dev/null
       - id: golangci-lint-fmt
