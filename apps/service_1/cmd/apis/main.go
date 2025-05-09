@@ -34,7 +34,10 @@ func main() {
 	}()
 
 	// Set up configs.
-	cfg := helpers.NewConfigs()
+	cfg, err := helpers.NewConfigs()
+	if err != nil {
+		log.Panic().Err(err).Msg("failed to load configs")
+	}
 
 	// Set up logger.
 	helpers.SetupLogger(cfg, "apis")

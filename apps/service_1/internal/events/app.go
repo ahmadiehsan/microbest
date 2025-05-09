@@ -45,7 +45,6 @@ func (a *App) Listen(ctx context.Context) error {
 	for _, cgh := range a.consumerGroupHandlers {
 		go a.listenForReader(ctx, cgh, errChan)
 	}
-
 	return <-errChan
 }
 

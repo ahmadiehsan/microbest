@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/IBM/sarama v1.45.1
+	github.com/caarlos0/env/v10 v10.0.0
 	github.com/gin-contrib/logger v1.2.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/rs/zerolog v1.34.0

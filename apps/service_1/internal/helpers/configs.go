@@ -1,9 +1,7 @@
 package helpers
 
 import (
-	"os"
-
-	"github.com/rs/zerolog/log"
+	"github.com/caarlos0/env/v10"
 )
 
 type Configs struct {
@@ -13,19 +11,26 @@ type Configs struct {
 	Service2GrpcAddress string
 }
 
-func NewConfigs() *Configs {
-	return &Configs{
-		IsDebug:             mustGetenv("PROJECT_ENV") == "dev",
-		KafkaAddress:        mustGetenv("KAFKA_HOST") + ":" + mustGetenv("KAFKA_BROKER_PORT"),
-		Service2HttpAddress: mustGetenv("SERVICE_2_HOST") + ":" + mustGetenv("SERVICE_2_HTTP_PORT"),
-		Service2GrpcAddress: mustGetenv("SERVICE_2_HOST") + ":" + mustGetenv("SERVICE_2_GRPC_PORT"),
+func NewConfigs() (*Configs, error) {
+	var envVars envVars
+	if err := env.Parse(&envVars); err != nil {
+		return nil, err
 	}
+
+	cfg := &Configs{
+		IsDebug:             envVars.ProjectEnv == "dev",
+		KafkaAddress:        envVars.KafkaHost + ":" + envVars.KafkaBrokerPort,
+		Service2HttpAddress: envVars.Service2Host + ":" + envVars.Service2HttpPort,
+		Service2GrpcAddress: envVars.Service2Host + ":" + envVars.Service2GrpcPort,
+	}
+	return cfg, nil
 }
 
-func mustGetenv(envKey string) string {
-	val := os.Getenv(envKey)
-	if val == "" {
-		log.Panic().Msgf("environment variable %q not set", envKey)
-	}
-	return val
+type envVars struct {
+	ProjectEnv       string `env:"PROJECT_ENV,required"`
+	KafkaHost        string `env:"KAFKA_HOST,required"`
+	KafkaBrokerPort  string `env:"KAFKA_BROKER_PORT,required"`
+	Service2Host     string `env:"SERVICE_2_HOST,required"`
+	Service2HttpPort string `env:"SERVICE_2_HTTP_PORT,required"`
+	Service2GrpcPort string `env:"SERVICE_2_GRPC_PORT,required"`
 }
