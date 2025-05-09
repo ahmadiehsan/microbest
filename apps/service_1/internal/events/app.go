@@ -20,13 +20,16 @@ type consumerGroupHandler struct {
 	handler       sarama.ConsumerGroupHandler
 }
 
-func NewApp(cfg *helpers.Configs) (func() error, *App) {
+func NewApp(cfg *helpers.Configs) (*App, func() error, error) {
 	var closeFuncs []func() error
 
 	app := &App{
 		configs: cfg,
 	}
-	app.setupConsumerGroupHandlers(&closeFuncs)
+	err := app.setupConsumerGroupHandlers(&closeFuncs)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	shutdown := func() error {
 		var errShut error
@@ -37,7 +40,7 @@ func NewApp(cfg *helpers.Configs) (func() error, *App) {
 		return errShut
 	}
 
-	return shutdown, app
+	return app, shutdown, nil
 }
 
 func (a *App) Listen(ctx context.Context) error {
@@ -63,7 +66,7 @@ func (a *App) listenForReader(ctx context.Context, cgh consumerGroupHandler, err
 	}
 }
 
-func (a *App) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
+func (a *App) setupConsumerGroupHandlers(closeFuncs *[]func() error) error {
 	saramaCfg := sarama.NewConfig()
 	saramaCfg.Version = sarama.V4_0_0_0
 	saramaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
@@ -71,7 +74,7 @@ func (a *App) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
 
 	client, err := sarama.NewConsumerGroup(brokers, "service_1_my_topic_consumer", saramaCfg)
 	if err != nil {
-		log.Panic().Err(err).Msg("error creating consumer group")
+		return err
 	}
 	*closeFuncs = append(*closeFuncs, client.Close)
 	a.consumerGroupHandlers = append(
@@ -82,4 +85,5 @@ func (a *App) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
 			handler:       &MyTopicHandler{},
 		},
 	)
+	return nil
 }

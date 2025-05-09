@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-contrib/logger"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
@@ -20,10 +19,13 @@ type App struct {
 	service2RpcClient service2pb.EchoClient
 }
 
-func NewApp(cfg *helpers.Configs) (func() error, *App) {
+func NewApp(cfg *helpers.Configs) (*App, func() error, error) {
 	var closeFuncs []func() error
 
-	service2RpcConn := mustCreateRPCConn(cfg.Service2GrpcAddress)
+	service2RpcConn, err := createRPCConn(cfg.Service2GrpcAddress)
+	if err != nil {
+		return nil, nil, err
+	}
 	closeFuncs = append(closeFuncs, service2RpcConn.Close)
 
 	app := &App{
@@ -43,7 +45,7 @@ func NewApp(cfg *helpers.Configs) (func() error, *App) {
 		return errShut
 	}
 
-	return shutdown, app
+	return app, shutdown, nil
 }
 
 func (a *App) Handler() *gin.Engine {
@@ -65,14 +67,14 @@ func (a *App) setupMiddlewares() {
 	a.engine.Use(otelgin.Middleware("gin"))
 }
 
-func mustCreateRPCConn(addr string) *grpc.ClientConn {
+func createRPCConn(addr string) (*grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(
 		addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
-		log.Panic().Err(err).Msgf("could not connect to service address %q", addr)
+		return nil, err
 	}
-	return conn
+	return conn, nil
 }

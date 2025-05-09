@@ -46,7 +46,10 @@ func main() {
 	setupModes(cfg)
 
 	// Set up APIs app.
-	apisAppShutdown, apisApp := apis.NewApp(cfg)
+	apisApp, apisAppShutdown, err := apis.NewApp(cfg)
+	if err != nil {
+		log.Panic().Err(err).Msg("failed to create APIs app")
+	}
 	defer func() {
 		errShut := apisAppShutdown()
 		if errShut != nil {

@@ -37,7 +37,10 @@ func main() {
 	helpers.SetupLogger(cfg, "events")
 
 	// Set up events app.
-	eventsAppShutdown, eventsApp := events.NewApp(cfg)
+	eventsApp, eventsAppShutdown, err := events.NewApp(cfg)
+	if err != nil {
+		log.Panic().Err(err).Msg("failed to create events app")
+	}
 	defer func() {
 		errShut := eventsAppShutdown()
 		if errShut != nil {
