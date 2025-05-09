@@ -2,22 +2,23 @@
 # Base
 # =====
 FROM python:3.12-alpine AS base
-ENV APP_PATH="/app"
-ENV APP_VENV_SETUP_PATH="/venv_setup"
+ENV APP_PATH="/app" \
+    APP_VENV_SETUP_PATH="/venv_setup"
 
 # =========================
 # Builder (base)
 # =====
 FROM base AS builder_base
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-RUN apk add --no-cache curl git
+RUN apk add --no-cache curl
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1
 
 RUN curl -LsSf https://astral.sh/uv/0.6.14/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
-ENV UV_PYTHON_DOWNLOADS=0
-ENV UV_LINK_MODE=copy
+ENV PATH="/root/.local/bin/:$PATH" \
+    UV_PYTHON_DOWNLOADS=0 \
+    UV_LINK_MODE=copy
 
 WORKDIR $APP_VENV_SETUP_PATH
 COPY uv.lock pyproject.toml ./
@@ -27,24 +28,26 @@ COPY uv.lock pyproject.toml ./
 # =====
 FROM builder_base AS builder_dev
 ENV UV_COMPILE_BYTECODE=0
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen
 
 # =========================
 # Builder (prod)
 # =====
 FROM builder_base AS builder_prod
 ENV UV_COMPILE_BYTECODE=1
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
 # =========================
 # App (base)
 # =====
 FROM base AS app_base
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=.
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=. \
+    PATH="$APP_VENV_SETUP_PATH/.venv/bin:$PATH"
 WORKDIR /app
 COPY . ./
-ENV PATH="$APP_VENV_SETUP_PATH/.venv/bin:$PATH"
 
 # =========================
 # App (dev)
