@@ -54,7 +54,8 @@ func main() {
 		errEventsSrv <- eventsApp.Listen(ctx)
 	}()
 
-	// Wait for interruption.
+	log.Info().Msg("events server is up and running")
+
 	select {
 	case err = <-errEventsSrv:
 		log.Panic().Err(err).Msg("events server exited unexpectedly")

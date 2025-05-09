@@ -69,7 +69,8 @@ func main() {
 		errHTTPSrv <- httpSrv.ListenAndServe()
 	}()
 
-	// Wait for interruption.
+	log.Info().Msg("APIs server is up and running")
+
 	select {
 	case err = <-errHTTPSrv:
 		log.Panic().Err(err).Msg("HTTP server exited unexpectedly")
