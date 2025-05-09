@@ -33,19 +33,19 @@ func main() {
 	// Set up logger.
 	helpers.SetupLogger(cfg, "events")
 
-	// Set up events listener.
-	eventsShutdown, eventsSrv := events.NewServer(cfg)
+	// Set up events app.
+	eventsAppShutdown, eventsApp := events.NewApp(cfg)
 	defer func() {
-		errShut := eventsShutdown()
+		errShut := eventsAppShutdown()
 		if errShut != nil {
-			log.Error().Err(errShut).Msg("failed to shut down events server")
+			log.Error().Err(errShut).Msg("failed to shut down events app")
 		}
 	}()
 
 	// Start events server.
 	errEventsSrv := make(chan error, 1)
 	go func() {
-		errEventsSrv <- eventsSrv.Listen(ctx)
+		errEventsSrv <- eventsApp.Listen(ctx)
 	}()
 
 	// Wait for interruption.

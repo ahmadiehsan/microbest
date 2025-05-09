@@ -14,25 +14,25 @@ import (
 	"service_1/internal/pb/service2pb"
 )
 
-type Server struct {
+type App struct {
 	configs           *helpers.Configs
 	engine            *gin.Engine
 	service2RpcClient service2pb.EchoClient
 }
 
-func NewServer(cfg *helpers.Configs) (func() error, *Server) {
+func NewApp(cfg *helpers.Configs) (func() error, *App) {
 	var closeFuncs []func() error
 
 	service2RpcConn := mustCreateRPCConn(cfg.Service2GrpcAddress)
 	closeFuncs = append(closeFuncs, service2RpcConn.Close)
 
-	srv := &Server{
+	app := &App{
 		configs:           cfg,
 		engine:            gin.New(),
 		service2RpcClient: service2pb.NewEchoClient(service2RpcConn),
 	}
-	srv.setupMiddlewares()
-	srv.setupRoutes()
+	app.setupMiddlewares()
+	app.setupRoutes()
 
 	shutdown := func() error {
 		var errShut error
@@ -43,26 +43,26 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 		return errShut
 	}
 
-	return shutdown, srv
+	return shutdown, app
 }
 
-func (s *Server) Handler() *gin.Engine {
-	return s.engine
+func (a *App) Handler() *gin.Engine {
+	return a.engine
 }
 
-func (s *Server) setupRoutes() {
-	api := s.engine.Group("/api")
-	api.GET("", s.hello)
-	api.GET("/external-api-http", s.externalAPIHTTP)
-	api.GET("/service-2-ping-http", s.service2PingHTTP)
-	api.GET("/service-2-event-http", s.service2EventHTTP)
-	api.GET("/service-2-echo-grpc", s.service2EchoGrpc)
+func (a *App) setupRoutes() {
+	api := a.engine.Group("/api")
+	api.GET("", a.hello)
+	api.GET("/external-api-http", a.externalAPIHTTP)
+	api.GET("/service-2-ping-http", a.service2PingHTTP)
+	api.GET("/service-2-event-http", a.service2EventHTTP)
+	api.GET("/service-2-echo-grpc", a.service2EchoGrpc)
 }
 
-func (s *Server) setupMiddlewares() {
-	s.engine.Use(gin.Recovery())
-	s.engine.Use(logger.SetLogger())
-	s.engine.Use(otelgin.Middleware("gin"))
+func (a *App) setupMiddlewares() {
+	a.engine.Use(gin.Recovery())
+	a.engine.Use(logger.SetLogger())
+	a.engine.Use(otelgin.Middleware("gin"))
 }
 
 func mustCreateRPCConn(addr string) *grpc.ClientConn {

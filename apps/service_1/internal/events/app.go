@@ -9,7 +9,7 @@ import (
 	"service_1/internal/helpers"
 )
 
-type Server struct {
+type App struct {
 	configs               *helpers.Configs
 	consumerGroupHandlers []consumerGroupHandler
 }
@@ -20,13 +20,13 @@ type consumerGroupHandler struct {
 	handler       sarama.ConsumerGroupHandler
 }
 
-func NewServer(cfg *helpers.Configs) (func() error, *Server) {
+func NewApp(cfg *helpers.Configs) (func() error, *App) {
 	var closeFuncs []func() error
 
-	srv := &Server{
+	app := &App{
 		configs: cfg,
 	}
-	srv.setupConsumerGroupHandlers(&closeFuncs)
+	app.setupConsumerGroupHandlers(&closeFuncs)
 
 	shutdown := func() error {
 		var errShut error
@@ -37,19 +37,19 @@ func NewServer(cfg *helpers.Configs) (func() error, *Server) {
 		return errShut
 	}
 
-	return shutdown, srv
+	return shutdown, app
 }
 
-func (s *Server) Listen(ctx context.Context) error {
+func (a *App) Listen(ctx context.Context) error {
 	errChan := make(chan error, 1)
-	for _, cgh := range s.consumerGroupHandlers {
-		go s.listenForReader(ctx, cgh, errChan)
+	for _, cgh := range a.consumerGroupHandlers {
+		go a.listenForReader(ctx, cgh, errChan)
 	}
 
 	return <-errChan
 }
 
-func (s *Server) listenForReader(ctx context.Context, cgh consumerGroupHandler, errChan chan error) {
+func (a *App) listenForReader(ctx context.Context, cgh consumerGroupHandler, errChan chan error) {
 	log.Info().Msgf("start listening for %s events", cgh.topics)
 
 	for {
@@ -64,19 +64,19 @@ func (s *Server) listenForReader(ctx context.Context, cgh consumerGroupHandler, 
 	}
 }
 
-func (s *Server) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
+func (a *App) setupConsumerGroupHandlers(closeFuncs *[]func() error) {
 	saramaCfg := sarama.NewConfig()
 	saramaCfg.Version = sarama.V4_0_0_0
 	saramaCfg.Consumer.Offsets.Initial = sarama.OffsetOldest
-	brokers := []string{s.configs.KafkaAddress}
+	brokers := []string{a.configs.KafkaAddress}
 
 	client, err := sarama.NewConsumerGroup(brokers, "service_1_my_topic_consumer", saramaCfg)
 	if err != nil {
 		log.Panic().Err(err).Msg("error creating consumer group")
 	}
 	*closeFuncs = append(*closeFuncs, client.Close)
-	s.consumerGroupHandlers = append(
-		s.consumerGroupHandlers,
+	a.consumerGroupHandlers = append(
+		a.consumerGroupHandlers,
 		consumerGroupHandler{
 			consumerGroup: client,
 			topics:        []string{"my_topic"},

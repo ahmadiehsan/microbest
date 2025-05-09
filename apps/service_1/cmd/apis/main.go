@@ -42,12 +42,12 @@ func main() {
 	// Set up modes.
 	setupModes(cfg)
 
-	// Set up APIs server.
-	apisShutdown, apisSrv := apis.NewServer(cfg)
+	// Set up APIs app.
+	apisAppShutdown, apisApp := apis.NewApp(cfg)
 	defer func() {
-		errShut := apisShutdown()
+		errShut := apisAppShutdown()
 		if errShut != nil {
-			log.Error().Err(errShut).Msg("failed to shut down APIs server")
+			log.Error().Err(errShut).Msg("failed to shut down APIs app")
 		}
 	}()
 
@@ -56,7 +56,7 @@ func main() {
 		Addr:              ":8080",
 		ReadHeaderTimeout: httpSrvReadHeaderTimeout,
 		BaseContext:       func(_ net.Listener) context.Context { return ctx },
-		Handler:           apisSrv.Handler(),
+		Handler:           apisApp.Handler(),
 	}
 	errHTTPSrv := make(chan error, 1)
 	go func() {

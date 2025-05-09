@@ -10,7 +10,7 @@ import (
 	"service_1/internal/pb/service2pb"
 )
 
-func (s *Server) hello(ginCtx *gin.Context) {
+func (a *App) hello(ginCtx *gin.Context) {
 	log.Info().Msg("hello API")
 	endpoints := []string{
 		"/api",
@@ -22,7 +22,7 @@ func (s *Server) hello(ginCtx *gin.Context) {
 	ginCtx.JSON(http.StatusOK, gin.H{"message": "Hello from Gin!", "end_points": endpoints})
 }
 
-func (s *Server) externalAPIHTTP(ginCtx *gin.Context) {
+func (a *App) externalAPIHTTP(ginCtx *gin.Context) {
 	log.Info().Msg("call external API")
 	url := "https://httpbin.org/get"
 
@@ -43,9 +43,9 @@ func (s *Server) externalAPIHTTP(ginCtx *gin.Context) {
 	ginCtx.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func (s *Server) service2PingHTTP(ginCtx *gin.Context) {
+func (a *App) service2PingHTTP(ginCtx *gin.Context) {
 	log.Info().Msg("call Service 2 ping API")
-	url := "http://" + s.configs.Service2HttpAddress + "/api/ping/"
+	url := "http://" + a.configs.Service2HttpAddress + "/api/ping/"
 
 	resp, err := otelhttp.Get(ginCtx.Request.Context(), url)
 	if err != nil {
@@ -64,9 +64,9 @@ func (s *Server) service2PingHTTP(ginCtx *gin.Context) {
 	ginCtx.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func (s *Server) service2EventHTTP(ginCtx *gin.Context) {
+func (a *App) service2EventHTTP(ginCtx *gin.Context) {
 	log.Info().Msg("call Service 2 event API")
-	url := "http://" + s.configs.Service2HttpAddress + "/api/event/"
+	url := "http://" + a.configs.Service2HttpAddress + "/api/event/"
 
 	resp, err := otelhttp.Get(ginCtx.Request.Context(), url)
 	if err != nil {
@@ -85,10 +85,10 @@ func (s *Server) service2EventHTTP(ginCtx *gin.Context) {
 	ginCtx.JSON(http.StatusOK, gin.H{"status_code": resp.StatusCode, "content": result})
 }
 
-func (s *Server) service2EchoGrpc(ginCtx *gin.Context) {
+func (a *App) service2EchoGrpc(ginCtx *gin.Context) {
 	log.Info().Msg("call Service 2 echo RPC")
 
-	resp, err := s.service2RpcClient.Echo(
+	resp, err := a.service2RpcClient.Echo(
 		ginCtx.Request.Context(),
 		&service2pb.EchoRequest{Message: "hello from Service 1"},
 	)
