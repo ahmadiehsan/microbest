@@ -10,5 +10,5 @@ repos:
     hooks:
       - id: golangci-lint-config-verify
       - id: golangci-lint
-        entry: golangci-lint run --new-from-rev HEAD --fix 2>/dev/null
+        entry: env LOG_LEVEL=error golangci-lint run --new-from-rev HEAD --fix
       - id: golangci-lint-fmt
