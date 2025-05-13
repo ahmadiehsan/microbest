@@ -1,94 +1,52 @@
 # =========================
-# Base
-# =====
-FROM python:3.12-slim-bullseye AS base
-
-# App configurations
-ENV APP_PATH="/app"
-ENV APP_VENV_SETUP_PATH="/venv_setup"
-
-# =========================
 # Builder (base)
 # =====
-FROM base AS builder_base
+FROM golang:1.24-alpine AS builder_base
+RUN apk add --no-cache curl
 
-# Python configurations
-ENV PYTHONDONTWRITEBYTECODE=1
+WORKDIR /build/go_supervisor
+RUN curl -L -o supervisord.tar.gz https://github.com/ochinchina/supervisord/releases/download/v0.7.3/supervisord_0.7.3_Linux_64-bit.tar.gz && \
+    tar -xzf supervisord.tar.gz --strip-components=1 && \
+    chmod +x supervisord
 
-# PIP configurations
-ENV PIP_NO_CACHE_DIR=1
-ENV PIP_DISABLE_PIP_VERSION_CHECK=1
-
-# Machine dependencies
-RUN apt-get update && \
-    apt-get install curl git -y --no-install-recommends && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# UV installation
-RUN curl -LsSf https://astral.sh/uv/0.6.14/install.sh | sh
-ENV PATH="/root/.local/bin/:$PATH"
-
-# UV configurations
-ENV UV_PYTHON_DOWNLOADS=0
-ENV UV_LINK_MODE=copy
+WORKDIR /build/app
+ENV CGO_ENABLED=0
+COPY go.mod go.sum ./
 
 # =========================
 # Builder (dev)
 # =====
 FROM builder_base AS builder_dev
-
-# UV configurations
-ENV UV_COMPILE_BYTECODE=0
-
-# Python dependencies
-WORKDIR $APP_VENV_SETUP_PATH
-COPY uv.lock pyproject.toml ./
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download -x && \
+    go install tool && \
+    cp -a /go/pkg/mod /go/pkg_mod_cache
 
 # =========================
 # Builder (prod)
 # =====
 FROM builder_base AS builder_prod
-
-# UV configurations
-ENV UV_COMPILE_BYTECODE=1
-
-# Python dependencies
-WORKDIR $APP_VENV_SETUP_PATH
-COPY uv.lock pyproject.toml ./
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev
-
-# =========================
-# App (base)
-# =====
-FROM base AS app_base
-
-# Python configurations
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONPATH=.
-
-# Project directory
-WORKDIR $APP_PATH
-
-# Project content
-COPY . .
-
-# Virtualenv activation
-ENV PATH="$APP_VENV_SETUP_PATH/.venv/bin:$PATH"
+COPY . ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    go mod download -x && \
+    go build -v -ldflags="-s -w" -o ./apis ./cmd/apis && \
+    go build -v -ldflags="-s -w" -o ./events ./cmd/events
 
 # =========================
 # App (dev)
 # =====
-FROM app_base AS dev
-
-# Copy builder setups
-COPY --from=builder_dev $APP_VENV_SETUP_PATH $APP_VENV_SETUP_PATH
+FROM golang:1.24-alpine AS dev
+COPY --from=builder_dev /build/go_supervisor/supervisord /usr/local/bin/supervisord
+COPY --from=builder_dev /go/bin /go/bin
+COPY --from=builder_dev /go/pkg_mod_cache /go/pkg/mod
+WORKDIR /app
+COPY . ./
 
 # =========================
 # App (prod)
 # =====
-FROM app_base AS prod
-
-# Copy builder setups
-COPY --from=builder_prod $APP_VENV_SETUP_PATH $APP_VENV_SETUP_PATH
+FROM alpine:3.21 AS prod
+COPY --from=builder_prod /build/go_supervisor/supervisord /usr/local/bin/supervisord
+WORKDIR /app
+COPY --from=builder_prod /build/app ./

@@ -14,19 +14,22 @@ SERVICE_2_ROOT := ./apps/service_2
 # =====
 dependencies.install: _is_env_dev
 	echo ">>>>> Service 1"
-	uv sync --project $(SERVICE_1_ROOT)
+	cd $(SERVICE_1_ROOT) && go mod download -x && go install tool
+
 	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT)
 
 dependencies.upgrade: _is_env_dev
 	echo ">>>>> Service 1"
-	uv sync --project $(SERVICE_1_ROOT) --upgrade
+	cd $(SERVICE_1_ROOT) && go get -u ./...
+
 	echo ">>>>> Service 2"
 	uv sync --project $(SERVICE_2_ROOT) --upgrade
 
 dependencies.lock: _is_env_dev
 	echo ">>>>> Service 1"
-	uv lock --project $(SERVICE_1_ROOT)
+	cd $(SERVICE_1_ROOT) && go mod tidy
+
 	echo ">>>>> Service 2"
 	uv lock --project $(SERVICE_2_ROOT)
 
@@ -298,14 +301,17 @@ service_1.logs: _is_env_prod_or_dev
 	$(COMPOSE) logs  --no-log-prefix -f service_1
 
 service_1.shell: _is_env_prod_or_dev service_1.up
-	$(COMPOSE) exec service_1 /bin/bash
+	$(COMPOSE) exec service_1 /bin/sh
 
 service_1.docker_build: _is_env_dev
 	$(COMPOSE) build service_1
 
 service_1.compile_protos: _is_env_dev
-	uv run --project $(SERVICE_1_ROOT) python -m grpc_tools.protoc -I=./apps/protos --python_out=$(SERVICE_1_ROOT)/api/compiled_protos --mypy_out=$(SERVICE_1_ROOT)/api/compiled_protos --grpc_python_out=$(SERVICE_1_ROOT)/api/compiled_protos ./apps/protos/*.proto
-	for file in $(SERVICE_1_ROOT)/api/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+	protoc \
+	  -I=./apps/protos \
+	  --go_out=$(SERVICE_1_ROOT)/internal/pb \
+	  --go-grpc_out=$(SERVICE_1_ROOT)/internal/pb \
+	  ./apps/protos/*.proto
 
 # =========================
 # Service 2
@@ -329,27 +335,30 @@ service_2.logs: _is_env_prod_or_dev
 	$(COMPOSE) logs  --no-log-prefix -f service_2
 
 service_2.shell: _is_env_prod_or_dev service_2.up
-	$(COMPOSE) exec service_2 /bin/bash
+	$(COMPOSE) exec service_2 /bin/sh
 
 service_2.docker_build: _is_env_dev
 	$(COMPOSE) build service_2
 
 service_2.compile_protos: _is_env_dev
-	uv run --project $(SERVICE_2_ROOT) python -m grpc_tools.protoc -I=./apps/protos --python_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos --mypy_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos --grpc_python_out=$(SERVICE_2_ROOT)/src/rpc/compiled_protos ./apps/protos/*.proto
-	for file in $(SERVICE_2_ROOT)/src/rpc/compiled_protos/*_pb2_grpc.py; do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; done
+	uv run --project $(SERVICE_2_ROOT) python -m grpc_tools.protoc \
+	  -I=./apps/protos \
+	  --python_out=$(SERVICE_2_ROOT)/src/pb/service_2 \
+	  --mypy_out=$(SERVICE_2_ROOT)/src/pb/service_2 \
+	  --grpc_python_out=$(SERVICE_2_ROOT)/src/pb/service_2 \
+	  ./apps/protos/*.proto
+	for file in $(SERVICE_2_ROOT)/src/pb/*/*_pb2_grpc.py; \
+	  do sed -i '1s|^|# mypy: disable-error-code=no-untyped-def\n|' "$$file"; \
+	  done
 
 # =========================
 # Scripts
 # =====
 script.dir_checker: _is_env_prod_or_dev
-	echo ">>>>> Service 1"
-	cd $(SERVICE_1_ROOT) && uv run --only-dev dir_checker
 	echo ">>>>> Service 2"
 	cd $(SERVICE_2_ROOT) && uv run --only-dev dir_checker
 
 script.python_checker: _is_env_dev
-	echo ">>>>> Service 1"
-	cd $(SERVICE_1_ROOT) && uv run --only-dev python_checker
 	echo ">>>>> Service 2"
 	cd $(SERVICE_2_ROOT) && uv run --only-dev python_checker
 

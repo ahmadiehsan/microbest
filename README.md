@@ -11,7 +11,7 @@ Tech Stack:
 - **Prometheus & Grafana** – Metrics-driven monitoring
 - **Jaeger** – Distributed tracing made simple
 - **Kafka** – Reliable event streaming
-- **Example services** – Two minimal services demonstrating basic inter-service communication
+- **Example services** – Two minimal services (Go and Python) demonstrating basic inter-service communication
 
 Built for clarity, efficiency, and real-world usability. 🚀
 
@@ -26,8 +26,8 @@ make compose.up
 
 Services:
 
-- [Service 1](http://127.0.0.1:8000/api)
-- [Service 2](http://127.0.0.1:8000/service-2/api/)
+- [Service 1 (Go)](http://127.0.0.1:8000/api)
+- [Service 2 (Python)](http://127.0.0.1:8000/service-2/api/)
 - [Kibana](http://127.0.0.1:8000/kibana)
 - [Grafana](http://127.0.0.1:8000/grafana)
 - [Jaeger UI](http://127.0.0.1:8000/jaeger)
@@ -54,6 +54,8 @@ make help
 - [x] Add gRPC communications
 - [x] Add Kafka
 - [x] Add Kong and its plugins
+- [x] Add Go service
+- [x] Add Python service
 - [x] Add production support to compose.yaml
 - [x] Rename the projct to microbest
 - [x] Add Kibana dashboard for logs
@@ -61,6 +63,6 @@ make help
 - [x] Persist data for Prometheus, Grafana, Elasticsearch, Kibana, and Kafka
 - [ ] Persist data for Kong, OtelCollector
 - [ ] Fix Grafana's OpenTelemetry Collector dashboard
-- [ ] Grafana dashboard for FastAPI and Django
+- [ ] Grafana dashboard for FastAPI and Gin
 - [ ] Add example ENVs
 - [ ] Add overview diagram

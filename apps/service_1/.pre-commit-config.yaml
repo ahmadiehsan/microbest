@@ -1,0 +1,14 @@
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.5.1
+    hooks:
+      - id: go-mod-tidy
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v2.1.6
+    hooks:
+      - id: golangci-lint-config-verify
+      - id: golangci-lint
+        entry: env LOG_LEVEL=error golangci-lint run --new-from-rev HEAD --fix
+      - id: golangci-lint-fmt

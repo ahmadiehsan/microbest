@@ -24,57 +24,10 @@ repos:
       - id: checkmake
         args: [--config, "./.checkmake.ini"]
 
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.6.14
-    hooks:
-      - id: uv-lock
-        name: uv-lock (service_1)
-        args: [--project, "./apps/service_1"]
-        files: apps/service_1/pyproject.toml
-      - id: uv-lock
-        name: uv-lock (service_2)
-        args: [--project, "./apps/service_2"]
-        files: apps/service_2/pyproject.toml
-
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.5
-    hooks:
-      - id: ruff
-        name: ruff (service_1)
-        args: [--config, "./apps/service_1/pyproject.toml"]
-        files: ^apps/service_1/.*\.py
-      - id: ruff-format
-        name: ruff-format (service_1)
-        args: [--config, "./apps/service_1/pyproject.toml"]
-        files: ^apps/service_1/.*\.py
-      - id: ruff
-        name: ruff (service_2)
-        args: [--config, "./apps/service_2/pyproject.toml"]
-        files: ^apps/service_2/.*\.py
-      - id: ruff-format
-        name: ruff-format (service_2)
-        args: [--config, "./apps/service_2/pyproject.toml"]
-        files: ^apps/service_2/.*\.py
-
   - repo: https://github.com/ahmadiehsan/fixmate
     rev: 1.1.0
     hooks:
       - id: dir_checker
-        name: dir_checker (service_1)
-        args: [--config, "./apps/service_1/pyproject.toml"]
-      - id: python_checker
-        name: python_checker (service_1)
-        args: [--config, "./apps/service_1/pyproject.toml"]
-        files: ^apps/service_1/.*\.py
-      - id: dir_checker
-        name: dir_checker (service_2)
-        args: [--config, "./apps/service_2/pyproject.toml"]
-      - id: python_checker
-        name: python_checker (service_2)
-        args: [--config, "./apps/service_2/pyproject.toml"]
-        files: ^apps/service_2/.*\.py
-      - id: dir_checker
-        name: dir_checker (protos)
       - id: compose_checker
         args: [--env-file, "./settings/compose/.env"]
 
@@ -83,44 +36,18 @@ repos:
     hooks:
       - id: hadolint-docker
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
+  - repo: https://github.com/ddanier/sub-pre-commit.git
+    rev: v4.2.0
     hooks:
-      - id: mypy
-        name: mypy (service_1)
-        args:
-          [
-            --ignore-missing-imports,
-            --scripts-are-modules,
-            --config-file,
-            "./apps/service_1/pyproject.toml",
-          ]
-        files: ^apps/service_1/.*\.py
-        additional_dependencies: [types-requests==2.32.0.20250328]
-      - id: mypy
-        name: mypy (service_2)
-        args:
-          [
-            --ignore-missing-imports,
-            --scripts-are-modules,
-            --config-file,
-            "./apps/service_2/pyproject.toml",
-          ]
-        files: ^apps/service_2/.*\.py
-
-  - repo: https://github.com/pycqa/pylint
-    rev: v3.3.6
-    hooks:
-      - id: pylint
-        name: pylint (service_1)
-        args: [--rcfile, "./apps/service_1/pyproject.toml"]
-        files: ^apps/service_1/.*\.py
-      - id: pylint
-        name: pylint (service_2)
-        args: [--rcfile, "./apps/service_2/pyproject.toml"]
-        files: ^apps/service_2/.*\.py
-
-  - repo: https://github.com/yoheimuta/protolint
-    rev: v0.53.0
-    hooks:
-      - id: protolint-docker
+      - id: sub-pre-commit
+        name: "pre-commit for service_1"
+        args: [-p, "apps/service_1"]
+        files: "^apps/service_1/.*"
+      - id: sub-pre-commit
+        name: "pre-commit for service_2"
+        args: [-p, "apps/service_2"]
+        files: "^apps/service_2/.*"
+      - id: sub-pre-commit
+        name: "pre-commit for protos"
+        args: [-p, "apps/protos"]
+        files: "^apps/protos/.*"

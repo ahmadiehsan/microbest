@@ -1,14 +1,15 @@
 import logging
+import os
 from typing import Any, ClassVar
 
 
 class _CustomFormatter(logging.Formatter):
     _colors: ClassVar = {
-        "DEBUG": "\033[36m",  # Cyan
-        "INFO": "\033[32m",  # Green
+        "DEBUG": "\033[35m",  # Magenta
+        "INFO": "\033[34m",  # Blue
         "WARNING": "\033[33m",  # Yellow
         "ERROR": "\033[31m",  # Red
-        "CRITICAL": "\033[1;31m",  # Bold Red
+        "CRITICAL": "\033[31m",  # Red
     }
     _color_reset = "\033[0m"
 
@@ -20,6 +21,7 @@ class _CustomFormatter(logging.Formatter):
         log_color = self._colors.get(record.levelname, self._color_reset)
         record.color_levelname = f"{log_color}{record.levelname}{self._color_reset}"
         record.process_name = self._process_name
+        record.name_os = record.name.replace(".", os.sep) + ".py"
         return super().format(record)
 
 
@@ -30,7 +32,7 @@ def setup_python_logger(*, process_name: str) -> None:
     stream_handler.setLevel(logging.INFO)
     stream_handler.setFormatter(
         _CustomFormatter(
-            "[%(color_levelname)s] %(message)s [%(process_name)s] [%(name)s:%(lineno)d]", process_name=process_name
+            "%(color_levelname)s [%(name_os)s:%(lineno)d] %(message)s [%(process_name)s]", process_name=process_name
         )
     )
     root_logger.addHandler(stream_handler)

@@ -10,7 +10,6 @@ dependencies = [
     "fastapi==0.115.12",
     "uvicorn==0.34.0",
     "grpcio==1.71.0",
-    "grpcio-tools==1.71.0",
     "mypy-protobuf==3.6.0",
     "kafka-python==2.1.4",
     "opentelemetry-sdk==1.31.1",
@@ -27,6 +26,7 @@ dev = [
     "mypy>=1.15.0,<2",
     "pre-commit>=4.2.0,<5",
     "ruff>=0.11.4,<0.12",
+    "grpcio-tools==1.71.0",
 ]
 
 # =========================
@@ -135,7 +135,7 @@ disable = [
 # Python Checker
 # =====
 [tool.python_checker.per-file-ignores]
-"*src/helpers/*" = ["func_validator"]
-"*src/helpers/otel.py" = ["import_validator"]
-"*src/fast_api/end_points.py" = ["func_validator"]
-"*src/rpc/compiled_protos/*" = ["all"]
+"src/helpers/*" = ["func_validator"]
+"src/helpers/otel.py" = ["import_validator"]
+"src/apis/end_points.py" = ["func_validator"]
+"src/pb/*" = ["all"]

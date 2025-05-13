@@ -1,6 +1,7 @@
 syntax = "proto3";
-
 package service_2;
+
+option go_package = "/service2pb";
 
 service Echo {
   rpc Echo (EchoRequest) returns (EchoResponse) {}
