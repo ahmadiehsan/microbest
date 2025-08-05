@@ -5,6 +5,11 @@
         "**/.idea": true,
         "**/.ruff_cache": true
     },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "compose.yaml": "compose.dev.yaml, compose.prod.yaml",
+        ".pre-commit-config.yaml": ".env, .hadolint.yaml, .checkmake.ini",
+    },
     "cSpell.words": [
         "golangci",
         "nodaemon",
