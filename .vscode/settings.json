@@ -6,6 +6,7 @@
         "**/.ruff_cache": true
     },
     "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
     "explorer.fileNesting.patterns": {
         "compose.yaml": "compose.dev.yaml, compose.prod.yaml",
         ".pre-commit-config.yaml": ".env, .hadolint.yaml, .checkmake.ini",
