@@ -15,7 +15,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN curl -LsSf https://astral.sh/uv/0.6.14/install.sh | sh
+RUN curl -LsSf https://astral.sh/uv/0.8.10/install.sh | sh
 ENV PATH="/root/.local/bin/:$PATH" \
     UV_PYTHON_DOWNLOADS=0 \
     UV_LINK_MODE=copy

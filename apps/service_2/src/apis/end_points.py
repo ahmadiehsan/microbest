@@ -14,20 +14,20 @@ API_ROUTER = APIRouter(prefix="/api")
 
 @API_ROUTER.get("/")
 async def hello() -> dict:
-    _logger.info("hello API called")
+    _logger.info("Hello API called")
     return {"message": "Hello from FastAPI!", "end_points": ["/api/", "/api/ping/", "/api/event/"]}
 
 
 @API_ROUTER.get("/ping/")
 async def ping() -> dict:
-    _logger.info("ping API called")
+    _logger.info("Ping API called")
     _PING_COUNTER.add(1)
     return {"message": "pong"}
 
 
 @API_ROUTER.get("/event/")
 async def event(request: Request) -> dict:
-    _logger.info("event API called")
+    _logger.info("Event API called")
     producer: KafkaProducer = request.app.state.kafka_producer
     producer.send("my_topic", b"event from Service 2")
     return {"message": "event sent"}

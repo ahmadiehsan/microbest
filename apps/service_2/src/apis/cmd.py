@@ -19,7 +19,7 @@ class Command:
         setup_python_logger(process_name="apis")
         setup_otel()
         self._app.create(cfg)
-        _logger.info("apis server is up and running")
+        _logger.info("API server is up and running")
         return self._app.engine
 
 

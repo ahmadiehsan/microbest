@@ -7,6 +7,15 @@
         "**/.idea": true,
         "**/.ruff_cache": true
     },
+    "search.exclude": {
+        "**/uv.lock": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "pyproject.toml": "uv.lock",
+        "Dockerfile": ".dockerignore",
+    },
     "cSpell.words": [
         "asgi",
         "checkmake",

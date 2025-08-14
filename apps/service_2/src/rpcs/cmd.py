@@ -17,7 +17,7 @@ class Command:
         setup_python_logger(process_name="rpcs")
         setup_otel()
         self._app.create(cfg)
-        _logger.info("rpc server is up and running")
+        _logger.info("RPC server is up and running")
         self._app.listen()
 
 

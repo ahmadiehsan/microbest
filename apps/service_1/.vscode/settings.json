@@ -2,6 +2,16 @@
     "files.exclude": {
         "**/tmp": true,
     },
+    "search.exclude": {
+        "**/go.sum": true
+    },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "Dockerfile": ".dockerignore",
+        ".pre-commit-config.yaml": ".golangci.yaml",
+        "go.mod": "go.sum",
+    },
     "cSpell.words": [
         "exhaustruct",
         "gcflags",

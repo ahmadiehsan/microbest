@@ -2,27 +2,27 @@ exclude: ^(.*assets|.*_pb2\.py|.*_pb2\.pyi|.*_pb2_grpc\.py|\.venv)
 default_stages: [pre-commit]
 repos:
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.6.14
+    rev: 0.8.10
     hooks:
       - id: uv-lock
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.11.5
+    rev: v0.12.7
     hooks:
-      - id: ruff
+      - id: ruff-check
       - id: ruff-format
 
   - repo: https://github.com/ahmadiehsan/fixmate
-    rev: 1.1.0
+    rev: 2.0.2
     hooks:
       - id: python_checker
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.15.0
+    rev: v1.17.1
     hooks:
       - id: mypy
 
   - repo: https://github.com/pycqa/pylint
-    rev: v3.3.6
+    rev: v3.3.8
     hooks:
       - id: pylint

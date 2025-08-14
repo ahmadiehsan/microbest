@@ -45,13 +45,15 @@ class APIsApp:
     def _add_middlewares(self) -> None:
         @self.engine.middleware("http")
         async def request_logger(request: Request, call_next: Callable) -> Response:
-            _logger.info("req start | path=%s method=%s", request.url.path, request.method)
+            _logger.info("Req start | path=%s method=%s", request.url.path, request.method)
             start_time = time.time()
 
             response = await call_next(request)
 
             process_time = (time.time() - start_time) * 1000
-            _logger.info("req end | completed_in=%s status=%s", f"{process_time:.2f}ms", response.status_code)
+            _logger.info(
+                "Req end | completed_in=%s status=%s", f"{process_time:.2f} Milliseconds", response.status_code
+            )
             return response
 
     def _add_routers(self) -> None:
@@ -60,7 +62,7 @@ class APIsApp:
     def _add_exception_handlers(self) -> None:
         @self.engine.exception_handler(Exception)
         async def internal_error(_: Request, exc: Exception) -> JSONResponse:
-            _logger.error("unhandled error occurred: %s", exc, exc_info=True)
+            _logger.error("Unhandled error occurred: %s", exc)
             return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
 
     def _add_instrumentors(self) -> None:
