@@ -1,4 +1,4 @@
-default_stages: [pre-commit]
+default_stages: [ pre-commit ]
 repos:
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1
@@ -6,7 +6,7 @@ repos:
       - id: go-mod-tidy
 
   - repo: https://github.com/golangci/golangci-lint
-    rev: v2.4.0
+    rev: v2.11.4
     hooks:
       - id: golangci-lint-config-verify
       - id: golangci-lint
